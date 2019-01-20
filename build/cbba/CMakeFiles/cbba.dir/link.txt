@@ -1,2 +1,0 @@
-/usr/bin/ar qc ../lib/libcbba.a  CMakeFiles/cbba.dir/src/cbba_agent.cpp.o CMakeFiles/cbba.dir/src/cbba_task.cpp.o
-/usr/bin/ranlib ../lib/libcbba.a

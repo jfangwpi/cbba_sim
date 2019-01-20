@@ -1,2 +1,0 @@
-/usr/bin/ar qc ../lib/libltl.a  CMakeFiles/ltl.dir/src/buchi_automaton.cpp.o CMakeFiles/ltl.dir/src/spot_hoa_interpreter.cpp.o CMakeFiles/ltl.dir/src/product_automaton.cpp.o
-/usr/bin/ranlib ../lib/libltl.a

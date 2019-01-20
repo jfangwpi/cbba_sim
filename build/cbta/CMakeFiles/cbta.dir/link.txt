@@ -1,2 +1,0 @@
-/usr/bin/ar qc ../lib/libcbta.a  CMakeFiles/cbta.dir/src/graph_lift.cpp.o CMakeFiles/cbta.dir/src/hcost_interface.cpp.o CMakeFiles/cbta.dir/src/defn_hlevel.cpp.o CMakeFiles/cbta.dir/src/defn_tile_block.cpp.o CMakeFiles/cbta.dir/src/defn_tile.cpp.o
-/usr/bin/ranlib ../lib/libcbta.a
