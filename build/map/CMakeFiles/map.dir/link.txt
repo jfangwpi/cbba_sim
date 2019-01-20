@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../lib/libmap.a  CMakeFiles/map.dir/src/square_grid.cpp.o
+/usr/bin/ranlib ../lib/libmap.a

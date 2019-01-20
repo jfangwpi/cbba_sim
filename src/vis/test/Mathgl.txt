@@ -1,0 +1,1 @@
+g++ test_mathgl_vis.cpp -lmgl -lmgl-fltk && ./test_mathgl_vis.out
