@@ -33,7 +33,7 @@ $ sudo apt-get -y install libcgal-dev
 ```
 
 # Install Visual Studio code (Optional)
-Can downloaded from https://code.visualstudio.com/ and installed mannually. Otherwise, run:
+Can download the file from https://code.visualstudio.com/ and install mannually. Otherwise, run:
 ```
 $ sudo apt-get -y install apt-transport-https 
 $ curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
@@ -65,8 +65,7 @@ $ echo $LCM_INSTALL_DIR > /etc/ld.so.conf.d/lcm.conf
 ```
 
 # Spot (Required by LTL)
-Download the latest version of spot from website: https://spot.lrde.epita.fr/install.html
-Extract files into ~/software
+Download the latest version of spot from website: https://spot.lrde.epita.fr/install.html   Extract files into ~/software
 ```
 $ cd ~/software
 $ ./configure
