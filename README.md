@@ -126,6 +126,7 @@ Totally 4 iterations are required before convergence. The process of CBBA among 
 <img src="/data/iter4.png" align="middle" height="500" >
 
 
-
+#### Comments about result
+1. The terminal on the top left is pi1, the terminal on the top right is pi2 and the terminal on the bottom is pi3.
 
 
