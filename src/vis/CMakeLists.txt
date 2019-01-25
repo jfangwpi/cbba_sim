@@ -7,8 +7,6 @@ find_package(OpenCV REQUIRED)
 find_package(MathGL2 2.4)
 find_package(PythonLibs 2.7)
 
-
-
 # Add libraries
 set(VIS_LIB_SRC
     src/vis_utils.cpp
@@ -27,8 +25,6 @@ include_directories(
     ${MathGL_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIRS}
 )
-
-
 
 
 

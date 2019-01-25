@@ -33,7 +33,7 @@ TransitionData get_lifted_transition(int H, Eigen::Matrix<int,Eigen::Dynamic,4> 
 
 int zta02rgn_idx(std::vector<double> zta0, REGION_BD region_bd);
 
-TileTraversalData hcost_preprocessing(double r_min);
+TileTraversalData hcost_preprocessing();
 }
 
 }

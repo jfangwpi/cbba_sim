@@ -33,7 +33,7 @@ $ sudo apt-get -y install libcgal-dev
 ```
 
 # Install Visual Studio code (Optional)
-Can download the file from https://code.visualstudio.com/ and install mannually. Otherwise, run:
+Can downloaded from https://code.visualstudio.com/ and installed mannually. Otherwise, run:
 ```
 $ sudo apt-get -y install apt-transport-https 
 $ curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
@@ -65,7 +65,8 @@ $ echo $LCM_INSTALL_DIR > /etc/ld.so.conf.d/lcm.conf
 ```
 
 # Spot (Required by LTL)
-Download the latest version of spot from website: https://spot.lrde.epita.fr/install.html   Extract files into ~/software
+Download the latest version of spot from website: https://spot.lrde.epita.fr/install.html
+Extract files into ~/software
 ```
 $ cd ~/software
 $ ./configure
@@ -131,6 +132,4 @@ Check the result at "/cbba_sim/build/bin", the result is the figure called "resu
 <img src="/data/result_cbba.jpg" align="middle" height="500" >
 
 #### Comments about result
-1. The feasible path for vehicle i is draw by straight line with corresponding color, i.e., vehicle 1 is required to move to cell 6 first, then move to cell 75 along the blue line.  
-
-
+1. The feasible path for vehicle i is draw by straight line with corresponding color, i.e., vehicle 1 is required to move to cell 6 first, then move to cell 75 along the blue line. 

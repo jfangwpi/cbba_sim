@@ -25,14 +25,7 @@ using namespace librav;
 int main(int argc, char** argv )
 {
 	/*** 0. Preprocessing CBTA data ***/
-	std::map<double, TileTraversalData> tile_travelsal_data;
-	double r_min_1 = 3.0;
-	tile_travelsal_data[r_min_1] = HCost::hcost_preprocessing(r_min_1);
-
-	double r_min_2 = 2.0;
-	tile_travelsal_data[r_min_2] = HCost::hcost_preprocessing(r_min_2);
-
-
+	TileTraversalData tile_traversal_data = HCost::hcost_preprocessing();
 	/*** 1. Create a empty square grid ***/
 	int row_num = 10;
 	int col_num = 10;
@@ -79,8 +72,7 @@ int main(int argc, char** argv )
 	clock_t		product_time;
 	total_time = clock();
 	product_time = clock();
-	std::shared_ptr<Graph_t<ProductState *>> product_graph_new1 = std::make_shared<Graph_t<ProductState *>>();
-	std::shared_ptr<Graph_t<ProductState *>> product_graph_new2 = std::make_shared<Graph_t<ProductState *>>();
+	std::shared_ptr<Graph_t<ProductState *>> product_graph_new = std::make_shared<Graph_t<ProductState *>>();
 	product_time = clock() - product_time;
 
 	/*** 6. Search in the product graph ***/
@@ -94,56 +86,37 @@ int main(int argc, char** argv )
 
 	// Convert from original node to product node
 	std::vector<double> zta0 = {0.45,0.0};
-	std::map<double, std::vector<int>> rgn_idx_init;
-	rgn_idx_init[r_min_1] = {HCost::zta02rgn_idx(zta0,tile_travelsal_data[r_min_1].region_bd)};
-	rgn_idx_init[r_min_2] = {HCost::zta02rgn_idx(zta0,tile_travelsal_data[r_min_2].region_bd)};
+	std::vector<int> rgn_idx_init = {HCost::zta02rgn_idx(zta0,tile_traversal_data.region_bd)};
     std::cout << "Start to look for virtual id " << std::endl;
-	std::map<double, int64_t> virtual_start_id;
-	virtual_start_id[r_min_1] = ProductAutomaton::SetVirtualStartIncre(start_node_origin, rgn_idx_init[r_min_1], lifted_graph, buchi_graph, product_graph_new1);
-	virtual_start_id[r_min_2] = ProductAutomaton::SetVirtualStartIncre(start_node_origin, rgn_idx_init[r_min_2], lifted_graph, buchi_graph, product_graph_new2);
-    std::cout << "The virtual start id is " << virtual_start_id[r_min_1] << std::endl;
-	std::cout << "The virtual start id is " << virtual_start_id[r_min_2] << std::endl;
+	int64_t virtual_start_id = ProductAutomaton::SetVirtualStartIncre(start_node_origin, rgn_idx_init, lifted_graph, buchi_graph, product_graph_new);
+    std::cout << "The virtual start id is " << virtual_start_id << std::endl;
 	// Search in product graph
 	std::vector<int64_t>  buchi_acc = buchi_graph->GetVertexFromID(0)->state_->acc_state_idx;
 
-	GetProductCBTANeighbour get_product_cbta_neighbour1(lifted_graph, buchi_graph, tile_travelsal_data[r_min_1], grid);
-	GetProductCBTANeighbour get_product_cbta_neighbour2(lifted_graph, buchi_graph, tile_travelsal_data[r_min_2], grid);
+	GetProductCBTANeighbour get_product_cbta_neighbour(lifted_graph, buchi_graph, tile_traversal_data, grid);
 
 	std::cout << "Start A star " << std::endl;
-	auto path1 = AStar::ProductIncSearchCBTA(product_graph_new1, virtual_start_id[r_min_1], buchi_acc,  GetNeighbourFunc_t<ProductState*, double>(get_product_cbta_neighbour1));
-	auto path2 = AStar::ProductIncSearchCBTA(product_graph_new2, virtual_start_id[r_min_2], buchi_acc,  GetNeighbourFunc_t<ProductState*, double>(get_product_cbta_neighbour2));
+	auto path = AStar::ProductIncSearchCBTA(product_graph_new, virtual_start_id,buchi_acc,  GetNeighbourFunc_t<ProductState*, double>(get_product_cbta_neighbour));
+
 
 	total_time = clock() - total_time;
 	std::cout << "Total time in " << double(total_time)/CLOCKS_PER_SEC << " s." << std::endl;
 
 
 	// Map path in the product graph back to the square grid graph
-	std::vector<Vertex_t<SquareCell*>*> path_origin1;
-	std::vector<Vertex_t<SquareCell*>*> path_origin2;
+	std::vector<Vertex_t<SquareCell*>*> path_origin;
     //path_t<SquareCell *> path_vis;
-	for (auto it = path1.begin()+1; it != path1.end(); it++){
-		path_origin1.push_back((*it)->lifted_vertex_->state_->history.front());
+	for (auto it = path.begin()+1; it != path.end(); it++){
+		path_origin.push_back((*it)->lifted_vertex_->state_->history.front());
 	}
-	path_origin1.insert(path_origin1.end(),path1.back()->lifted_vertex_->state_->history.begin()+1,path1.back()->lifted_vertex_->state_->history.end());
+	path_origin.insert(path_origin.end(),path.back()->lifted_vertex_->state_->history.begin()+1,path.back()->lifted_vertex_->state_->history.end());
     
-
-	for (auto it = path2.begin()+1; it != path2.end(); it++){
-		path_origin2.push_back((*it)->lifted_vertex_->state_->history.front());
-	}
-	path_origin2.insert(path_origin2.end(),path2.back()->lifted_vertex_->state_->history.begin()+1,path2.back()->lifted_vertex_->state_->history.end());
-
-
-    Path_t<SquareCell *> path_vis1;
-	Path_t<SquareCell *> path_vis2;
-    for (auto &e: path_origin1){
-        path_vis1.push_back(e->state_);
+    Path_t<SquareCell *> path_vis;
+    for (auto &e: path_origin){
+        path_vis.push_back(e->state_);
     }
 
-	for (auto &e: path_origin2){
-        path_vis2.push_back(e->state_);
-    }
-
-	for (auto &ee:path_vis1){
+	for (auto &ee:path_vis){
         std::cout << ee->id_ << " ";
     }
     std::cout << std::endl;
@@ -156,8 +129,8 @@ int main(int argc, char** argv )
 	/*** you can visualize the squre grid by itself or overlay it on the map image ***/
 	GraphVis::VisSquareGrid(*grid, vis_img);
 	//GraphVis::VisSquareGrid(*grid, vis_img, vis_img, true);
-	GraphVis::VisSquareGridPath(path_vis1, vis_img, vis_img);
-	GraphVis::VisSquareGridPath(path_vis2, vis_img, vis_img);
+	GraphVis::VisSquareGridPath(path_vis, vis_img, vis_img);
+
 	// display visualization result
 	namedWindow("Processed Image", WINDOW_NORMAL ); // WINDOW_AUTOSIZE
 	imshow("Processed Image", vis_img);

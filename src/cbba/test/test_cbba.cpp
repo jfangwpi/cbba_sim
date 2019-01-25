@@ -47,15 +47,13 @@ int main(int argc, char** argv )
 		grid->SetInterestedRegionLabel(Global_LTL.task_info[i].pos_,Global_LTL.task_info[i].idx_);	
 	// Decompose the global LTL_expression
 	LTLDecomposition::GlobalLTLDecomposition(Global_LTL);
-	TasksList tasks(Global_LTL);
-    tasks.GetAllTasks();
 	
 	/*** 4. Initialize agents ***/
-	std::vector<Agent> agents_group = TaskAssignment::InitializeAgents();
+	std::vector<cbba_Agent> agents_group = CBBA::InitializeAgents();
 	int num_agents = agents_group.size();
 
     /*** 5. Construct a graph from the square grid ***/
-	std::shared_ptr<Graph_t<SquareCell *>> grid_graph = GraphFromGrid::BuildGraphFromSquareGrid(grid, false, false);
+	std::shared_ptr<Graph_t<SquareCell *>> grid_graph = GraphFromGrid::BuildGraphFromSquareGrid(grid,false, false);
 
 
 	/************************************************************************************************************/
@@ -68,7 +66,7 @@ int main(int argc, char** argv )
 	//while(agent[0].Iter < 2){
 		/*** 6. Communication among neighbors ***/
 		std::cout << "Iteration is " << agents_group[0].iter_ << "********************************" << std::endl;
-		TaskAssignment::communicate(agents_group);
+		CBBA::communicate(agents_group);
 		//Update the history of iteration neighbors
 		for (int i = 0; i < agents_group[0].num_agents_; i++)
 			agents_group[i].history_.iter_neighbors_his.push_back(agents_group[i].iteration_neighbors_);
@@ -77,21 +75,27 @@ int main(int argc, char** argv )
 		for(int i = 0; i < agents_group[0].num_agents_; i++){
 			std::cout << "Vehicle " << i << std::endl;
 			std::cout << "Winners for tasks are " << std::endl;
-			std::cout << agents_group[i].cbba_z_ << std::endl;
+			for (auto &e: agents_group[i].cbba_z_)
+				std::cout << e << " ";
+			std::cout << std::endl;
 			std::cout << "Highest reward are " << std::endl;
-			std::cout << agents_group[i].cbba_y_ << std::endl;
+			for(auto &t: agents_group[i].cbba_y_)
+				std::cout << t << " ";
+			std::cout << std::endl;
 			std::cout << "Path info is " << std::endl;
 			for(auto &b: agents_group[i].cbba_path_)
 				std::cout << b << " ";
 			std::cout << std::endl;
 			std::cout << "Reward for each vehicle is " << std::endl;
-			std::cout << agents_group[i].cbba_reward_ << std::endl;
+			for(auto &y: agents_group[i].cbba_award_)
+				std::cout << y << " ";
+			std::cout << std::endl;
 		
 		}
 
 		/*** 7. Bundle Operations ***/
 		/*** 7.1 Remove the out-bid task from the bundle ***/
-		TaskAssignment::bundle_remove(agents_group);
+		CBBA::bundle_remove(agents_group);
 		std::cout << "===================================== AFTER BUNDLE REMOVE ======================================" << std::endl;
 		for(int i = 0; i < agents_group[0].num_agents_; i++){
 			std::cout << "Vehicle " << i << std::endl;
@@ -101,9 +105,9 @@ int main(int argc, char** argv )
 			std::cout << std::endl;
 		}
 		/*** 7.2 Keep inserting tasks which have not been assigned into the bundle ***/
-		TaskAssignment::bundle_add(tasks,grid_graph,agents_group);
+		CBBA::bundle_add(Global_LTL,grid_graph,agents_group);
 		/*** 7.3 Check whether the assignment converge or not ***/
-		succFlag = TaskAssignment::success_checker(agents_group);
+		succFlag = CBBA::success_checker(agents_group);
 		std::cout << "The Flag for success is " << succFlag <<std::endl;
 		/*** 7.4 Update the number of interation ***/
 		
@@ -115,16 +119,21 @@ int main(int argc, char** argv )
 		for(int i = 0; i < agents_group[0].num_agents_; i++){
 			std::cout << "Vehicle " << i << std::endl;
 			std::cout << "Winners for tasks are " << std::endl;
-			std::cout << agents_group[i].cbba_z_ << std::endl;
+			for (auto &e: agents_group[i].cbba_z_)
+				std::cout << e << " ";
+			std::cout << std::endl;
 			std::cout << "Highest reward are " << std::endl;
-			std::cout << agents_group[i].cbba_y_ << std::endl;
-			std::cout << "Path info is " << std::endl;
+			for(auto &t: agents_group[i].cbba_y_)
+				std::cout << t << " ";
+			std::cout << std::endl;
 			std::cout << "Path info is " << std::endl;
 			for(auto &b: agents_group[i].cbba_path_)
 				std::cout << b << " ";
 			std::cout << std::endl;
 			std::cout << "Reward for each vehicle is " << std::endl;
-			std::cout << agents_group[i].cbba_reward_ << std::endl;
+			for(auto &y: agents_group[i].cbba_award_)
+				std::cout << y << " ";
+			std::cout << std::endl;
 
 		}
 	}
@@ -138,7 +147,7 @@ int main(int argc, char** argv )
 	for (auto it_ag = agents_group.begin(); it_ag != agents_group.end(); it_ag++){
 		
 		/*** 8.1 Rebuild the local LTL specification based on current bundle/path ***/
-		std::string ltl_formula = tasks.local_formula_recreator((*it_ag).cbba_path_);
+		std::string ltl_formula = LTLDecomposition::subtask_recreator((*it_ag).cbba_path_,true, Global_LTL);
 		std::cout << "The specification is " << ltl_formula << std::endl;
 		std::vector<std::vector<std::string>> buchi_regions = LTLDecomposition::ObtainBuchiRegion({ltl_formula});
 
@@ -149,7 +158,7 @@ int main(int argc, char** argv )
 
 		/*** 8.4 Construct a product graph ***/
         std::shared_ptr<Graph_t<ProductState *>> product_graph = std::make_shared<Graph_t<ProductState *>>();
-        int64_t start_id_grid = (*it_ag).init_pos_;
+        int64_t start_id_grid = (*it_ag).start_node_;
         int64_t virtual_start_state_id = ProductAutomaton::SetVirtualStartState(product_graph, buchi_graph, grid_graph, start_id_grid);
 		//std::shared_ptr<Graph_t<ProductState>> product_graph_new = std::make_shared<Graph_t<ProductState>>();
 
@@ -176,9 +185,10 @@ int main(int argc, char** argv )
 	vis.VisSquareGrid(*grid, vis_img);
 	vis.VisSquareGridGraph(*grid_graph, vis_img, vis_img, true);
 	// // put the path on top of the graph
-	for (int i = 0; i < agents_group[0].num_agents_; i++){
-		vis.VisSquareGridPath(path_origin[i], vis_img, vis_img, i);
-	}
+	vis.VisSquareGridPath(path_origin[0], vis_img, vis_img);
+	vis.VisSquareGridPath(path_origin[1], vis_img, vis_img);
+	vis.VisSquareGridPath(path_origin[2], vis_img, vis_img);
+	// vis.VisSquareGridPath(path_origin[3], vis_img, vis_img);
 	
 	// display visualization result
 	//namedWindow("Processed Image", WINDOW_NORMAL ); // WINDOW_AUTOSIZE

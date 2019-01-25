@@ -30,23 +30,23 @@ int main(int argc, char** argv )
 	grid->SetInterestedRegionLabel(3,1);
     // grid->SetInterestedRegionLabel(99,2);
 
-	grid->SetInterestedRegionLabel(3,2);
+	grid->SetInterestedRegionLabel(56,2);
     grid->SetInterestedRegionLabel(19,3);
-    grid->SetInterestedRegionLabel(80,4);
+    // grid->SetInterestedRegionLabel(80,4);
 
 	std::shared_ptr<Graph_t<SquareCell *>> grid_graph = GraphFromGrid::BuildGraphFromSquareGrid(grid,false, false);
 
     //======================================== SET BUCHI AUTOMATON =================================//
     // Buchi Automaton
     std::vector<std::string> buchi_regions;
-	std::string ltl_formula = "[] p0 && <> (p1 && (p2 -> <> p3)) && (<>[] p4)";
-    // std::string ltl_formula = "[] p0 && <>[] p1 && <> p2 && <> p3";
+	// std::string ltl_formula = "[] p0 && [<>(p1 && (p2 -> <> p3)) && (<>[] p4)]";
+    std::string ltl_formula = "[] p0 && <>[] p1 && <> p2 && <> p3";
 	//buchi_regions.push_back("p1");
 	buchi_regions.push_back("p0");
 	buchi_regions.push_back("p1");
 	buchi_regions.push_back("p2");
 	buchi_regions.push_back("p3");
-    buchi_regions.push_back("p4");
+    // buchi_regions.push_back("p4");
     // buchi_regions.push_back("p5");
 	std::shared_ptr<Graph_t<BuchiState *, std::vector<int64_t>>> buchi_graph = BuchiAutomaton::BuildBuchiGraph(ltl_formula,buchi_regions);
     std::vector<int64_t> buchi_acc = (*buchi_graph->FindVertex(0)).state_->acc_state_idx;

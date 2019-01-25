@@ -49,10 +49,8 @@ int main(int argc, char** argv )
 	LTLDecomposition::GlobalLTLDecomposition(Global_LTL);
 	
 	/*** 4. Initialize agents ***/
-	
-	std::vector<Agent> agents_group = TaskAssignment::InitializeAgents();
+	std::vector<cbba_Agent> agents_group = CBBA::InitializeAgents();
 	int num_agents = agents_group.size();
-	
 
     /*** 5. Construct a graph from the square grid ***/
 	std::shared_ptr<Graph_t<SquareCell *>> grid_graph = GraphFromGrid::BuildGraphFromSquareGrid(grid,false, false);
@@ -61,15 +59,13 @@ int main(int argc, char** argv )
     std::vector<Vertex_t<SquareCell*>*> path_origin[num_agents];
     Path_t<SquareCell *> path_vis[num_agents];
     for (int i=0; i < num_agents; i++){
-        Vertex_t<SquareCell *> * start_node_origin = grid_graph->GetVertexFromID(agents_group[i].init_pos_);
+        Vertex_t<SquareCell *> * start_node_origin = grid_graph->GetVertexFromID(agents_group[i].start_node_);
         path_origin[i].push_back(start_node_origin);
 
         for (auto &ee: path_origin[i]){
             path_vis[i].push_back(ee->state_);
         }
     }
-
-    
 
 	/*** 9.Visualize the map and graph ***/
 	// Image Layouts: square grid -> graph -> path
@@ -78,15 +74,15 @@ int main(int argc, char** argv )
 	vis.VisSquareGrid(*grid, vis_img);
 	vis.VisSquareGridGraph(*grid_graph, vis_img, vis_img, true);
 	// // put the path on top of the graph
-	for (int i = 0; i < agents_group[0].num_agents_; i++){
-		vis.VisSquareGridPath(path_vis[i], vis_img, vis_img, i);
-	}
-
+	vis.VisSquareGridPath(path_vis[0], vis_img, vis_img);
+	vis.VisSquareGridPath(path_vis[1], vis_img, vis_img);
+	vis.VisSquareGridPath(path_vis[2], vis_img, vis_img);
+	// vis.VisSquareGridPath(path_vis[3], vis_img, vis_img);
 	
 	// display visualization result
 	//namedWindow("Processed Image", WINDOW_NORMAL ); // WINDOW_AUTOSIZE
 	//imshow("Processed Image", vis_img);
-	imwrite("result_map.jpg",vis_img);
+	imwrite("result_map_pi.jpg",vis_img);
 
 	waitKey(0);
 

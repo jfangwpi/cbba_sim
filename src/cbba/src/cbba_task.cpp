@@ -35,25 +35,12 @@ void LTLFormula::InitializeGlobalLTL(){
 		std::string AP_idx = "AP" + std::to_string(i);
 		std::string AP_pos = AP_idx + "_pos";
 		std::string AP_num_agents = AP_idx + "_num_agents";
-		std::string AP_type = AP_idx + "_type";
 
 		ap.P_idx_ = config_reader.GetString(AP_idx, "");
 		
 		ap.idx_ = stoi(ap.P_idx_.substr(1));
-		// std::cout << "P_idx_ is " << ap.idx_ << std::endl;
-		// std::cout << "ap.idx_ is " << ap.idx_ << std::endl;
 		ap.pos_ = config_reader.GetReal(AP_pos, 0);
 		ap.num_agents_ = config_reader.GetReal(AP_num_agents, 1);
-		std::string type = config_reader.GetString(AP_type, "");
-		if (type == "VISIT"){
-			ap.type_ = TaskType::VISIT;
-		}
-		else if(type == "SEARCH"){
-			ap.type_ = TaskType::SEARCH;
-		}
-		else{
-			std::cout << "Unknown task type. " << std::endl;
-		}
 
 		task_info.push_back(ap);
 	}
@@ -88,13 +75,12 @@ std::vector<std::vector<std::string>> LTLDecomposition::ObtainBuchiRegion(std::v
             else
             	sub_sub_LTL_expression = expression[i].substr(position_p[k]);
 
-			// std::cout << sub_sub_LTL_expression << std::endl;
             // Only work on the sub_sub_LTL_expression
             while (found != std::string::npos){
             	found = IntegerNum.find(sub_sub_LTL_expression[j]);
             	j++;
-            }	
-		
+            }
+
             buchi_regions.push_back(sub_sub_LTL_expression.substr(0,j-1));
             found = {0};
         }
@@ -110,15 +96,12 @@ void LTLDecomposition::GlobalLTLDecomposition(LTLFormula& formula){
 
 	std::vector<std::string> sub_expression_Liveness = LTLDecomposition::Decomposition(formula.LTL_expression_Liveness);
 	std::vector<std::vector<std::string>> sub_buchi_regions_total = LTLDecomposition::ObtainBuchiRegion(sub_expression_Liveness);
-
+	
 	// Determine whether the task is independent or dependent
 	for (auto &br: sub_buchi_regions_total){
 		for(auto &ti: formula.task_info){
 			if(br[0] == ti.P_idx_){
-				// std::cout << "br[0] " << br[0] << " and ti.P_idx_ is " << ti.P_idx_ << std::endl;
-				// std::cout << ti.num_agents_ << "<== the number of agents required. " << std::endl; 
 				if(ti.num_agents_ > 1){
-					// std::cout << "br[0] is " << br[0] << "added into dependent list " << std::endl;
 					formula.sub_buchi_regions.sub_buchi_regions_Liveness_De.push_back(br);
 				}
 				else{
@@ -145,12 +128,11 @@ void LTLDecomposition::GlobalLTLDecomposition(LTLFormula& formula){
 
 	// Expression of Dependent: Liveness
 	for (int idx = 0; idx < formula.sub_buchi_regions.sub_buchi_regions_Liveness_De.size(); idx++)
-		for (auto it1 = sub_expression_Liveness.begin();it1 != sub_expression_Liveness.end(); it1++){
-			if((*it1).find(formula.sub_buchi_regions.sub_buchi_regions_Liveness_De[idx][0]) != std::string::npos){
+		for (auto it1 = sub_expression_Liveness.begin();it1 != sub_expression_Liveness.end(); it1++)
+			if((*it1).find(formula.sub_buchi_regions.sub_buchi_regions_Liveness_De[idx][0]) != std::string::npos)
 				formula.LTL_expression.sub_LTL_expression_Liveness_De.push_back(*it1);
-				break;
-			}
-		}
+			else
+				continue;
 
 	if (!formula.LTL_expression_Safety.empty())
 		formula.LTL_expression_Safety.append(" && ");
@@ -196,11 +178,14 @@ void LTLDecomposition::GlobalLTLDecomposition(LTLFormula& formula){
 	//     std::cout << std::endl;
 	// }
 
-	// std::cout << "After Decomposition of LTL: " << std::endl;
-	// std::cout << "The safety specification is: " << formula.LTL_expression_Safety << std::endl; 
-	// std::cout << "The liveness tasks are: " << std::endl;
-	// for (auto it = formula.LTL_expression.sub_LTL_expression_Liveness_T.begin(); it != formula.LTL_expression.sub_LTL_expression_Liveness_T.end(); it++)
+	// std::cout << "============== Task information of LTL ==============" << std::endl;
+	// // std::cout << "The safety specification is: " << formula.LTL_expression_Safety << std::endl; 
+	// std::cout << "The decomposed liveness tasks are: " << std::endl;
+	// int count = 0;
+	// for (auto it = formula.LTL_expression.sub_LTL_expression_Liveness_T.begin(); it != formula.LTL_expression.sub_LTL_expression_Liveness_T.end(); it++){
+	// 	std::cout << "Task " << count << ": ";
 	// 	std::cout << *it << std::endl;
+	// }
 
 }
 
@@ -374,41 +359,38 @@ type_(type),
 num_agents_(num_agents),
 specification_liveness_(liveness),
 specification_safety_(safety),
-buchi_regions_(buchi_regions){max_reward_ = 0.0;};
+buchi_regions_(buchi_regions){
+	min_bid_ = -1;
+};
 
 
-void TasksList::SetTasksFromLTL(LTLFormula Global_LTL){
+void CBBATasks::SetTasksFromLTL(LTLFormula Global_LTL){
     tasks_ = {};
     for (int i = 0; i < Global_LTL.sub_buchi_regions.sub_buchi_regions_Liveness_T.size(); i++){
         int64_t id = i;
         std::vector<int64_t> pos = {};
         int num_agents = 1;
-		TaskType type;
         for (int j = 0; j < Global_LTL.sub_buchi_regions.sub_buchi_regions_Liveness_T[i].size(); j++){
             for(int m = 0; m < Global_LTL.task_info.size(); m++){
                 if(Global_LTL.sub_buchi_regions.sub_buchi_regions_Liveness_T[i][j] == Global_LTL.task_info[m].P_idx_){
                     pos.push_back(Global_LTL.task_info[m].pos_);
-					if(num_agents <= Global_LTL.task_info[m].num_agents_){
-						num_agents = Global_LTL.task_info[m].num_agents_;
-					}
-					type =  Global_LTL.task_info[m].type_;
+                    num_agents = Global_LTL.task_info[m].num_agents_;
                     break;
                 }
             }
         }
-        // TaskType type = TaskType::SEARCH;
-        std::string liveness = Global_LTL.LTL_expression.sub_LTL_expression_Liveness_T[id];
+        TaskType type = TaskType::VISIT;
+        std::string liveness = Global_LTL.LTL_expression.sub_LTL_expression_T[id];
         std::string safety = Global_LTL.LTL_expression_Safety;
         std::vector<std::string> buchi_regions = Global_LTL.sub_buchi_regions.sub_buchi_regions_Liveness_T[id];
 
         cbba_Task task = cbba_Task(id, pos, type, num_agents, liveness, safety, buchi_regions);
         tasks_.push_back(task);
     }
-	specification_safety_ = Global_LTL.LTL_expression_Safety;
 }
 
 
-cbba_Task TasksList::FindTaskFromID(int64_t idx){
+cbba_Task CBBATasks::FindTaskFromID(int64_t idx){
     for (auto &task: tasks_){
         if(task.idx_ == idx)
             return task;
@@ -416,7 +398,7 @@ cbba_Task TasksList::FindTaskFromID(int64_t idx){
 }
 
 
-cbba_Task& TasksList::FindTask(int64_t idx){
+cbba_Task& CBBATasks::FindTask(int64_t idx){
     for (auto &task: tasks_){
         if(task.idx_ == idx)
             return task;
@@ -424,136 +406,25 @@ cbba_Task& TasksList::FindTask(int64_t idx){
 }
 
 
-void TasksList::GetAllTasks(){
+void CBBATasks::GetAllTasks(){
+	std::cout << "================ Task information of LTL ================" << std::endl;
     for (auto &task: tasks_){
-        std::cout << "============================== " << std::endl;
-        std::cout << "task " << task.idx_ << std::endl;
-        std::cout << "pos: ";
+        std::cout << "++++++++++++++++++++++++++++++++++" <<std::endl;
+        std::cout << "Task " << task.idx_ << std::endl;
+        std::cout << "Position of task: ";
         for (auto &p: task.pos_)
             std::cout <<  p << " ";
         std::cout << std::endl;
-        std::cout << "num of agents required " << task.num_agents_ << std::endl;
-        std::cout << "safety specification is " << task.specification_safety_ << std::endl;
-        std::cout << "liveness specification is " << task.specification_liveness_ << std::endl;
-        std::cout << "buchi regions are "  << std::endl;
-        for (auto &e: task.buchi_regions_)
-            std::cout << e << " ";
-        std::cout << std::endl;
+        std::cout << "Number of vehicles required to satisfy the task: " << task.num_agents_ << std::endl;
+        // std::cout << "safety specification is " << task.specification_safety_ << std::endl;
+        std::cout << "Corresponding specification of the task: " << std::endl;
+		std::cout << task.specification_liveness_ << std::endl;
+        // std::cout << "buchi regions are "  << std::endl;
+        // for (auto &e: task.buchi_regions_)
+        //     std::cout << e << " ";
+        // std::cout << std::endl;
     }
-}
-
-
-std::string TasksList::local_task_recreator(std::vector<int> bundle){
-	std::string SubtaskFromBundle;
-	std::string sub_task_bundled;
-	sub_task_bundled.clear();
-	SubtaskFromBundle.clear();
-
-
-	if(bundle.size() == 1){
-		cbba_Task task = FindTask(bundle[0]);
-		std::cout << "There is no need to recreate the subtask" << std::endl;
-		SubtaskFromBundle = task.specification_liveness_;
-		// std::cout << "~========================DEBUG after=============================" << std::endl;
-	}
-
-	else if(bundle.size() > 1){
-		for (int j  = bundle.size()-1; j >= 0;j--){
-			cbba_Task task = FindTask(bundle[j]);
-			if (j == bundle.size()-1 ){
-				SubtaskFromBundle = task.specification_liveness_;
-				// SubtaskFromBundle = "<> ( " + task.buchi_regions_.front
-			}
-			else{
-				if (task.buchi_regions_.size() == 1)
-					SubtaskFromBundle = "<> ( " + task.buchi_regions_.front() + " && " + SubtaskFromBundle + ")";
-				else {
-					if(task.type_ == TaskType::VISIT){
-						for (int it_sub_task_idx = task.buchi_regions_.size()-1;it_sub_task_idx >= 0 ; it_sub_task_idx--)
-							SubtaskFromBundle = "<> ( " + task.buchi_regions_[it_sub_task_idx] + " && " + SubtaskFromBundle + ")";
-					}
-					else if(task.type_ == TaskType::SEARCH){
-						std::cout << "Misson Search, need to fixed later " << std::endl;
-						// std::size_t pos_p = formula.LTL_expression.sub_LTL_expression_Liveness_T[bundle[j]].find('p');
-						// int str_size = formula.LTL_expression.sub_LTL_expression_Liveness_T[bundle[j]].size();
-						// std::string key_part = formula.LTL_expression.sub_LTL_expression_Liveness_T[bundle[j]].substr(pos_p-1);
-						// key_part.pop_back();
-						// SubtaskFromBundle = "<> ( " + key_part + " && " + SubtaskFromBundle + ")";
-					}
-					else
-						std::cout << "NO TASK TYPE DEFINED" << std::endl;
-				}
-					//SubtaskFromBundle = "( " + sub_LTL_expression_Liveness[bundle[j]] + " && " + SubtaskFromBundle + ")";
-			}
-		}
-	}
-	else{
-		std::cout << "No task in the bundle" <<std::endl;
-		sub_task_bundled = specification_safety_.substr(0,9);
-		
-	}
-
-	if (!specification_safety_.empty())
-		sub_task_bundled = specification_safety_ + SubtaskFromBundle;
-	else
-		sub_task_bundled = SubtaskFromBundle;
-
-	return sub_task_bundled;
-}
-
-std::string TasksList::local_formula_recreator(std::vector<int> bundle){
-	std::string SubtaskFromBundle;
-	std::string sub_task_bundled;
-
-	if(bundle.size() == 1){
-		cbba_Task task = FindTask(bundle[0]);
-		std::cout << "There is no need to recreate the subtask" << std::endl;
-		SubtaskFromBundle = task.specification_liveness_;
-		// std::cout << "~========================DEBUG after=============================" << std::endl;
-	}
-	else if(bundle.size() > 1){
-		for (int j  = bundle.size()-1; j >= 0;j--){
-			cbba_Task task = FindTask(bundle[j]);
-			if (j == bundle.size()-1){
-				SubtaskFromBundle = task.specification_liveness_;
-				// SubtaskFromBundle = "<> ( " + task.buchi_regions_.front
-			}
-			else{
-				if (task.buchi_regions_.size() == 1)
-					SubtaskFromBundle = "<> ( " + task.buchi_regions_.front() + " && " + SubtaskFromBundle + ")";
-				else {
-					if(task.type_ == TaskType::VISIT){
-						for (int it_sub_task_idx = task.buchi_regions_.size()-1;it_sub_task_idx >= 0 ; it_sub_task_idx--)
-							SubtaskFromBundle = "<> ( " + task.buchi_regions_[it_sub_task_idx] + " && " + SubtaskFromBundle + ")";
-					}
-					else if(task.type_ == TaskType::SEARCH){
-						int length = task.specification_liveness_.size();
-						std::string key_part = task.specification_liveness_.substr(5,length-7);
-						SubtaskFromBundle = "<> ( " + key_part + " && " + SubtaskFromBundle + ")";
-					}
-					else
-						std::cout << "NO TASK TYPE DEFINED" << std::endl;
-				}
-					//SubtaskFromBundle = "( " + sub_LTL_expression_Liveness[bundle[j]] + " && " + SubtaskFromBundle + ")";
-			}
-		}
-	}
-	else{
-		std::cout << "No task in the bundle" <<std::endl;
-		int length = specification_safety_.size();
-		sub_task_bundled = specification_safety_.substr(0,length-3);
-		
-	}
-
-	if (!specification_safety_.empty())
-		sub_task_bundled = specification_safety_ + SubtaskFromBundle;
-	else
-		sub_task_bundled = SubtaskFromBundle;
-
-	return sub_task_bundled;
-}
-
-
-std::vector<std::vector<std::string>> TasksList::obtain_buchi_regions(std::vector<std::string> expressions){
-	return LTLDecomposition::ObtainBuchiRegion(expressions);
+				  
+	std::cout << "=========================================================" << std::endl;
+	std::cout << std::endl;
 }

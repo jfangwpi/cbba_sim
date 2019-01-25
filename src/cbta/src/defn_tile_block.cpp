@@ -27,7 +27,7 @@ TileBlock::~TileBlock() {
 
 // Main driver of Curvature Bounded Traversability Analysis (CBTA)
 //
-void TileBlock::cbta(double r_min){
+void TileBlock::cbta(){
 	std::cout << "Enter cbta()" << std::endl;
 	y_exit = MatrixXd::Zero(H,1);
 	z_exit = MatrixXd::Zero(H,1);
@@ -103,8 +103,7 @@ void TileBlock::cbta(double r_min){
 			//Matrix<double,1,N_CBTA_W>& xSmp,
 			RowVectorXd& xSmp,
 			Matrix<double,2,N_CBTA_W>& btaSmp,
-			Matrix<double,2,1>& returnMatrix,
-			double r_min);
+			Matrix<double,2,1>& returnMatrix);
 	if (tile->traversal_type(H-1,0)==1)
 		fcn_cone = &TileBlock::cbta_s1;
 	else
@@ -119,7 +118,7 @@ void TileBlock::cbta(double r_min){
 		Matrix<double,2,N_CBTA_W> btaSmp = bta_smp.bottomRows(2);
 		Matrix<double,2,1> alfa;
 		alfa << -T_INFINITY, T_INFINITY;
-		(this->*fcn_cone)(w,d,xSmp,btaSmp,alfa,r_min);
+		(this->*fcn_cone)(w,d,xSmp,btaSmp,alfa);
 		alfa_sol.block(2*H-2,qq,2,1) = alfa; // bottom 2 rows, qqth column in 2*H by N_CBTA_W_SOL matrix
 	}
 
@@ -158,7 +157,7 @@ void TileBlock::cbta(double r_min){
 				Matrix<double,2,N_CBTA_W> btaSmp = bta_smp.middleRows(2*pp-2,2);
 				Matrix<double,2,1> alfa;
 				alfa << -T_INFINITY, T_INFINITY;
-				(this->*fcn_cone)(w,d,xSmp,btaSmp,alfa,r_min);
+				(this->*fcn_cone)(w,d,xSmp,btaSmp,alfa);
 //				std::cout << "Exited cbta_s1 or cbta_s2" << std::endl;
 //				std::cout << "returned alfa value" << std::endl << alfa << std::endl;
 				alfa_sol.block(2*pp-2,qq,2,1) = alfa; // bottom 2 rows, qqth column in 2*H by N_CBTA_W_SOL matrix
@@ -225,8 +224,7 @@ void TileBlock::cbta_s1(double w, double d,
 		                //Matrix<double,1,N_CBTA_W>& xSmp,
 		                RowVectorXd& xSmp,
 		                Matrix<double,2,N_CBTA_W>& btaSmp,
-		                Matrix<double,2,1>& return_alfa,
-						double r_min){
+		                Matrix<double,2,1>& return_alfa){
 //	std::cout << "---- Enter cbta_s1 ----" << std::endl;
 	// ------ Max and min initial angle possible
 //	std::cout << "w = " << w << std::endl;
@@ -462,8 +460,7 @@ void TileBlock::cbta_s2(double w, double d,
 		                //Matrix<double,1,N_CBTA_W>& xSmp,
 		                RowVectorXd& xSmp,
 		                Matrix<double,2,N_CBTA_W>& btaSmp,
-		                Matrix<double,2,1>& return_alfa,
-						double r_min){
+		                Matrix<double,2,1>& return_alfa){
 //	std::cout << "**** Enter cbta_s2 ****" << std::endl;
 	// ------ Intersect with segment with non-Inf bta
 	RowVectorXi btaNotInfIndx;

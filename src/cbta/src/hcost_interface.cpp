@@ -102,7 +102,7 @@ int HCost::zta02rgn_idx(std::vector<double> zta0, REGION_BD region_bd)
 }
 
 //std::map<unsigned int,std::shared_ptr<Hlevel>> HCost::hcost_preprocessing()
-TileTraversalData HCost::hcost_preprocessing(double r_min)
+TileTraversalData HCost::hcost_preprocessing()
 {
 	TileTraversalData tile_traversal_data;
 	Mat input_image;
@@ -265,7 +265,7 @@ TileTraversalData HCost::hcost_preprocessing(double r_min)
 			std::cout << " -------- End of current Tile data attributes----------" << std::endl;
 			std::shared_ptr<TileBlock> this_tile_block = std::make_shared<TileBlock>(REGION_BD,this_tile_data,HistoryH);
 			this_tile_data->addTileBlock(REGION_BD,this_tile_block,HistoryH);
-			this_tile_block->cbta(r_min); // Activte CBTA computations, necessary cbta_results
+			this_tile_block->cbta(); // Activte CBTA computations, necessary cbta_results
 			// stored in this_tile_block's public members
 
 			// ------- Find grid regions at end of second cell from where traversal

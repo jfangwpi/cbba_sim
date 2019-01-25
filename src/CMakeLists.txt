@@ -4,7 +4,10 @@ project(task_allocation)
 # cmake module path
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
-
+# automatically build LCM types.  This also defines a number of CMake
+# variables, see cmake/lcmtypes.cmake for details
+include(cmake/lcmtypes.cmake)
+lcmtypes_build()
 
 ## Put all binary files into /bin and libraries into /lib
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
@@ -28,11 +31,14 @@ endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-set(BUILD_DEMO off)
+set(BUILD_TEST off)
 
-if(BUILD_DEMO)
-	add_subdirectory(demo)
-endif(BUILD_DEMO)
+## Add sub source directories
+#add_subdirectory(demo)
+
+if(BUILD_TEST)
+	add_subdirectory(tests)
+endif(BUILD_TEST)
 
 # Add include directories of third party libraries
 include_directories(${CMAKE_SOURCE_DIR}/src/third_party/)
@@ -45,5 +51,5 @@ add_subdirectory(ltl)
 add_subdirectory(map)
 add_subdirectory(cbba)
 add_subdirectory(cbta)
-add_subdirectory(cbga)
+add_subdirectory(lcmlib)
 

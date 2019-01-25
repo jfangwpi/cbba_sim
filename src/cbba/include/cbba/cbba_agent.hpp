@@ -32,40 +32,54 @@
 namespace librav{
 
 // The number of helpers required
-const double eps = 0.0;
+const float eps = 0.0;
 
-const double cbba_benefit = 200.0;
-const double syn_benefit = 200.0;
+const float cbba_benefit = 100.0;
 
 /*** General CBBA ***/
 typedef struct
-{	
-	// Required by CBBA
-	std::vector<Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>> x_history;
-	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> y_history;
-	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> z_history;
-	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> iter_neighbors_his;
-	// Required by synchronization algorithm
+{
+	std::vector<std::vector<int>> x_history;
+	std::vector<std::vector<float>> y_history;
+	std::vector<std::vector<int>> z_history;
+	std::vector<std::vector<int>> iter_neighbors_his;
+
 	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> assignment_;
 	std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> winning_bids_;
 }Memo;
 
-class Agent
+class cbba_Agent
 {
 public:
 	// Constructor
-	Agent(int id, int startID, int num_tasks_inde, int num_tasks_de, int num_agents);
+	cbba_Agent(int id, int startID, std::vector<int> com, int num_tasks_inde, int num_tasks_de);
 
 	// Destructor
-	~Agent(){};
+	~cbba_Agent(){};
 
 public:
-	/*** General information of vehicles ***/
 	// The index of agent (agent 0,1,...)
 	int idx_;
-	int init_pos_;
+	int start_node_;
+	// The award of agent
+	std::vector<float> cbba_award_;
+	// The set of available task
+	std::vector<int> h_avai_;
+	// Bundle
+	std::vector<int> cbba_bundle_;
+	// Path
+	std::vector<int> cbba_path_;
 	// Iteration that the agent talk to neighbors
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> iteration_neighbors_;
+	std::vector<int> iteration_neighbors_;
+	// The highest bid for certain task that agent knows
+	std::vector<float> cbba_y_;
+	// The winner for certain task that agent knows
+	std::vector<int> cbba_z_;
+	// The assignment of task
+	std::vector<int> cbba_x_;
+	// Best insert position for task
+	std::vector<int> insert_pos_;
+
 	// Maximum tasks each agent can be assigned
 	int max_tasks_;
 	// Number of agents in the group
@@ -76,183 +90,112 @@ public:
 	int num_tasks_inde_;
 	// Number of dependent tasks
 	int num_tasks_de_;
-	// Communication Topology
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> comm_topo_;
-	// The neighbor of the agent
-	std::vector<int> neighbors_;
-	// Current iteration
-	int iter_;
-	// Best insert position for all tasks (Independent + Dependent)
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> insert_pos_;
-	// History of information required by CBBA and Synchronization Algorithm
+
 	Memo history_;
 
+	// Communication Topology
+	std::vector<int> comm_topo_;
+	// The neighbor of the agent
+	std::vector<int> neighbors_;
 
-	/*** Information required by CBBA ***/
-	// The reward of agent
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> cbba_reward_;
-	// The set of available independent tasks
-	std::vector<int> h_avai_;
-	// Task Bundle
-	std::vector<int> cbba_bundle_;
-	// Task Path
-	std::vector<int> cbba_path_;
-	// The highest bid for certain task that agent knows
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> cbba_y_;
-	// The winner for certain task that agent knows
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> cbba_z_;
-	// The assignment of task
-	Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> cbba_x_;
-	
-	
-	/*** Information required by synchronization algorithm ***/
-	// Required by synchronization algorithm
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> syn_c_;
-	// The set of available dependent tasks
-	std::vector<int> h_avai_de_;
-	// Assignment matrix
+	int iter_;
+
+	// Decentralized Synchronization
 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> assignment_matrix_;
-	// Reward matrix 
 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> winning_bids_matrix_;
-	// Total waiting time required by the vehicle 
-	double waiting_t_;
-	// Insert position threshold for dependent tasks
-	int last_pos_dependent_;
-
 	
+
 public:
-	/*** Required by CBBA ***/
-	// Add independent tasks into task bundle
-	void bundle_add(TasksList tasks, const std::shared_ptr<Graph_t<SquareCell*>> graph);
-	// Find the neighbors for vehicle based on comm_topo_
+
+	void assignment_update();
+
+	std::vector<int> award_update(LTLFormula Global_LTL,const std::shared_ptr<Graph_t<SquareCell*>> graph);
+	std::vector<int> award_update_CBTA(LTLFormula Global_LTL,const std::shared_ptr<Graph_t<SquareCell*>> graph, std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph,  
+			TileTraversalData tile_traversal_data, std::shared_ptr<SquareGrid> grid);
+	void update_reward_syn(CBBATasks tasks, std::shared_ptr<Graph_t<SquareCell*>> graph, int task_idx_syn);
 	void neighbor_finder();
-	// Update the reward of independent tasks
-	void reward_update(TasksList tasks_list, const std::shared_ptr<Graph_t<SquareCell*>> graph);
-	// Find the available independent tasks based on current task path
-	void available_tasks_finder();
-	// Find the desired task from a list of available indenpendent tasks
-	int desired_task_finder();
-	// Remove the outbid independent tasks from task bundle
-	void bundle_remove();
-	// Remove the outbid independent tasks from task path
-	void path_remove();
+	void assignment_update(cbba_Task& task, bool flag);
+	void assignment_update(std::vector<int> dependent_task_idx);
 	
+	void update_reward_dependent(CBBATasks tasks, std::vector<int> dependent_tasks_idx, std::shared_ptr<Graph_t<SquareCell*>> graph);
+	void bundle_add_dependent(CBBATasks tasks, std::vector<int> dependent_tasks_idx, std::shared_ptr<Graph_t<SquareCell*>> graph);
+	void update_dependent_path_length(CBBATasks tasks, std::vector<int> dependent_tasks_idx, std::shared_ptr<Graph_t<SquareCell*>> graph);
 
-	/*** Required by Synchronization Algorithm ***/
-	// Update the syn_c and the optimal insert position 
-	void update_reward_dependent(TasksList tasks, std::shared_ptr<Graph_t<SquareCell*>> graph);
-	// Find the available dependent task based on current task path
-	void available_dep_tasks_finder(TasksList tasks, std::shared_ptr<Graph_t<SquareCell*>> graph);
-	// Find the desired dependent task from the list of available tasks
-	int desired_dep_task_finder();
-	// Add dependent task into task path
-	void bundle_add_dependent(TasksList task, const std::shared_ptr<Graph_t<SquareCell*>> graph);
-	// Update the optimal group for the given task
-	void optimal_group_finder(cbba_Task task);
-	// Find the vehicles based on the bids
-	std::vector<int> FindVehicleFrombid(cbba_Task task, std::vector<double> winners_bid);
-	// Find the winners for the given task
-	std::vector<int> winners_finder(cbba_Task task);
-	// Find the number of vehicle 
-	int winners_count(cbba_Task task);
-	// Remove outbid dependent task from task path
-	void path_remove_dependent(TasksList tasks);
-	// Remove outbid dependent task from task bundle
-	void bundle_remove_dependent();
-	// Find the winning bids for the given task
-	std::vector<double> winning_bids_finder(cbba_Task task);
-	// Compute the waiting time required by all dependent tasks
-	void UpdateWaitingTime(std::shared_ptr<Graph_t<SquareCell*>> graph, TasksList tasks);
+	void dependent_tasks_convergence(int task_idx, int num_agent, std::vector<cbba_Agent>& agents);
+
+	std::vector<int> winners_finder(cbba_Task& task);
+	std::vector<int> his_winners_finder(cbba_Task& task);
+	int winners_count(cbba_Task& task);
+	std::pair<int, float> min_bid_finder(cbba_Task& task);
+	std::map<int, float> cross_bid_finder(cbba_Task& task, float new_bid);
+	std::pair<int, float> max_bid_finder(cbba_Task& task);
+	std::pair<int, float> second_min_bid_finder(cbba_Task& task);
+	std::pair<int, float> second_max_bid_finder(cbba_Task& task);
 
 
-	/*** Required by CBTA-CBBA ***/
-	// Update the reward for independent tasks
-	void reward_update_CBTA(TasksList tasks, const std::shared_ptr<Graph_t<SquareCell*>> graph, std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph,  
-		TileTraversalData tile_traversal_data, std::shared_ptr<SquareGrid> grid);
-	// Insert independent tasks into task bundle/path
-	void bundle_add(TasksList tasks,const std::shared_ptr<Graph_t<SquareCell*>> graph,std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph, 
-		TileTraversalData tile_traversal_data, std::shared_ptr<SquareGrid> grid);
+	// CBTA
+	void update_reward_dependent(CBBATasks tasks, std::vector<int> dependent_tasks_idx, LTLFormula Global_LTL, 
+		std::shared_ptr<Graph_t<SquareCell*>> graph, std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph, TileTraversalData tile_traversal_data, 
+		std::shared_ptr<SquareGrid> grid);
 
 
-	/*** Required by CBTA-Synchronization algoeirhm ***/
-	// Update syn_c and optimal insert position for dependent task
-	void update_reward_dependent(TasksList tasks, std::shared_ptr<Graph_t<SquareCell*>> graph, std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph, 
-		TileTraversalData tile_traversal_data, std::shared_ptr<SquareGrid> grid);
-	// Find the available dependent tasks
-	void available_dep_tasks_finder(TasksList tasks, std::shared_ptr<Graph_t<SquareCell*>> graph,std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph,
-		TileTraversalData tile_traversal_data, std::shared_ptr<SquareGrid> grid);
-	// Insert dependent tasks into task bundle/path
-	void bundle_add_dependent(TasksList tasks, std::shared_ptr<Graph_t<SquareCell*>> graph, std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph, 
-		TileTraversalData tile_traversal_data, std::shared_ptr<SquareGrid> grid);
+	void bundle_add_dependent(CBBATasks tasks, std::vector<int> dependent_task_idx, LTLFormula Global_LTL, 
+		std::shared_ptr<Graph_t<SquareCell*>> graph, std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph, TileTraversalData tile_traversal_data, 
+		std::shared_ptr<SquareGrid> grid);
+
+
+	void update_dependent_path_length(CBBATasks tasks, std::vector<int> dependent_task_idx, LTLFormula Global_LTL, 
+		std::shared_ptr<Graph_t<SquareCell*>> graph, std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph, TileTraversalData tile_traversal_data, 
+		std::shared_ptr<SquareGrid> grid);
 
 };
 
-namespace TaskAssignment
+namespace CBBA
 {
-	/*** General functions for agents ***/
+
 	double CalcHeuristic(SquareCell *node1, SquareCell *node2);
-	// Read agents information from config file
-	std::vector<Agent> InitializeAgents();
-	// Reurn all possible task path after inserting new task into current task path
-	std::vector<std::vector<int>> PossibleInsertPosFinder(std::vector<int> current_path, int task_syn);
-	// Return agent based on index
-	Agent& FindAgent(std::vector<Agent>& agents, int64_t idx);
-	// Compute the length of path with given task path
-	double PathLengthCalculation(TasksList tasks_list, std::shared_ptr<Graph_t<SquareCell*>> graph, std::vector<int> bundle, int start_idx_);
-	double PathLengthCalculationFromLTL(TasksList tasks, std::shared_ptr<Graph_t<SquareCell*>> graph, std::vector<int> bundle, int start_idx_);
-	double PathLengthCalculationBasedType(TasksList tasks, std::shared_ptr<Graph_t<SquareCell*>> graph, std::vector<int> bundle, int start_idx_);
-	double PathLengthCalculationCBTA(TasksList tasks, std::shared_ptr<Graph_t<SquareCell*>> graph,
-		std::vector<int> bundle, int start_idx_,std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph, 
+	std::vector<cbba_Agent> InitializeAgents();
+
+    float PathLengthCalculation(LTLFormula Global_LTL,std::shared_ptr<Graph_t<SquareCell*>> graph,std::vector<int> bundle_copy_onecase,int start_idx);
+	float PathLengthCalculationWithDelay(CBBATasks tasks, std::shared_ptr<Graph_t<SquareCell*>> graph, std::vector<int> bundle, int start_idx);
+	float PathLengthCalculationCBTA(LTLFormula Global_LTL, std::shared_ptr<Graph_t<SquareCell*>> graph,
+		std::vector<int> bundle_copy_onecase,int start_idx_,std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph, 
 		TileTraversalData tile_traversal_data, std::shared_ptr<SquareGrid> grid);
 
-	/*** Functions for CBBA ***/
-	void bundle_add(TasksList tasks, const std::shared_ptr<Graph_t<SquareCell*>> graph, std::vector<Agent>& agents);
-	void bundle_remove(std::vector<Agent>& agents);
-	void communicate(std::vector<Agent>& agents);
-	bool success_checker(std::vector<Agent> agent);
+	void communicate(std::vector<cbba_Agent>& agents);
+	void communicate_lcm(cbba_Agent& agent, int neig_idx, std::vector<float> neig_y_his, std::vector<int> neigh_z_his, std::vector<int> neigh_iter_nei_his);
+	void communicate_dependent_lcm(cbba_Agent& agent, cbba_Task& task, int neighbor_idx, std::vector<std::vector<float>> bids_matrix, std::vector<std::vector<int>> assignment_matrix, std::vector<int> iteration_neighbors);
+	void available_tasks_finder(cbba_Agent& agent_sig);
+	int desired_task_finder(cbba_Agent& agent_sig);
+	void bundle_remove(std::vector<cbba_Agent>& agent);
+	void bundle_remove(cbba_Agent& agent);
+	void path_remove(std::vector<cbba_Agent>& agent);
+	void path_remove(cbba_Agent& agent);
+	void bundle_add(LTLFormula Global_LTL,const std::shared_ptr<Graph_t<SquareCell*>> graph,std::vector<cbba_Agent>& agent);
+	void bundle_add(LTLFormula Global_LTL,const std::shared_ptr<Graph_t<SquareCell*>> graph, cbba_Agent& agent);
+	void bundle_add(LTLFormula Global_LTL,const std::shared_ptr<Graph_t<SquareCell*>> graph,std::vector<cbba_Agent>& agent,
+		std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph, TileTraversalData tile_traversal_data, 
+		std::shared_ptr<SquareGrid> grid);
+	bool success_checker(std::vector<cbba_Agent> agent);
 
+	// // Decentralized Syn
+	void communicate_dependent_centralized(std::vector<cbba_Agent>& agents, cbba_Task& task);
+	int find_num_agents(LTLFormula Global_LTL, int task_syn);
+	void CommunicationSyn(std::vector<cbba_Agent>& agents, LTLFormula Global_LTL, int task_syn);
+	std::vector<int> DesiredInserPosFinder(cbba_Agent agent, int task_syn, LTLFormula Global_LTL,std::shared_ptr<Graph_t<SquareCell*>> graph,int n_helper);
+	std::vector<std::vector<int>> PossibleInsertPosFinder(std::vector<int> current_path, int task_syn);
+	cbba_Agent& FindAgent(std::vector<cbba_Agent>& agents, int idx);
+	void update_iteration_number(std::vector<cbba_Agent>& agents);
+
+
+	std::vector<float> findKclosest(std::vector<cbba_Agent>& agents, float leader_bid, int leader_idx, int K, int n, cbba_Task task);
+	int findCrossOver(std::vector<float> ordered_bids, int low, int high, int leader_bid);
+	std::vector<int> findKclosest_idx(std::vector<float> Kclosest_bids, std::vector<cbba_Agent>& agents, cbba_Task task);
+	void leader_select_centralized(std::vector<cbba_Agent>& agents, CBBATasks& tasks, int task_idx);
+
+	void communicate_dependent_decentralized(std::vector<cbba_Agent>& agents, cbba_Task& task);
 	
-	/*** Functions for Synchronization algorithm ***/
-	// Insert dependent tasks into task bundle/path and update iteration
-	void bundle_add_dependent(TasksList tasks, const std::shared_ptr<Graph_t<SquareCell*>> graph, std::vector<Agent>& agents);
-	// Remove dependent tasks from task path/bundle
-	void path_remove_dependent(TasksList tasks, std::vector<Agent>& agents);
-	// Communicate with neighbors
-	void communicate_dependent(std::vector<Agent>& agents, TasksList tasks);
-	// Find the K closest reward based on current reward
-	std::vector<double> KClosestFinder(std::vector<double> ordered_bids, int x, int k, int n);
-	int findCrossOver(std::vector<double> ordered_bids, int low, int high, int x);
-	double maximum_bid_finder(std::vector<double> winning_bids);
-	double minimum_bid_finder(std::vector<double> winning_bids);
-	// Check whether the convergence of synchronization algorithm is achieved
-	bool success_checker_dependent(std::vector<Agent> agents, TasksList tasks);
-
-
-	/*** Functions for CBTA-CBBA ***/
-	// Insert independent tasks into task bundle and task path by CBBA
-	void bundle_add(TasksList tasks,const std::shared_ptr<Graph_t<SquareCell*>> graph,std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph, 
-	TileTraversalData tile_traversal_data, std::shared_ptr<SquareGrid> grid,std::vector<Agent>& agents);
-	// Insert independent tasks into task bundle and path with different radius of turn by CBBA
-	void bundle_add(TasksList tasks,const std::shared_ptr<Graph_t<SquareCell*>> graph,std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph, 
-		std::map<int, TileTraversalData> tile_traversal_data, std::shared_ptr<SquareGrid> grid, std::vector<Agent>& agents);
-
-	
-	/*** Functions for CBTA-Synchronization algorithm ***/
-	// Insert dependent tasks into task bundle and task path by synchronization algorithm
-	void bundle_add_dependent(TasksList tasks, std::shared_ptr<Graph_t<SquareCell*>> graph, std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph, 
-		TileTraversalData tile_traversal_data, std::shared_ptr<SquareGrid> grid,std::vector<Agent>& agents);
-	void bundle_add_dependent(TasksList tasks, std::shared_ptr<Graph_t<SquareCell*>> graph, std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph, 
-		std::map<int, TileTraversalData> tile_traversal_data, std::shared_ptr<SquareGrid> grid,std::vector<Agent>& agents);
-
-
-	/*** Compute the waiting time required by vehicle ***/
-	double WaitingTimeCalculation(std::shared_ptr<Graph_t<SquareCell*>> graph, std::vector<Agent>& agents, TasksList tasks);
-	int FindNumAppearance(std::vector<int> list, int target);
-	std::vector<int> FindWinners(std::vector<Agent> agents, int task_idx);
-	// Find the longest path for all dependent tasks
-	double MaximumRewardCalculation(std::shared_ptr<Graph_t<SquareCell*>> graph, std::vector<int> bundle, int init_pos, TasksList tasks);
-	// Compute certain length of path by considerring the waiting time
-	double PathLengthCalculationWithWaiting(std::shared_ptr<Graph_t<SquareCell*>> graph, std::vector<int> bundle, int init_pos, TasksList tasks);
+	// void group_vehicles_selection(std::vector<cbba_Agent>& agents, int K, cbba_Task& task);
 };
 
 }

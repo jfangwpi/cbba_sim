@@ -1,0 +1,18 @@
+package cbba_lcm_msgs;
+
+struct Agent
+{
+    
+    int32_t idx;
+    int32_t num_tasks_inde;
+    int32_t num_tasks_de;
+    int32_t num_tasks;
+    int32_t num_agent;
+    float y_his[num_tasks];
+    int32_t z_his[num_tasks];
+    int32_t iter_nei_his[num_agent];
+    float bids_matrix[num_tasks][num_agent];
+    int32_t assignment_matrix[num_tasks][num_agent];
+    boolean is_data_received_self;
+
+}

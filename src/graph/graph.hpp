@@ -10,7 +10,7 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
-#define USE_UNORDERED_MAP 1
+#define USE_UNORDERED_MAP
 
 #ifndef USE_UNORDERED_MAP
 #include <unordered_map>

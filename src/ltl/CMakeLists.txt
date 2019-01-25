@@ -20,18 +20,15 @@ target_include_directories(ltl PUBLIC
     PRIVATE src)
 
 
-add_executable(test_buchi test/test_buchi.cpp)
-target_link_libraries(test_buchi ltl)
+#add_executable(test_buchi test/test_buchi.cpp)
+#target_link_libraries(test_buchi ltl)
 
-add_executable(test_product test/test_product.cpp)
-target_link_libraries(test_product vis ltl map ${OpenCV_LIBS})
+#add_executable(test_product test/test_product.cpp)
+#target_link_libraries(test_product vis ltl map ${OpenCV_LIBS})
 
-add_executable(test_cosafe test/test_cosafe.cpp)
-target_link_libraries(test_cosafe vis ltl map ${OpenCV_LIBS})
+#add_executable(test_product_complex test/test_product_complex.cpp)
+#target_link_libraries(test_product_complex vis ltl map ${OpenCV_LIBS})
 
-add_executable(test_multi_area test/test_multi_area.cpp)
-target_link_libraries(test_multi_area vis ltl map ${OpenCV_LIBS})
-
-add_executable(test_avoid_ROI test/test_avoid_ROI.cpp)
-target_link_libraries(test_avoid_ROI vis ltl map ${OpenCV_LIBS})
+#add_executable(test_cosafe test/test_cosafe.cpp)
+#target_link_libraries(test_cosafe vis ltl map ${OpenCV_LIBS})
 

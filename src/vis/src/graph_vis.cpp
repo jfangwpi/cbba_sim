@@ -18,18 +18,6 @@ cv::Scalar GraphVis::aoi_color_ = Scalar(Scalar(0,162,255));
 cv::Scalar GraphVis::start_color_ = Scalar(0,0,255);
 cv::Scalar GraphVis::finish_color_ = Scalar(153,76,0);
 
-cv::Scalar GraphVis::v0_color_ = Scalar(205,0,0);	
-cv::Scalar GraphVis::v1_color_ = Scalar(133,21,199);	
-cv::Scalar GraphVis::v2_color_ = Scalar(0,69,255);		
-cv::Scalar GraphVis::v3_color_ = Scalar(0,0,128);
-cv::Scalar GraphVis::v4_color_ = Scalar(0,255,255);
-cv::Scalar GraphVis::v5_color_ = Scalar(0,100,0);
-cv::Scalar GraphVis::v6_color_ = Scalar(0,255,0);
-cv::Scalar GraphVis::v7_color_ = Scalar(237,149,100);
-cv::Scalar GraphVis::v8_color_ = Scalar(255,255,0);
-cv::Scalar GraphVis::v9_color_ = Scalar(47,107,85);
-
-
 void GraphVis::VisSquareGrid(const SquareGrid& grid, cv::OutputArray _dst)
 {
 	int32_t vis_side_size = grid.cell_size_ * grid.pixel_per_meter_;
@@ -118,19 +106,19 @@ void GraphVis::VisSquareGridGraph(Graph_t<SquareCell*>& graph, cv::InputArray _s
 		}
 	}
 
-	// draw all edges
-	// auto edges = graph.GetAllEdges();
-	// for(auto &ite: edges)
-	// {
-	// 	uint64_t x1,y1,x2,y2;
-	// 	x1 = (*ite).src_->state_->position_.x;
-	// 	y1 = (*ite).src_->state_->position_.y;
-	// 	x2 = (*ite).dst_->state_->position_.x;
-	// 	y2 = (*ite).dst_->state_->position_.y;
+	//draw all edges
+	auto edges = graph.GetAllEdges();
+	for(auto &ite: edges)
+	{
+		uint64_t x1,y1,x2,y2;
+		x1 = (*ite).src_->state_->position_.x;
+		y1 = (*ite).src_->state_->position_.y;
+		x2 = (*ite).dst_->state_->position_.x;
+		y2 = (*ite).dst_->state_->position_.y;
 
-	// 	//DrawEdge(Point(x1,y1), Point(x2,y2), dst);
-	// 	VisUtils::DrawLine(dst, Point(x1,y1), Point(x2,y2));
-	// }
+		//DrawEdge(Point(x1,y1), Point(x2,y2), dst);
+		VisUtils::DrawLine(dst, Point(x1,y1), Point(x2,y2));
+	}
 }
 
 void GraphVis::VisSquareGridPath(Path_t<SquareCell *>& path, cv::InputArray _src, cv::OutputArray _dst)
@@ -200,110 +188,28 @@ void GraphVis::VisSquareGridPath(Path_t<SquareCell *>& path, cv::InputArray _src
 	}
 }
 
-void GraphVis::VisSquareGridPath(Path_t<SquareCell *>& path, cv::InputArray _src, cv::OutputArray _dst, int64_t idx)
-{
-	Mat src, dst;
-	int src_type = _src.getMat().type();
-	if(src_type == CV_8UC1)
-	{
-		cvtColor(_src, src, CV_GRAY2BGR);
-		_dst.create(src.size(), src.type());
-		dst = _dst.getMat();
-	}
-	else
-	{
-		src = _src.getMat();
-		_dst.create(_src.size(), _src.type());
-		dst = _dst.getMat();
-		src.copyTo(dst);
-	}
-
-	// draw starting and finishing cell
-	auto cell_s = path[0];
-	uint64_t x,y;
-	x = cell_s->position_.x;
-	x = x - (cell_s->bbox_.x.max - cell_s->bbox_.x.min)/8;
-	y = cell_s->position_.y;
-	y = y + (cell_s->bbox_.y.max - cell_s->bbox_.y.min)/8;
-	//FillSquareCellColor(cell_s->bbox_, start_color_, dst);
-	cv::Scalar vehicle_color;
-	std::string vehicle_idx;
-	uint64_t d = 0;
-	switch(idx){
-		case 0: vehicle_color = v0_color_; vehicle_idx = "V1"; d = 0; break;
-		case 1: vehicle_color = v1_color_; vehicle_idx = "V2"; d = -10; break;
-		case 2: vehicle_color = v2_color_; vehicle_idx = "V3"; d = 10; break;
-		case 3: vehicle_color = v3_color_; vehicle_idx = "V4"; d = 20; break;
-		case 4: vehicle_color = v4_color_; vehicle_idx = "V5"; d = -20; break;
-		case 5: vehicle_color = v5_color_; vehicle_idx = "V6"; d = 30; break;
-		case 6: vehicle_color = v6_color_; vehicle_idx = "V7"; d = 15; break;
-		case 7: vehicle_color = v7_color_; vehicle_idx = "V8"; d = -15; break;
-		case 8: vehicle_color = v8_color_; vehicle_idx = "V9"; d = 25; break;
-		case 9: vehicle_color = v9_color_; vehicle_idx = "V10"; d = -25; break;
-	}
-
-	VisUtils::FillRectangularArea(dst, cell_s->bbox_, vehicle_color);
-	putText(dst, vehicle_idx ,Point(x,y), CV_FONT_NORMAL, 1, Scalar(0,0,0),1,1);
-
-	auto cell_f = (*(path.end()-1));
-	x = cell_f->position_.x;
-	x = x - (cell_f->bbox_.x.max - cell_f->bbox_.x.min)/8;
-	y = cell_f->position_.y;
-	y = y + (cell_f->bbox_.y.max - cell_f->bbox_.y.min)/8;
-	//FillSquareCellColor(cell_f->bbox_, finish_color_, dst);
-	// VisUtils::FillRectangularArea(dst, cell_f->bbox_, vehicle_color);
-	// putText(dst, "F" ,Point(x,y), CV_FONT_NORMAL, 1, Scalar(0,0,0),1,1);
-
-	// draw path
-	uint64_t x1,y1,x2,y2;
-	int thickness = 3;
-	int lineType = 8;
-	int pathline_thickness = 3;
-
-	for(auto it = path.begin(); it != path.end()-1; it++)
-	{
-		// consecutive cells
-		auto cell1 = (*it);
-		auto cell2 = (*(it+1));
-
-		// center coordinates
-		x1 = cell1->position_.x;
-		y1 = cell1->position_.y;
-
-		x2 = cell2->position_.x;
-		y2 = cell2->position_.y;
-
-		line( dst,
-				Point(x1+d,y1+d),
-				Point(x2+d,y2+d),
-				//Scalar( 237, 149, 100 ),
-				vehicle_color,
-				pathline_thickness,
-				lineType);
-	}
-}
-
 
 void GraphVis::VisColorMap(Graph_t<SquareCell*>& graph){
-	int n = 225;
+	int n = 25;
 	srand(time(NULL));
 	std::vector<uchar> r(n,0);
 	for (int i =0; i < n; i++){
-		r[i] = rand() % 10 + 1;
+		r[i] = rand() % 10 +1;
 	}
 
+	for (int j= 0; j < n; j++){
+		std::cout << r[j] << std::endl;
+	}
 	Mat mat1d(r);
-	Mat mat2d = mat1d.reshape(1, 15);
+	Mat mat2d = mat1d.reshape(1, 5);
 	mat2d *= (255/10);
 
-	// std::cout << mat2d << std::endl;
+	std::cout << mat2d << std::endl;
 
 	Mat image;
 	applyColorMap(mat2d, image, COLORMAP_HOT);
-	// cvtColor(mat2d, image,CV_HSV2BGR);
 
-	namedWindow("colormap", WINDOW_NORMAL); // WINDOW_AUTOSIZE
+	namedWindow("colormap", WINDOW_NORMAL ); // WINDOW_AUTOSIZE
 	imshow("colormap", image);
-	imwrite("heatingmap.jpg",image);
 	waitKey(0);
 }

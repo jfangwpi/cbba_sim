@@ -34,8 +34,7 @@ const unsigned int SPD_MAX = 1;
 
 const int N_CBTA_W_SOL = 51;
 const int N_CBTA_W = 101;
-// const double r_min = 2;
-// // double r_min = 0.0;
+const double r_min = 3;
 
 struct REGION_BD{
 		std::vector<double> region_w_lower;    //REGION_BD(0,:)
@@ -122,7 +121,7 @@ public:
 
 
 public:
-	void cbta(double r_min);
+	void cbta();
 	void cbra(int idx_r_from,REGION_BD &theRegion,double r_min,
 				long int N_REGION_TOTAL, Eigen::RowVectorXi& region_target_2,
 	//			Matrix<int,1,Dynamic>& returnMatrix);
@@ -134,15 +133,13 @@ private:
 			     //Matrix<double,1,N_CBTA_W>& xSmp,
 			Eigen::RowVectorXd& xSmp,
 			Eigen::Matrix<double,2,N_CBTA_W>& btaSmp,
-			Eigen::Matrix<double,2,1>& returnMatrix,
-			double r_min);
+			Eigen::Matrix<double,2,1>& returnMatrix);
 
 	void cbta_s2(double w, double d,
 			     //Matrix<double,1,N_CBTA_W>& xSmp,
 			Eigen::RowVectorXd& xSmp,
 			Eigen::Matrix<double,2,N_CBTA_W>& btaSmp,
-			Eigen::Matrix<double,2,1>& returnMatrix,
-			double r_min);
+			Eigen::Matrix<double,2,1>& returnMatrix);
 
 	void interp_broken_seg(Eigen::RowVectorXd& x_data,
 			Eigen::Matrix<double,2,Eigen::Dynamic>& y_data,

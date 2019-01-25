@@ -82,7 +82,7 @@
 
 cmake_minimum_required(VERSION 2.6.0)
 
-set(POD_NAME uncertain_map_lcm_msgs)
+set(POD_NAME cbba_lcm_msgs)
 include(cmake/pods.cmake)
 
 # Policy settings to prevent warnings on 2.6 but ensure proper operation on

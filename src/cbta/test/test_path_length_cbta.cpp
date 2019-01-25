@@ -31,8 +31,7 @@ int main(int argc, char** argv )
     /************************************************************************************************************/
 	/*********************************          Initialize: Map         *****************************************/
 	/************************************************************************************************************/
-	double r_min = 4;
-    TileTraversalData tile_traversal_data = HCost::hcost_preprocessing(r_min);
+	TileTraversalData tile_traversal_data = HCost::hcost_preprocessing();
     /*** 1. Create a empty square grid ***/
 	std::shared_ptr<SquareGrid> grid = GraphFromGrid::CreateSquareGrid();
 	
@@ -45,7 +44,7 @@ int main(int argc, char** argv )
 	LTLDecomposition::GlobalLTLDecomposition(Global_LTL);
 	
 	/*** 4. Initialize agents ***/
-	std::vector<Agent> agents_group = TaskAssignment::InitializeAgents();
+	std::vector<cbba_Agent> agents_group = CBBA::InitializeAgents();
 	int num_agents = agents_group.size();
 
     /*** 5. Construct a graph from the square grid ***/
@@ -55,7 +54,7 @@ int main(int argc, char** argv )
     std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph = GraphLifter::BuildLiftedGraph(historyH, grid_graph);
 
 
-    std::vector<int> path_ = {2};
+    std::vector<int> path_ = {0};
     std::string ltl_formula = LTLDecomposition::subtask_recreator(path_,true, Global_LTL);
     std::vector<std::vector<std::string>> buchi_regions = LTLDecomposition::ObtainBuchiRegion({ltl_formula});
 
@@ -65,7 +64,7 @@ int main(int argc, char** argv )
 
     /*** 8.4 Construct a product graph ***/
     std::shared_ptr<Graph_t<ProductState *>> product_graph = std::make_shared<Graph_t<ProductState *>>();
-    int64_t start_id_grid = agents_group[1].init_pos_;
+    int64_t start_id_grid = agents_group[0].start_node_;
     Vertex_t<SquareCell *> * start_node_origin = grid_graph->GetVertexFromID(start_id_grid);
 
     std::vector<double> zta0 = {0.45,0.0};
@@ -94,23 +93,6 @@ int main(int argc, char** argv )
         std::cout << cell->id_ << ", ";
     }
     std::cout << std::endl;
-
-
-
-	/*** 9.Visualize the map and graph ***/
-	// Image Layouts: square grid -> graph -> path
-	GraphVis vis;
-	Mat vis_img;
-	vis.VisSquareGrid(*grid, vis_img);
-	vis.VisSquareGridGraph(*grid_graph, vis_img, vis_img, false);
-	// // put the path on top of the graph
-	vis.VisSquareGridPath(path_vis, vis_img, vis_img, 0);
-
-	
-	// display visualization result
-	namedWindow("Processed Image", WINDOW_NORMAL ); // WINDOW_AUTOSIZE
-	imshow("Processed Image", vis_img);
-	imwrite("result_length_cbta.jpg",vis_img);
 
 
 }

@@ -30,7 +30,6 @@ typedef struct
 	int idx_;
 	int pos_;
 	int num_agents_;
-    TaskType type_;
 }AP_Info;
 
 
@@ -116,33 +115,32 @@ class cbba_Task{
             std::vector<int64_t> pos_;
             TaskType type_;
             int64_t num_agents_;
-            double max_reward_;
+			float min_bid_;
             
             std::string specification_liveness_;
             std::string specification_safety_;
             std::vector<std::string> buchi_regions_;
-			
+			std::vector<int> winners_;
+
     };
 
-    class TasksList{
+    class CBBATasks{
 
         public: 
-            TasksList(LTLFormula Global_LTL){SetTasksFromLTL(Global_LTL);};
-            ~TasksList(){};
+            CBBATasks(LTLFormula Global_LTL){SetTasksFromLTL(Global_LTL);};
+            ~CBBATasks(){};
 
 
         public: 
             std::vector<cbba_Task> tasks_;
-            std::string specification_safety_;
 
         public:
             void SetTasksFromLTL(LTLFormula Global_LTL);
             cbba_Task FindTaskFromID(int64_t idx);
 			cbba_Task& FindTask(int64_t idx);
             void GetAllTasks();
-            std::string local_task_recreator(std::vector<int> bundle);
-            std::string local_formula_recreator(std::vector<int> bundle);
-            std::vector<std::vector<std::string>> obtain_buchi_regions(std::vector<std::string> expressions);
+
+
     };
 }
 

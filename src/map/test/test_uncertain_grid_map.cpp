@@ -17,6 +17,14 @@ using namespace cv;
 using namespace librav;
 
 
+double CalcHeuristic(SquareCell *node1, SquareCell *node2)
+{
+    int32_t dist_row = node1->coordinate_.x - node2->coordinate_.x;
+    int32_t dist_col = node1->coordinate_.y - node2->coordinate_.y;
+
+    return std::sqrt(dist_row * dist_row + dist_col * dist_col);
+}
+
 int main(int argc, char** argv )
 {
 
