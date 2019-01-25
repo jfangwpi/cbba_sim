@@ -2,7 +2,7 @@
 
 ## 1. Development Environment
 
-* OS: Ubuntu 16.04,
+* OS: Ubuntu 16.04, Raspbian 
 * Compiler: gcc 4.7+
 * Building System: CMake
 
@@ -108,28 +108,23 @@ $ export PYTHONPATH=$LTLSAMPLING/src/lcmtypes/python:$LTLSAMPLING/src/lcmtypes/p
 ```
 
 ## 6. Test the example
-### Visualize the map
-Edit the configuration files for agents, tasks and map. These configuration files are stored at "/cbba_sim/src/config"
-Once the editing is completed, run 
+### Communicate among raspberry pi's
+Open 3 terminals, in each terminal type:
 ```
-$ cd bin
-$ ./test_map
+$ cd ~/Workspace/cbba_sim/build/bin
 ```
-Check the result at "/cbba_sim/build/bin", the result is the figure called "result_map.jpg". Example of the result can be: 
-<img src="/data/result_map.jpg" align="middle" height="500" >
-
-#### Comments about result
-1. The grey cells are obstacles, orange cells are regions of interest (tasks) and the cell marked by v_i is the initial position of vehicle i.
-
-
-### Task assignment among multiple vehicles by CBBA
-Once the information of agents, tasks and map is defined, run the following command to visualize the result of task assignment among multiple vehicles by CBBA
+In terminal 1, type:
 ```
-$ cd bin
-$ ./test_cbba
+$ ./test_pi1
 ```
-Check the result at "/cbba_sim/build/bin", the result is the figure called "result_cbba.jpg". Example of the result can be: 
-<img src="/data/result_cbba.jpg" align="middle" height="500" >
+Similar to terminal 2 and terminal 3.
+Totally 4 iterations are required before convergence. The process of CBBA among 3 pi's is shown as
+<img src="/data/iter1.png" align="middle" height="500" >
+<img src="/data/iter2.png" align="middle" height="500" >
+<img src="/data/iter3.png" align="middle" height="500" >
+<img src="/data/iter4.png" align="middle" height="500" >
 
-#### Comments about result
-1. The feasible path for vehicle i is draw by straight line with corresponding color, i.e., vehicle 1 is required to move to cell 6 first, then move to cell 75 along the blue line. 
+
+
+
+
