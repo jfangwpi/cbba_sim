@@ -119,6 +119,7 @@ $ ./test_pi1
 ```
 Similar to terminal 2 and terminal 3.
 Totally 4 iterations are required before convergence. The process of CBBA among 3 pi's is shown as
+
 <img src="/data/iter1.png" align="middle" height="500" >
 <img src="/data/iter2.png" align="middle" height="500" >
 <img src="/data/iter3.png" align="middle" height="500" >
