@@ -35,5 +35,11 @@ target_link_libraries(test_pi2 lcmlib ltl map vis cbba ${LCM_LIBRARIES})
 add_executable(test_pi3 test/test_pi3.cpp)
 target_link_libraries(test_pi3 lcmlib ltl map vis cbba ${LCM_LIBRARIES})
 
+add_executable(publisher test/publisher.cpp)
+target_link_libraries(publisher lcmlib ltl map vis cbba ${LCM_LIBRARIES})
+
+add_executable(subscriber test/subscriber.cpp)
+target_link_libraries(subscriber lcmlib ltl map vis cbba ${LCM_LIBRARIES})
+
 #add_executable(test_pi4 test/test_pi4.cpp)
 #target_link_libraries(test_pi4 lcmlib ltl map vis cbba ${LCM_LIBRARIES})
