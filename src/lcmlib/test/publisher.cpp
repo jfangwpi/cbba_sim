@@ -1,5 +1,6 @@
 #include <lcm/lcm-cpp.hpp>
 #include "lcmtypes/cbba_lcm_msgs.hpp"
+#include <iostream>
 
 int main(int argc, char ** argv)
 {
@@ -30,7 +31,7 @@ int main(int argc, char ** argv)
     my_data.name = "example string";
     my_data.enabled = true;
 
-    lcm.publish("EXAMPLE", &my_data);
-
+    int flag = lcm.publish("EXAMPLE", &my_data);
+    std::cout << "The flag for publisher is " << flag << std::endl;
     return 0;
 }
