@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <string>
 #include <memory>
+#include <vector>
 
 #include "map/common_types.hpp"
 #include "ltl/cell_label.hpp"
@@ -96,12 +97,12 @@ namespace librav{
             
         public: 
             Position2D GetCoordinateFromID(int64_t id);
-
+            Position2D GetRealCoordinateFromID(int64_t id, double real_side_length);
             void SetCellOccupancy(int32_t x_col, int32_t y_row, OccupancyType occ);
             void SetCellOccupancy(int64_t id, OccupancyType occ);
 
             int64_t GetIDFromCoordinate(int32_t x_col, int32_t y_row);
-
+            int64_t GetIDFromRealCoordinate(double x_col_real, double y_row_real, double real_side_length);
 	        SquareCell* GetCellFromID(int64_t id);
 
 	        std::vector<SquareCell*> GetNeighbors(int64_t id, bool allow_diag);

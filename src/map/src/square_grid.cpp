@@ -1,5 +1,6 @@
 #include "map/square_grid.hpp"
 #include "config_reader/config_reader.hpp"
+#include <vector>
 
 using namespace librav;
 
@@ -69,6 +70,16 @@ Position2D SquareGrid::GetCoordinateFromID(int64_t id)
 
 }
 
+Position2D SquareGrid::GetRealCoordinateFromID(int64_t id, double real_side_length)
+{
+    double y_real = (id/num_col_)*real_side_length/num_row_;
+    double x_real = (id%num_col_)*real_side_length/num_col_;
+    //coord.push_back(x_real);
+    //coord.push_back(y_real);
+    return Position2D(x_real,y_real);
+
+}
+
 void SquareGrid::SetCellOccupancy(int32_t x_col, int32_t y_row, OccupancyType occ)
 {
     grid_cells_[x_col][y_row]->occu_ = occ;
@@ -84,6 +95,14 @@ void SquareGrid::SetCellOccupancy(int64_t id, OccupancyType occ)
 int64_t SquareGrid::GetIDFromCoordinate(int32_t x_col, int32_t y_row)
 {
     return y_row * num_col_ + x_col;
+}
+
+int64_t SquareGrid::GetIDFromRealCoordinate(double x_col_real, double y_row_real, double real_side_length)
+{
+    double y_sim = y_row_real * (num_row_/real_side_length);
+    double x_sim = x_col_real * (num_col_/real_side_length);
+
+    return y_sim * num_col_ + x_sim;
 }
 
 SquareCell* SquareGrid::GetCellFromID(int64_t id)

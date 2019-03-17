@@ -20,14 +20,14 @@ target_include_directories(map PUBLIC
     PRIVATE src)
 
 
-#add_executable(test_grid_map test/test_grid_map.cpp)
-#target_link_libraries(test_grid_map vis map utility ${OpenCV_LIBS})
+add_executable(test_grid_map test/test_grid_map.cpp)
+target_link_libraries(test_grid_map vis map utility ${OpenCV_LIBS})
 
-#add_executable(test_vis_lib test/test_vis_lib.cpp)
-#target_include_directories(test_vis_lib PRIVATE ${PYTHON_INCLUDE_DIRS})
-#target_link_libraries(test_vis_lib utility ${PYTHON_LIBRARIES})
+add_executable(test_vis_lib test/test_vis_lib.cpp)
+target_include_directories(test_vis_lib PRIVATE ${PYTHON_INCLUDE_DIRS})
+target_link_libraries(test_vis_lib utility ${PYTHON_LIBRARIES})
 
-#add_executable(test_uncertain_grid_map test/test_uncertain_grid_map.cpp)
-#target_link_libraries(test_uncertain_grid_map vis map)
+add_executable(test_uncertain_grid_map test/test_uncertain_grid_map.cpp)
+target_link_libraries(test_uncertain_grid_map vis map)
 
 
