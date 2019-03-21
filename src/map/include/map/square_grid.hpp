@@ -34,6 +34,7 @@ namespace librav{
 
             // additional information when associated with an image map
             Position2D position_;
+            PhysicalPosition2D physical_position_;
             BoundingBox<int32_t> bbox_;
 
             // For buchi automaton
@@ -97,7 +98,7 @@ namespace librav{
             
         public: 
             Position2D GetCoordinateFromID(int64_t id);
-            Position2D GetRealCoordinateFromID(int64_t id, double real_side_length);
+            PhysicalPosition2D GetRealCoordinateFromID(int64_t id, double real_side_length);
             void SetCellOccupancy(int32_t x_col, int32_t y_row, OccupancyType occ);
             void SetCellOccupancy(int64_t id, OccupancyType occ);
 
