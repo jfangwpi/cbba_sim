@@ -143,6 +143,9 @@ int main(int argc, char** argv )
 
 
 	/*** 8. Visualization ***/
+
+
+
 	Path_t<SquareCell*> path_origin[num_agents];
 	for (auto it_ag = agents_group.begin(); it_ag != agents_group.end(); it_ag++){
 		
@@ -174,10 +177,12 @@ int main(int argc, char** argv )
 		else{
 			path_origin[(*it_ag).idx_].push_back(path[0]->grid_vertex_->state_);
 		}
-		
+	
 	}
-
-
+			for(auto &p_cell: path_origin[0]){
+				std::cout << p_cell->id_ << std::endl;
+			}	
+	//std::cout << path_origin[(*it_ag).idx_] << std::endl;
 	/*** 9.Visualize the map and graph ***/
 	// Image Layouts: square grid -> graph -> path
 	GraphVis vis;
@@ -191,8 +196,8 @@ int main(int argc, char** argv )
 	// vis.VisSquareGridPath(path_origin[3], vis_img, vis_img);
 	
 	// display visualization result
-	//namedWindow("Processed Image", WINDOW_NORMAL ); // WINDOW_AUTOSIZE
-	//imshow("Processed Image", vis_img);
+	namedWindow("Processed Image", WINDOW_NORMAL ); // WINDOW_AUTOSIZE
+	imshow("Processed Image", vis_img);
 	imwrite("result_cbba.jpg",vis_img);
 
 	waitKey(0);
