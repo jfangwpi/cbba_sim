@@ -25,11 +25,11 @@ target_include_directories(lcmlib PUBLIC
     $<INSTALL_INTERFACE:include>
     PRIVATE src)
 
-#add_executable(test_pi1 test/test_pi1.cpp)
-#target_link_libraries(test_pi1 lcmlib ltl map vis cbba ${LCM_LIBRARIES})
+add_executable(test_pi1 test/test_pi1.cpp)
+target_link_libraries(test_pi1 lcmlib ltl map vis cbba ${LCM_LIBRARIES})
 
-#add_executable(test_pi2 test/test_pi2.cpp)
-#target_link_libraries(test_pi2 lcmlib ltl map vis cbba ${LCM_LIBRARIES})
+add_executable(test_pi2 test/test_pi2.cpp)
+target_link_libraries(test_pi2 lcmlib ltl map vis cbba ${LCM_LIBRARIES})
 
 #add_executable(test_pi3 test/test_pi3.cpp)
 #target_link_libraries(test_pi3 lcmlib ltl map vis cbba ${LCM_LIBRARIES})
@@ -40,14 +40,14 @@ target_include_directories(lcmlib PUBLIC
 #add_executable(subscriber test/subscriber.cpp)
 #target_link_libraries(subscriber lcmlib ltl map vis cbba ${LCM_LIBRARIES})
 
-add_executable(subscribe_motor test/subscribe_motor.cpp)
-target_link_libraries(subscribe_motor lcmlib ltl map vis cbba ${LCM_LIBRARIES})
+#add_executable(subscribe_motor test/subscribe_motor.cpp)
+#target_link_libraries(subscribe_motor lcmlib ltl map vis cbba ${LCM_LIBRARIES})
 
-add_executable(publish_motor test/publish_motor.cpp)
-target_link_libraries(publish_motor lcmlib ltl map vis cbba ${LCM_LIBRARIES})
+#add_executable(publish_motor test/publish_motor.cpp)
+#target_link_libraries(publish_motor lcmlib ltl map vis cbba ${LCM_LIBRARIES})
 
-add_executable(test_gpio test/test_gpio.cpp)
-target_link_libraries(test_gpio lcmlib ltl map vis cbba ${LCM_LIBRARIES})
+#add_executable(test_gpio test/test_gpio.cpp)
+#target_link_libraries(test_gpio lcmlib ltl map vis cbba ${LCM_LIBRARIES})
 
 #add_executable(test_pi4 test/test_pi4.cpp)
 #target_link_libraries(test_pi4 lcmlib ltl map vis cbba ${LCM_LIBRARIES})
