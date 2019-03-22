@@ -28,13 +28,21 @@ double CalcHeuristic(SquareCell *node1, SquareCell *node2)
 
 int main(int argc, char** argv )
 {
+	// for(int i = 1; i<=143; i++)
+	// {
+	// 	int ID = i;
+	// 	int L  = 15;
 
+	// 	std::vector<double> real_coord = grid->GetRealCoordinateFromID(ID,L);
+	// 	int64_t id = grid->GetIDFromRealCoordinate(real_coord[0],real_coord[1],L);
+	// 	//std::vector<float> test_vector_output = test_output.toVector();
+	// 	std::printf("Real Coordinates for ID = %d and side length = %dm,\n x:%f y:%f\n",ID,L,real_coord[0],real_coord[1]);
+	// 	std::printf("Calculated ID from coordinates: %d\n-----------------------------------\n", id);
+	// }
 	/*** 1. Read from config file: map.ini ***/
 	std::shared_ptr<SquareGrid> grid = GraphFromGrid::CreateSquareGrid();
-
 	/*** 2. Construct a graph from the square grid ***/
 	std::shared_ptr<Graph_t<SquareCell*>> graph = GraphFromGrid::BuildGraphFromSquareGrid(grid, false, true);
-
 
 	/*** Visualize the map and graph ***/
 	Mat vis_img;

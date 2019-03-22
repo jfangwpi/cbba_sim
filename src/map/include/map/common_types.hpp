@@ -24,6 +24,7 @@ namespace librav{
     };
 
     using Position2D = value2d<int32_t>;
+    using PhysicalPosition2D = value2d<double_t>;
 
     template<typename T>
     struct Range2D

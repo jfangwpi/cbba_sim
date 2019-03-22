@@ -178,7 +178,7 @@ std::cout << std::endl;
 	std::cout << std::endl;
 
     std::ofstream pfile;
-    std::string file_name = "path_" + std::to_string(agent.idx_) + ".txt";
+    std::string file_name = "path_" + std::to_string(agent.idx_ + 1) + ".txt";
     pfile.open(file_name);
     for (auto &p_cell: path_origin){
 		pfile << p_cell->id_ << "\n";
