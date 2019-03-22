@@ -187,7 +187,7 @@ int main(int argc, char** argv )
 	// // put the path on top of the graph
 	vis.VisSquareGridPath(path_origin[0], vis_img, vis_img);
 	vis.VisSquareGridPath(path_origin[1], vis_img, vis_img);
-	vis.VisSquareGridPath(path_origin[2], vis_img, vis_img);
+	// vis.VisSquareGridPath(path_origin[2], vis_img, vis_img);
 	// vis.VisSquareGridPath(path_origin[3], vis_img, vis_img);
 	
 	// display visualization result
