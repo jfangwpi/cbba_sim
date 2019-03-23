@@ -46,7 +46,7 @@ void MSGHandler::handleMessage(const lcm::ReceiveBuffer* rbuf,
         //std::cout << "NEIGHBOR " << msg->idx <<" MESSAGE RECEIVED TOO" << std::endl;
     }
     else
-        is_data_received_neigh[msg->idx] = true;
+        is_data_received_neigh[msg->idx] = false;
     
     std::vector<float> y_his_sig = {};
     for (auto it=msg->y_his.begin();it !=msg->y_his.end(); it++){
