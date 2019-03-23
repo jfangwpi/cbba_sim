@@ -28,6 +28,7 @@
 using namespace librav;
 int main(int argc, char** argv )
 {   
+    std::ofstream file_;
     /************************************************************************************************************/
 	/*********************************          Initialize: Map         *****************************************/
 	/************************************************************************************************************/
@@ -134,8 +135,6 @@ int main(int argc, char** argv )
         std::cout << std::endl;
         count ++;
     }
-
-
     // Generate the path
     std::cout << std::endl;
     std::cout << "=============== Task Assignment Completed ===============" << std::endl;
@@ -175,13 +174,19 @@ int main(int argc, char** argv )
 	for (auto &p_cell: path_origin){
 		std::cout << p_cell->id_ << " ->";
     }
+    std::cout << std::endl;
+    std::cout << "Agent #" << (agent.idx_ + 1) << " physical path: ";
+	for (auto &p_cell: path_origin){
+		std::cout << "(" << p_cell->physical_position_.x << ", " << p_cell->physical_position_.y << ") ";
+    }
+    
 	std::cout << std::endl;
 
     std::ofstream pfile;
     std::string file_name = "path_" + std::to_string(agent.idx_+1) + ".txt";
     pfile.open(file_name);
     for (auto &p_cell: path_origin){
-		pfile << p_cell->id_ << "\n";
+		pfile << p_cell->id_ << " " << p_cell->physical_position_.x << " " << p_cell->physical_position_.y << std::endl;
     }
     pfile.close();
 

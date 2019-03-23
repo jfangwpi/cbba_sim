@@ -131,6 +131,7 @@ int main(int argc, char** argv )
         for (auto &b: agent.cbba_path_){
             std::cout << b << ", ";
         }
+    
         std::cout << std::endl;
         std::cout << std::endl;
 
@@ -175,13 +176,19 @@ std::cout << std::endl;
 	for (auto &p_cell: path_origin){
 		std::cout << p_cell->id_ << " ->";
     }
+	    std::cout << std::endl;
+    std::cout << "Agent #" << (agent.idx_ + 1) << " physical path: ";
+	for (auto &p_cell: path_origin){
+		std::cout << "(" << p_cell->physical_position_.x << ", " << p_cell->physical_position_.y << ") ";
+    }
+    
 	std::cout << std::endl;
 
     std::ofstream pfile;
     std::string file_name = "path_" + std::to_string(agent.idx_ + 1) + ".txt";
     pfile.open(file_name);
     for (auto &p_cell: path_origin){
-		pfile << p_cell->id_ << "\n";
+		pfile << p_cell->id_ << " " << p_cell->physical_position_.x << " " << p_cell->physical_position_.y << std::endl;
     }
     pfile.close();
 
