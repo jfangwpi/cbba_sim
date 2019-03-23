@@ -177,14 +177,18 @@ int main(int argc, char** argv )
 		else{
 			path_origin[(*it_ag).idx_].push_back(path[0]->grid_vertex_->state_);
 		}
-	
 	}
-			for(auto &p_cell: path_origin[0]){
-				std::cout << "physical position: "<< p_cell->physical_position_.x << " " << p_cell->physical_position_.y << std::endl;
-				std::cout << "position: "<< p_cell->position_.x << " " << p_cell->position_.y << std::endl;
-				std::cout << "coordinate: "<< p_cell->coordinate_.x << " " << p_cell->coordinate_.y << std::endl;
-				std::cout << "===============================" << std::endl;
-			}	
+	std::cout << "================" << std::endl;
+	std::cout << "Path Information" << std::endl;
+	std::cout << "================" << std::endl;
+	for (auto &p_cell : path_origin[0])
+	{
+		std::cout << "physical position: " << p_cell->physical_position_.x << " " << p_cell->physical_position_.y << std::endl;
+		std::cout << "position: " << p_cell->position_.x << " " << p_cell->position_.y << std::endl;
+		std::cout << "coordinate: " << p_cell->coordinate_.x << " " << p_cell->coordinate_.y << std::endl;
+		std::cout << "--------------------------------" << std::endl;
+	}
+	std::cout << "================" << std::endl;
 	//std::cout << path_origin[(*it_ag).idx_] << std::endl;
 	/*** 9.Visualize the map and graph ***/
 	// Image Layouts: square grid -> graph -> path

@@ -74,6 +74,7 @@ int main(int argc, char** argv )
         /*** 7. Bundle Operations ***/
 		/*** 7.1 Remove the out-bid task from the bundle ***/
 		CBBA::bundle_remove(agent);
+    
 		/*** 7.2 Keep inserting tasks which have not been assigned into the bundle ***/
 		CBBA::bundle_add(Global_LTL,grid_graph,agent);
 
@@ -90,9 +91,9 @@ int main(int argc, char** argv )
         }
         std::cout << std::endl;
         std::cout << "Current task path for vehcile " << agent.idx_ << " is: ";
-        for (auto &b: agent.cbba_path_){
-            std::cout << b << ", ";
-        }
+        ////// for (auto &b: grid->grid_cells_){
+        //////     std::cout << b->position_.x << ", ";
+        ////// }
         std::cout << std::endl;
         //----------------------------- Communication -----------------------------//
         //-------------------------------------------------------------------------//
@@ -128,6 +129,54 @@ int main(int argc, char** argv )
         for (auto &b: agent.cbba_path_){
             std::cout << b << ", ";
         }
+        std::cout << std::endl;
+        std::cout << "=========================================================" << std::endl;
+        std::cout << "==================== Current Path =======================" << std::endl;
+        std::cout << "=========================================================" << std::endl;
+
+        Path_t<SquareCell *> path_origin;
+
+        /*** 8.1 Rebuild the local LTL specification based on current bundle/path ***/
+        std::string ltl_formula = LTLDecomposition::subtask_recreator(agent.cbba_path_, true, Global_LTL);
+        //std::cout << "The specification is " << ltl_formula << std::endl;
+        std::vector<std::vector<std::string>> buchi_regions = LTLDecomposition::ObtainBuchiRegion({ltl_formula});
+
+        /*** 8.2 Generate the corresponding buchi regions ***/
+        std::shared_ptr<Graph_t<BuchiState *, std::vector<int64_t>>> buchi_graph = BuchiAutomaton::BuildBuchiGraph(ltl_formula, buchi_regions.front());
+        std::vector<int64_t> buchi_acc = (*buchi_graph->FindVertex(0)).state_->acc_state_idx;
+        //std::shared_ptr<Graph_t<BuchiState>> buchi_graph = BuchiAutomaton::CreateBuchiGraph(ltl_formula,buchi_regions.front());
+
+        /*** 8.4 Construct a product graph ***/
+        std::shared_ptr<Graph_t<ProductState *>> product_graph = std::make_shared<Graph_t<ProductState *>>();
+        int64_t start_id_grid = agent.start_node_;
+        int64_t virtual_start_state_id = ProductAutomaton::SetVirtualStartState(product_graph, buchi_graph, grid_graph, start_id_grid);
+        //std::shared_ptr<Graph_t<ProductState>> product_graph_new = std::make_shared<Graph_t<ProductState>>();
+
+        GetProductNeighbor product_neighbor(grid_graph, buchi_graph);
+        auto path = AStar::ProductIncSearch(product_graph, virtual_start_state_id, buchi_acc, GetNeighbourFunc_t<ProductState *, double>(product_neighbor));
+
+        if (!agent.cbba_path_.empty())
+        {
+            for (auto &e : path)
+            {
+                path_origin.push_back(e->grid_vertex_->state_);
+            }
+        }
+        else
+        {
+            path_origin.push_back(path[0]->grid_vertex_->state_);
+        }
+
+        std::cout << "-------------------------------" << std::endl;
+        for (auto &path_ptr : path_origin)
+        {
+            std::cout << "Agent #" << agent.idx_ << " position ID: " << path_ptr->GetUniqueID() << std::endl;
+            std::cout << "Agent #" << agent.idx_ << " physical position: " << path_ptr->physical_position_.x << " " << path_ptr->physical_position_.y << std::endl;
+            std::cout << "Agent #" << agent.idx_ << " position: " << path_ptr->position_.x << " " << path_ptr->position_.y << std::endl;
+            std::cout << "Agent #" << agent.idx_ << " coordinate: " << path_ptr->coordinate_.x << " " << path_ptr->coordinate_.y << std::endl;
+            std::cout << "-------------------------------" << std::endl;
+        }
+
         std::cout << std::endl;
         std::cout << std::endl;
         count ++;
