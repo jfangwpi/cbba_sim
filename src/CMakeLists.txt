@@ -52,4 +52,4 @@ add_subdirectory(map)
 add_subdirectory(cbba)
 add_subdirectory(cbta)
 add_subdirectory(lcmlib)
-
+add_subdirectory(json)

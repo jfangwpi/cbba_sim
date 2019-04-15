@@ -91,11 +91,11 @@ int main(int argc, char** argv )
          for(auto &t: agent.cbba_z_){
             std::cout << t << ", ";
         }
-        std::cout << std::endl;
-        std::cout << "Current task path for vehcile " << agent.idx_ << " is: ";
-        for (auto &b: agent.cbba_path_){
-            std::cout << b << ", ";
-        }
+        // std::cout << std::endl;
+        // std::cout << "Current task path for vehcile " << agent.idx_ << " is: ";
+        // for (auto &b: agent.cbba_path_){
+        //     std::cout << b << ", ";
+        // }
         std::cout << std::endl;
         //----------------------------- Communication -----------------------------//
         //-------------------------------------------------------------------------//
@@ -130,7 +130,7 @@ int main(int argc, char** argv )
         std::cout << "Current task path for vehcile " << agent.idx_ << " is: ";
         for (auto &b: agent.cbba_path_){
             std::cout << b << ", ";
-        }
+        }       
         std::cout << std::endl;
         std::cout << std::endl;
         count ++;
@@ -169,13 +169,13 @@ int main(int argc, char** argv )
     }
 
 
-    std::cout << std::endl;
-	std::cout << "Path information for testing is " << std::endl;
-	for (auto &p_cell: path_origin){
-		std::cout << p_cell->id_ << " ->";
-    }
-    std::cout << std::endl;
-    std::cout << "Agent #" << (agent.idx_ + 1) << " physical path: ";
+    // std::cout << std::endl;
+	// std::cout << "Path information for testing is " << std::endl;
+	// for (auto &p_cell: path_origin){
+	// 	std::cout << p_cell->id_ << " ->";
+    // }
+	    std::cout << std::endl;
+    std::cout << "Agent #" << (agent.idx_ + 1) << " final path (meters): ";
 	for (auto &p_cell: path_origin){
 		std::cout << "(" << p_cell->physical_position_.x << ", " << p_cell->physical_position_.y << ") ";
     }

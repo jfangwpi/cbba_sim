@@ -159,7 +159,7 @@ std::cout << std::endl;
 
     GetProductNeighbor product_neighbor(grid_graph, buchi_graph);
     auto path = AStar::ProductIncSearch(product_graph, virtual_start_state_id, buchi_acc, GetNeighbourFunc_t<ProductState*, double>(product_neighbor));
-    
+
     if (!agent.cbba_path_.empty()){
         for(auto &e: path){
             path_origin.push_back(e->grid_vertex_->state_);
@@ -171,13 +171,13 @@ std::cout << std::endl;
     }
 
 
-    std::cout << std::endl;
-	std::cout << "Path information for testing is " << std::endl;
-	for (auto &p_cell: path_origin){
-		std::cout << p_cell->id_ << " ->";
-    }
+    // std::cout << std::endl;
+	// std::cout << "Path information for testing is " << std::endl;
+	// for (auto &p_cell: path_origin){
+	// 	std::cout << p_cell->id_ << " ->";
+    // }
 	    std::cout << std::endl;
-    std::cout << "Agent #" << (agent.idx_ + 1) << " physical path: ";
+    std::cout << "Agent #" << (agent.idx_ + 1) << " final path (meters): ";
 	for (auto &p_cell: path_origin){
 		std::cout << "(" << p_cell->physical_position_.x << ", " << p_cell->physical_position_.y << ") ";
     }

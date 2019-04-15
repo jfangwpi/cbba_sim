@@ -60,8 +60,10 @@ int main(int argc, char** argv )
 	/**************************************          CBBA         ***********************************************/
 	/************************************************************************************************************/
 	bool succFlag = 0;
+	int iteration = 0;
 	clock_t cbba_time;
 	cbba_time = clock();
+	// while (iteration != 3){
 	while (succFlag != 1){
 	//while(agent[0].Iter < 2){
 		/*** 6. Communication among neighbors ***/
@@ -107,6 +109,7 @@ int main(int argc, char** argv )
 		/*** 7.2 Keep inserting tasks which have not been assigned into the bundle ***/
 		CBBA::bundle_add(Global_LTL,grid_graph,agents_group);
 		/*** 7.3 Check whether the assignment converge or not ***/
+		// succFlag = 1;
 		succFlag = CBBA::success_checker(agents_group);
 		std::cout << "The Flag for success is " << succFlag <<std::endl;
 		/*** 7.4 Update the number of interation ***/
@@ -134,8 +137,9 @@ int main(int argc, char** argv )
 			for(auto &y: agents_group[i].cbba_award_)
 				std::cout << y << " ";
 			std::cout << std::endl;
-
+		
 		}
+		iteration++;
 	}
 	cbba_time = clock()-cbba_time;
 	std::cout << "CBBA iteration is " << agents_group[0].iter_ << std::endl;
@@ -177,7 +181,16 @@ int main(int argc, char** argv )
 		else{
 			path_origin[(*it_ag).idx_].push_back(path[0]->grid_vertex_->state_);
 		}
-	
+	        std::cout << "-------------------------------" << std::endl;
+        for (auto &path_ptr : path_origin[0])
+        {
+            std::cout << "Agent #" << ((*it_ag).idx_ + 1) << " position ID: " << path_ptr->GetUniqueID() << std::endl;
+            std::cout << "Agent #" << ((*it_ag).idx_ + 1) << " physical position: " << path_ptr->physical_position_.x << " " << path_ptr->physical_position_.y << std::endl;
+            // std::cout << "Agent #" << (*it_ag).idx_ << " position: " << path_ptr->position_.x << " " << path_ptr->position_.y << std::endl;
+            // std::cout << "Agent #" << (*it_ag).idx_ << " coordinate: " << path_ptr->coordinate_.x << " " << path_ptr->coordinate_.y << std::endl;
+            std::cout << "-------------------------------" << std::endl;
+		}
+		//std::cout << path_origin[(*it_ag).idx_] << std::endl;	
 	}
 			
 	//std::cout << path_origin[(*it_ag).idx_] << std::endl;

@@ -4,6 +4,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Dependency libraries
 find_package(OpenCV REQUIRED)
+#find_package(json REQUIRED)
 
 # Add libraries
 set(CBTA_LIB_SRC
@@ -15,6 +16,7 @@ set(CBTA_LIB_SRC
 )
 
 add_library(cbta STATIC ${CBTA_LIB_SRC})
+
 target_link_libraries(cbta map spot bddx utility)
 target_include_directories(cbta PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -27,6 +29,10 @@ target_include_directories(cbta PUBLIC
 
 add_executable(test_cbta test/test_cbta.cpp)
 target_link_libraries(test_cbta cbta vis map ltl ${OpenCV_LIBS})
+
+add_executable(test_json_output test/test_json_output.cpp)
+target_link_libraries(test_json_output cbta vis map ltl ${OpenCV_LIBS})
+#target_link_libraries(test_json_output PRIVATE nlohmann_json::nlohmann_json)
 
 #add_executable(test_path_length_cbta test/test_path_length_cbta.cpp)
 #target_link_libraries(test_path_length_cbta cbba cbta vis ltl map utility ${OpenCV_LIBS})
