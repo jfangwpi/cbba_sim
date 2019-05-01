@@ -144,7 +144,7 @@ TileTraversalData HCost::hcost_preprocessing()
 	double SIZE_REGION_PSI = PI/N_REGION_PSI;
 	double SIZE_REGION_SPD = (SPD_MAX - SPD_MIN)/N_REGION_SPD;
 
-	//int r_min = 3;
+	int r_min = 4;
 	REGION_BD REGION_BD;
 
 	int k_w, k_psi, k_vel;

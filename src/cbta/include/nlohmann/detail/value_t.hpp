@@ -39,7 +39,7 @@ value with the default value for a given type
 @since version 1.0.0
 */
 enum class value_t : std::uint8_t
-{
+{    
     null,             ///< null value
     object,           ///< object (unordered set of name/value pairs)
     array,            ///< array (ordered collection of values)

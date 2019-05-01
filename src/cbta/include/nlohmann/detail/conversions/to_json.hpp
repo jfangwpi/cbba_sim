@@ -191,6 +191,13 @@ struct external_constructor<value_t::object>
     }
 };
 
+
+/////////////////////////////
+// Converting custom types //
+/////////////////////////////
+
+
+
 /////////////
 // to_json //
 /////////////
