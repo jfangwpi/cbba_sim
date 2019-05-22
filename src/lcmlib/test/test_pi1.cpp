@@ -182,13 +182,15 @@ int main(int argc, char** argv )
     
 	std::cout << std::endl;
 
-    std::ofstream pfile;
+    std::ofstream path_file;
     std::string file_name = "path_" + std::to_string(agent.idx_+1) + ".txt";
-    pfile.open(file_name);
-    for (auto &p_cell: path_origin){
-		pfile << p_cell->id_ << " " << p_cell->physical_position_.x << " " << p_cell->physical_position_.y << std::endl;
+    path_file.open(file_name);
+    
+    // For all cells in the path write the cell's physical coordinates to the path file
+    for (auto &p_cell: path_origin){ 
+		path_file << p_cell->id_ << " " << p_cell->physical_position_.x << " " << p_cell->physical_position_.y << std::endl;
     }
-    pfile.close();
+    path_file.close();
 
 
 

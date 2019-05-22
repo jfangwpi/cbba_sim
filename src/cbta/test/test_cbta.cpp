@@ -9,6 +9,7 @@
 #include "opencv2/opencv.hpp"
 
 // user
+#include "vis/graph_vis.hpp"
 #include "graph/graph.hpp"
 #include "graph/algorithms/astar.hpp"
 #include "map/square_grid.hpp"
@@ -26,6 +27,8 @@ int main(int argc, char** argv )
 {
 	/*** 0. Preprocessing CBTA data ***/
 	TileTraversalData tile_traversal_data = HCost::hcost_preprocessing();
+
+	
 	/*** 1. Create a empty square grid ***/
 	int row_num = 10;
 	int col_num = 10;
@@ -43,7 +46,6 @@ int main(int argc, char** argv )
 	/*** 2. Construct a graph from the square grid ***/
     
 	std::shared_ptr<Graph_t<SquareCell*>> graph = GraphFromGrid::BuildGraphFromSquareGrid(grid, false, true);
-
 
     /*** 4. Construct a lifted graph ***/
 	int historyH = 4;

@@ -173,6 +173,7 @@ private:
 class Hlevel{
 public:
 	Hlevel(unsigned int Hin);
+	Hlevel(unsigned int Hin, unsigned int n_tiles_in, std::string unique_tiles_str);
 	~Hlevel();
 
 public:
@@ -180,6 +181,7 @@ public:
 	std::map<unsigned int, std::shared_ptr<Tile>> Tiles; // tiles associated with particular Hlevel
 	void get_tile_data(void);
 	void add_tile(std::shared_ptr<Tile> newTile);
+
 	unsigned int n_tiles;
 	Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> unique_tiles;
 

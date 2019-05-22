@@ -8,6 +8,7 @@
 // Eigen header
 #include <eigen3/Eigen/Core>
 #include "cbta/hcost_tile_library.hpp"
+#include <sstream>
 
 using namespace Eigen;
 using namespace librav;
@@ -17,6 +18,46 @@ Hlevel::Hlevel(unsigned int Hin){
 	H = Hin;
 	n_tiles = 0;
 	unique_tiles = MatrixXi::Zero(H,1);
+
+}
+
+Hlevel::Hlevel(unsigned int Hin, unsigned int n_tiles_in, std::string unique_tiles_str){
+	H = Hin;
+	n_tiles = n_tiles_in;
+
+	/******* Extract the arrays from the matrix *******/
+	char temp_char[unique_tiles_str.size() +1];
+	strcpy(temp_char, unique_tiles_str.c_str());
+	char *token;
+	
+	std::vector<char *> burner_array;
+	token = strtok (temp_char,"[");
+	while (token != NULL)
+	{	
+		burner_array.push_back(token);
+		token = strtok (NULL, "[");
+	}
+	unique_tiles = MatrixXi::Zero(H,n_tiles);
+	for (size_t i = 0; i < Hin; i++)
+	{	
+		std::vector<int> ind_num_array;
+		char *token;
+		token = strtok (burner_array[i],",]");
+		int j = 0;
+		while (token != NULL)
+		{	
+			token = strtok (NULL, ",]");
+			std::stringstream ss;
+			ss << token;
+			int temp_val;
+			ss >> temp_val;
+			ind_num_array.push_back(temp_val);
+			unique_tiles(i,j) = temp_val;
+			j++;
+		}	
+	}
+
+	
 
 }
 
@@ -57,4 +98,3 @@ void Hlevel::add_tile(std::shared_ptr<Tile> newTile){
 		n_tiles++;
 	}
 }
-

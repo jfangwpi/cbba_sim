@@ -5,6 +5,8 @@
 #include <tuple>
 #include <algorithm>
 #include <bitset>
+#include <memory>
+#include <math.h>
 // opencv
 #include "opencv2/opencv.hpp"
 #include <iostream>
@@ -37,8 +39,8 @@ using namespace librav;
 
 int main(int argc, char** argv )
 {
-	for(int desired_H = 1; desired_H < 6; desired_H++){
-		int r_min 		= 4; // change this value in hcost_interface.cpp
+	for(int desired_H = 1; desired_H < 4; desired_H++){
+		int r_min 		= 3; // change this value in hcost_interface.cpp
 		/*** Create the text file ***/
 		std::ofstream file_;
 		file_.open("tile_traversal_data_H" + std::to_string(desired_H) + "_R" + std::to_string(r_min) + ".txt");
@@ -82,7 +84,7 @@ int main(int argc, char** argv )
 
 			j["Hlevels"]["H"] 						= current_Hlevel->H;
 			j["Hlevels"]["n_tiles"] 				= current_Hlevel->n_tiles;	
-			j["Hlevels"]["HLevels"]["unique_tiles"] = unique_tiles_str;
+			j["Hlevels"]["unique_tiles"] = unique_tiles_str;
 			
 			// 					 // std::cout <<    current_tile->FACE_REF				<< std::endl;
 			// These are private // std::cout <<    current_tile->VERTICES_PERMUTATION	<< std::endl;
@@ -171,18 +173,37 @@ int main(int argc, char** argv )
 				}
 				cell_edge_str.pop_back();
 
+				/* 																 * 
+				 * The computer seems to run out of RAM 						 * 						
+				 * in this part of the code below. I was unable to 				 * 		
+				 * determine a solution to this problem. It very well			 * 			
+				 * might be solved by running it on a computer with more RAM.	 * 					
+				 * 																 * 
+				 * For now, we only have access to Hlevels 1-3					 * 	
+				 *																 */
 
-				// std::string connectivity_str;
-				// for(int i=0;i<current_tile->connectivity.rows(); i++){
-				// 	connectivity_str.append("[");
-				// 	for(int j=0;j<current_tile->connectivity.cols(); j++){
-				// 		connectivity_str.append(std::to_string(current_tile->connectivity(i,j)));
-				// 		connectivity_str.append(",");
-				// 	}
-				// 	connectivity_str.pop_back();
-				// 	connectivity_str.append("],");
-				// }
-				// connectivity_str.pop_back();
+				std::string connectivity_str;
+				auto con_mat = *(current_tile->connectivity.get());
+
+				// The commented code below is an attempt to divide the connectivity 
+				// matrix into blocks in order to reduce the amount of RAM used at a time
+
+				// int numRows = (*(current_tile->connectivity.get())).rows();
+				// int numCols = (*(current_tile->connectivity.get())).cols();
+				// Eigen::SparseMatrix<int, 1> div_mat = (*(current_tile->connectivity.get())).topLeftCorner(numRows/5, numCols/5);
+
+				for (int k = 0; k < con_mat.outerSize(); ++k)
+				{
+					for (Eigen::SparseMatrix<int, 1>::InnerIterator it(con_mat, k); it; ++it)
+					{
+						connectivity_str.append("[");
+						connectivity_str.append(std::to_string(it.row()));
+						connectivity_str.append(",");
+						connectivity_str.append(std::to_string(it.col()));
+						connectivity_str.append("],");
+					}
+				}
+				connectivity_str.pop_back();
 
 				j["HLevels"]["Tiles"][current_tile_name]["channel_data"] 		= channel_data_str;
 				j["HLevels"]["Tiles"][current_tile_name]["cell_vertices"] 		= cell_vertices_str;
@@ -190,7 +211,7 @@ int main(int argc, char** argv )
 				j["HLevels"]["Tiles"][current_tile_name]["cell_xform"] 			= cell_xform_str;
 				j["HLevels"]["Tiles"][current_tile_name]["traversal_faces"]		= traversal_faces_str;
 				j["HLevels"]["Tiles"][current_tile_name]["cell_edge"] 			= cell_edge_str;
-				// j["HLevels"]["Tiles"]["connectivity"] 						= connectivity_str;
+				j["HLevels"]["Tiles"]["connectivity"] 						    = connectivity_str;
 
 				//tile_block
 					std::shared_ptr<TileBlock> current_tile_block = current_tile->tile_block;
@@ -327,7 +348,7 @@ int main(int argc, char** argv )
 		// Write the json string to the output file
 
 		if(file_.is_open())
-			file_ << s;
+			file_ << std::setw(4) << s << std::endl;
 
 		file_.close();
 	}
