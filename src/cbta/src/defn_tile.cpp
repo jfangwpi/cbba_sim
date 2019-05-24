@@ -11,6 +11,7 @@
 //#include <eigen3/Eigen/Core>
 
 #include "cbta/hcost_tile_library.hpp"
+#include <sstream>
 
 using namespace Eigen;
 using namespace librav;
@@ -38,6 +39,14 @@ Tile::Tile(int H, Matrix<int,Dynamic,4> tile_vertices){
 	set_tile_data(H,tile_vertices);
 	//std::shared_ptr<TileBlock> tile_block;
 }
+
+Tile::Tile(int H, std::string traversal_type_str, std::string traversal_faces_str, std::string cell_xform_str, std::string channel_data_str, std::string cell_edge_str, std::string cell_vertices_str, std::string connectivity_str){
+
+	setMatricesFromJSON(traversal_type_str, traversal_faces_str, cell_xform_str, channel_data_str, cell_edge_str, cell_vertices_str);
+	setConnectivityFromJSON(connectivity_str);
+
+}
+
 
 Tile::~Tile(){
 
@@ -137,40 +146,39 @@ void Tile::set_tile_data(int H, Matrix<int,Dynamic,4> tile_vertices){
 			}
 		}
 //		std::cout << "idx1 = " << idx1 << std::endl;
-		cell_xform.row(n) = FACE_REF.row(idx1).rightCols(2); // cols 4,5, Existing transformation on current rectangle
+//		cell_xform.row(n) = FACE_REF.row(idx1).rightCols(2); // cols 4,5, Existing transformation on current rectangle
 //		std::cout << "cell_xform" << std::endl;
 //		std::cout << cell_xform << std::endl;
-		traversal_type(n,0) = (u1(n,0)!=u1(n+1,0)) + 1;
+//		traversal_type(n,0) = (u1(n,0)!=u1(n+1,0)) + 1;
 //		std::cout << "traversal_type" << std::endl;
 //		std::cout << traversal_type << std::endl;
-
-		int xform1 = INVERSE_XFORM(FACE_REF(idx1,4));
-		int xform2 = INVERSE_XFORM(FACE_REF(idx1,3));
+//		int xform1 = INVERSE_XFORM(FACE_REF(idx1,4));
+//		int xform2 = INVERSE_XFORM(FACE_REF(idx1,3));
 //		std::cout << "xform1 = " << xform1 << std::endl;
 //		std::cout << "xform2 = " << xform2 << std::endl;
-		RowVectorXi p1 = VERTICES_PERMUTATION.row(xform1);
-		RowVectorXi p2 = VERTICES_PERMUTATION.row(xform2);
+//		RowVectorXi p1 = VERTICES_PERMUTATION.row(xform1);
+//		RowVectorXi p2 = VERTICES_PERMUTATION.row(xform2);
 //		std::cout << "p1 = " << p1 << std::endl;
 //		std::cout << "p2 = " << p2 << std::endl;
 
-		Matrix4d I4p1;
-		int p10 = p1(0); int p11 = p1(1); int p12 = p1(2); int p13 = p1(3);
-		I4p1.row(0) = I4.row(p10-1);
-		I4p1.row(1) = I4.row(p11-1);
-		I4p1.row(2) = I4.row(p12-1);
-		I4p1.row(3) = I4.row(p13-1);
-		//std::cout << "I4p1" << std::endl << I4p1 << std::endl;
-		Matrix4d I4p2;
-		int p20 = p2(0); int p21 = p2(1); int p22 = p2(2); int p23 = p2(3);
-		I4p2.row(0) = I4.row(p20-1);
-		I4p2.row(1) = I4.row(p21-1);
-		I4p2.row(2) = I4.row(p22-1);
-		I4p2.row(3) = I4.row(p23-1);
-		//std::cout << "I4p2" << std::endl << I4p2 << std::endl;
-		MatrixXd this_cell_aug_vertices;
-		this_cell_aug_vertices = I4p2*I4p1*this_cell_vertices;
-		//std::cout << this_cell_aug_vertices << std::endl;
-		cell_vertices.block(0,2*n,4,2) = this_cell_aug_vertices;
+		// Matrix4d I4p1;
+		// int p10 = p1(0); int p11 = p1(1); int p12 = p1(2); int p13 = p1(3);
+		// I4p1.row(0) = I4.row(p10-1);
+		// I4p1.row(1) = I4.row(p11-1);
+		// I4p1.row(2) = I4.row(p12-1);
+		// I4p1.row(3) = I4.row(p13-1);
+		// //std::cout << "I4p1" << std::endl << I4p1 << std::endl;
+		// Matrix4d I4p2;
+		// int p20 = p2(0); int p21 = p2(1); int p22 = p2(2); int p23 = p2(3);
+		// I4p2.row(0) = I4.row(p20-1);
+		// I4p2.row(1) = I4.row(p21-1);
+		// I4p2.row(2) = I4.row(p22-1);
+		// I4p2.row(3) = I4.row(p23-1);
+		// //std::cout << "I4p2" << std::endl << I4p2 << std::endl;
+		// MatrixXd this_cell_aug_vertices;
+		// this_cell_aug_vertices = I4p2*I4p1*this_cell_vertices;
+		// //std::cout << this_cell_aug_vertices << std::endl;
+		// cell_vertices.block(0,2*n,4,2) = this_cell_aug_vertices;
 	}
 
 }
@@ -180,4 +188,272 @@ void Tile::addTileBlock(REGION_BD &REGION_BD, std::shared_ptr<TileBlock> this_ti
 	tile_block = this_tile_block;
 }
 
+void Tile::setMatricesFromJSON(std::string traversal_type_str, std::string traversal_faces_str, std::string cell_xform_str, std::string channel_data_str, std::string cell_edge_str, std::string cell_vertices_str){
 
+	/******* cell_xform_str *******/
+	char temp_char[cell_xform_str.size() +1];
+	strcpy(temp_char, cell_xform_str.c_str());
+	char *token;
+	
+	std::vector<char *> burner_array;
+	token = strtok (temp_char,"[");
+
+	int counter = 0;
+	while (token != NULL)
+	{	
+		burner_array.push_back(token);
+		token = strtok (NULL, "[");
+		counter++;
+	}
+
+	for (size_t i = 0; i < counter; i++)
+	{	
+		std::vector<int> ind_num_array;
+		char *token;
+		token = strtok (burner_array[i],",]");
+		int j = 0;
+		while (token != NULL)
+		{	
+			token = strtok (NULL, ",]");
+			std::stringstream ss;
+			ss << token;
+			int temp_val;
+			ss >> temp_val;
+			ind_num_array.push_back(temp_val);
+			j++;
+		}
+
+		cell_xform = MatrixXi::Zero(counter,j);
+		for (size_t k = 0; k < j; k++)
+		{
+			cell_xform(i,k) = ind_num_array[k];
+		}
+	}
+	
+	/******* channel_data_str *******/
+	temp_char[channel_data_str.size() +1];
+	strcpy(temp_char, channel_data_str.c_str());
+	
+	burner_array.clear();
+	token = strtok (temp_char,"[");
+
+	counter = 0;
+	while (token != NULL)
+	{	
+		burner_array.push_back(token);
+		token = strtok (NULL, "[");
+		counter++;
+	}
+
+	for (size_t i = 0; i < counter; i++)
+	{	
+		std::vector<int> ind_num_array;
+		char *token;
+		token = strtok(burner_array[i],",]");
+		int j = 0;
+		while (token != NULL)
+		{	
+			token = strtok(NULL, ",]");
+			std::stringstream ss;
+			ss << token;
+			int temp_val;
+			ss >> temp_val;
+			ind_num_array.push_back(temp_val);
+			j++;
+		}
+
+		channel_data = MatrixXi::Zero(counter,j);
+		for (size_t k = 0; k < j; k++)
+		{
+			channel_data(i,k) = ind_num_array[k];
+		}
+	}
+	/******* traversal_faces *******/
+	temp_char[traversal_faces_str.size() +1];
+	strcpy(temp_char, traversal_faces_str.c_str());
+	
+	burner_array.clear();
+	token = strtok (temp_char,"[");
+
+	counter = 0;
+	while (token != NULL)
+	{	
+		burner_array.push_back(token);
+		token = strtok (NULL, "[");
+		counter++;
+	}
+
+	for (size_t i = 0; i < counter; i++)
+	{	
+		std::vector<int> ind_num_array;
+		char *token;
+		token = strtok(burner_array[i],",]");
+		int j = 0;
+		while (token != NULL)
+		{	
+			token = strtok(NULL, ",]");
+			std::stringstream ss;
+			ss << token;
+			int temp_val;
+			ss >> temp_val;
+			ind_num_array.push_back(temp_val);
+			j++;
+		}
+
+		traversal_faces = MatrixXi::Zero(counter,j);
+		for (size_t k = 0; k < j; k++)
+		{
+			traversal_faces(i,k) = ind_num_array[k];
+		}
+	}
+	/******* traversal_type *******/
+	temp_char[traversal_type_str.size() +1];
+	strcpy(temp_char, traversal_type_str.c_str());
+	
+	burner_array.clear();
+	token = strtok (temp_char,"[");
+
+	counter = 0;
+	while (token != NULL)
+	{	
+		burner_array.push_back(token);
+		token = strtok (NULL, "[");
+		counter++;
+	}
+
+	for (size_t i = 0; i < counter; i++)
+	{	
+		std::vector<int> ind_num_array;
+		char *token;
+		token = strtok(burner_array[i],",]");
+		int j = 0;
+		while (token != NULL)
+		{	
+			token = strtok(NULL, ",]");
+			std::stringstream ss;
+			ss << token;
+			int temp_val;
+			ss >> temp_val;
+			ind_num_array.push_back(temp_val);
+			j++;
+		}
+
+		traversal_type = MatrixXi::Zero(counter,j);
+		for (size_t k = 0; k < j; k++)
+		{
+			traversal_type(i,k) = ind_num_array[k];
+		}
+	}
+	
+	/******* cell_edge_str *******/
+	char temp_char_double[cell_edge_str.size() +1];
+	strcpy(temp_char_double, cell_edge_str.c_str());
+	
+	burner_array.clear();
+
+	char *token_double = strtok (temp_char_double,"[");
+
+	counter = 0;
+	while (token_double != NULL)
+	{	
+		burner_array.push_back(token_double);
+		token_double = strtok (NULL, "[");
+		counter++;
+	}
+
+	for (size_t i = 0; i < counter; i++)
+	{	
+		std::vector<double> ind_num_array;
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
+		int j = 0;
+		while (token_double != NULL)
+		{	
+			token_double = strtok (NULL, ",]");
+			std::stringstream ss;
+			ss << token_double;
+			double temp_val;
+			ss >> temp_val;
+			ind_num_array.push_back(temp_val);
+			j++;
+		}
+
+		cell_edge = MatrixXd::Zero(counter,j);
+		for (size_t k = 0; k < j; k++)
+		{
+			cell_edge(i,k) = ind_num_array[k];
+		}
+	}
+	
+	/******* cell_vertices_str *******/
+	temp_char_double[cell_vertices_str.size() +1];
+	strcpy(temp_char_double, cell_vertices_str.c_str());
+	
+	burner_array.clear();
+	token_double = strtok (temp_char_double,"[");
+
+	counter = 0;
+	while (token_double != NULL)
+	{	
+		burner_array.push_back(token_double);
+		token_double = strtok (NULL, "[");
+		counter++;
+	}
+
+	for (size_t i = 0; i < counter; i++)
+	{	
+		std::vector<double> ind_num_array;
+		char *token;
+		token = strtok (burner_array[i],",]");
+		int j = 0;
+		while (token != NULL)
+		{	
+			token = strtok (NULL, ",]");
+			std::stringstream ss;
+			ss << token;
+			double temp_val;
+			ss >> temp_val;
+			ind_num_array.push_back(temp_val);
+			j++;
+		}
+
+		cell_vertices = MatrixXd::Zero(counter,j);
+		for (size_t k = 0; k < j; k++)
+		{
+			cell_vertices(i,k) = ind_num_array[k];
+		}
+	}
+}
+
+void Tile::setConnectivityFromJSON(std::string connectivity_str){
+	char conn_char[connectivity_str.size() +1];
+	strcpy(conn_char, connectivity_str.c_str());
+
+
+	/* Recall: the first two values of the connectivity section
+	 * are the number of rows and colums of the sparse matrix */ 
+	// std::stringstream str_rows;
+	// std::stringstream str_cols;
+	// str_rows << conn_char[0];
+	// str_cols << conn_char[1];
+	// int n_rows, n_cols;
+	// str_rows >> n_cols;
+	// str_cols >> n_cols;
+
+	Eigen::SparseMatrix<int> connectivity(2500,2500);
+
+	for (size_t i = 0; i < strlen(conn_char) - 1; i = i+2)
+	{	
+		std::stringstream str1;
+		std::stringstream str2;
+
+		str1 << conn_char[i];
+		str2 << conn_char[i+1];
+		int idx1, idx2;
+		str1 >> idx1;
+		str2 >> idx2;
+
+		connectivity.coeffRef(idx1, idx2) = 1;
+	}
+
+}

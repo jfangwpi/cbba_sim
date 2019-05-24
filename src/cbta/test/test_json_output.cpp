@@ -192,26 +192,30 @@ int main(int argc, char** argv )
 				// int numCols = (*(current_tile->connectivity.get())).cols();
 				// Eigen::SparseMatrix<int, 1> div_mat = (*(current_tile->connectivity.get())).topLeftCorner(numRows/5, numCols/5);
 
+				// /* Note: First two values of the connectivity section are the number of rows and columns of the sparse matrix */
+				// connectivity_str.append(std::to_string(con_mat.rows()));
+				// connectivity_str.append(std::to_string(con_mat.cols()));
+
 				for (int k = 0; k < con_mat.outerSize(); ++k)
-				{
+				{	
 					for (Eigen::SparseMatrix<int, 1>::InnerIterator it(con_mat, k); it; ++it)
 					{
-						connectivity_str.append("[");
+						// connectivity_str.append("[");
 						connectivity_str.append(std::to_string(it.row()));
-						connectivity_str.append(",");
+						// connectivity_str.append(",");
 						connectivity_str.append(std::to_string(it.col()));
-						connectivity_str.append("],");
+						// connectivity_str.append("],");
 					}
 				}
-				connectivity_str.pop_back();
+				// connectivity_str.pop_back();
 
-				j["HLevels"]["Tiles"][current_tile_name]["channel_data"] 		= channel_data_str;
-				j["HLevels"]["Tiles"][current_tile_name]["cell_vertices"] 		= cell_vertices_str;
-				j["HLevels"]["Tiles"][current_tile_name]["traversal_type"] 		= traversal_type_str;
-				j["HLevels"]["Tiles"][current_tile_name]["cell_xform"] 			= cell_xform_str;
-				j["HLevels"]["Tiles"][current_tile_name]["traversal_faces"]		= traversal_faces_str;
-				j["HLevels"]["Tiles"][current_tile_name]["cell_edge"] 			= cell_edge_str;
-				j["HLevels"]["Tiles"]["connectivity"] 						    = connectivity_str;
+				j[current_tile_name]["channel_data"] 		= channel_data_str;
+				j[current_tile_name]["cell_vertices"] 		= cell_vertices_str;
+				j[current_tile_name]["traversal_type"] 		= traversal_type_str;
+				j[current_tile_name]["cell_xform"] 			= cell_xform_str;
+				j[current_tile_name]["traversal_faces"]		= traversal_faces_str;
+				j[current_tile_name]["cell_edge"] 			= cell_edge_str;
+				j[current_tile_name]["connectivity"] 		= connectivity_str;
 
 				//tile_block
 					std::shared_ptr<TileBlock> current_tile_block = current_tile->tile_block;
@@ -301,13 +305,13 @@ int main(int argc, char** argv )
 					w_sol_str.pop_back();
 
 
-					j["HLevels"]["Tiles"][current_tile_name]["tile_block"]["alfa"]		= alfa_str;
-					j["HLevels"]["Tiles"][current_tile_name]["tile_block"]["bta"]		= bta_str;
-					j["HLevels"]["Tiles"][current_tile_name]["tile_block"]["w_lower"]	= w_lower_str;
-					j["HLevels"]["Tiles"][current_tile_name]["tile_block"]["w_upper"]	= w_upper_str;
-					j["HLevels"]["Tiles"][current_tile_name]["tile_block"]["x"]			= x_str;
-					j["HLevels"]["Tiles"][current_tile_name]["tile_block"]["w"]			= w_str;
-					j["HLevels"]["Tiles"][current_tile_name]["tile_block"]["w_sol"]		= w_sol_str;
+					j[current_tile_name]["tile_block"]["alfa"]		= alfa_str;
+					j[current_tile_name]["tile_block"]["bta"]		= bta_str;
+					j[current_tile_name]["tile_block"]["w_lower"]	= w_lower_str;
+					j[current_tile_name]["tile_block"]["w_upper"]	= w_upper_str;
+					j[current_tile_name]["tile_block"]["x"]			= x_str;
+					j[current_tile_name]["tile_block"]["w"]			= w_str;
+					j[current_tile_name]["tile_block"]["w_sol"]		= w_sol_str;
 
 					//H
 					//y_exit	// <--- These are private //

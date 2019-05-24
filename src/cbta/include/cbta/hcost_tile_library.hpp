@@ -55,6 +55,7 @@ class TileBlock; // say TileBlock exists without defining it, forward declaratio
 class Tile{
 public:
 	Tile(int H, Eigen::Matrix<int,Eigen::Dynamic,4> tile_vertices);
+	Tile(int H, std::string traversal_type_str, std::string traversal_faces_str, std::string cell_xform_str, std::string channel_data_str, std::string cell_edge_str, std::string cell_vertices_str, std::string connectivity_str);
 	~Tile();
 
 private:
@@ -80,6 +81,11 @@ public:
 	void set_tile_data(int, Eigen::Matrix<int,Eigen::Dynamic,4>);
 
 	void addTileBlock(REGION_BD &region_bd, std::shared_ptr<TileBlock> this_tile, int H);
+
+	void setMatricesFromJSON(std::string traversal_type_str, std::string traversal_faces_str, std::string cell_xform_str, std::string channel_data_str, std::string cell_edge_str, std::string cell_vertices_str);
+
+	void setConnectivityFromJSON(std::string connectivity_str);
+
 };
 
 // =============================== TileBlock ==============================
@@ -93,6 +99,14 @@ class TileBlock{
 public:
 	TileBlock();
 	TileBlock(REGION_BD &region_bd, std::shared_ptr<Tile> linked_tile, int Hin);
+	TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, int Hin,
+					 	std::string alfa_str,
+						std::string bta_str,
+						std::string w_lower_str,
+						std::string w_upper_str,
+						std::string x_str,
+						std::string w_str,
+						std::string w_sol_str);
 	~TileBlock();
 private:
 	int H;

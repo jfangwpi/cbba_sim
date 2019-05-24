@@ -24,6 +24,7 @@ Hlevel::Hlevel(unsigned int Hin){
 Hlevel::Hlevel(unsigned int Hin, unsigned int n_tiles_in, std::string unique_tiles_str){
 	H = Hin;
 	n_tiles = n_tiles_in;
+	unique_tiles = MatrixXi::Zero(H,1); //might need to do this
 
 	/******* Extract the arrays from the matrix *******/
 	char temp_char[unique_tiles_str.size() +1];
@@ -32,12 +33,13 @@ Hlevel::Hlevel(unsigned int Hin, unsigned int n_tiles_in, std::string unique_til
 	
 	std::vector<char *> burner_array;
 	token = strtok (temp_char,"[");
+
 	while (token != NULL)
 	{	
 		burner_array.push_back(token);
 		token = strtok (NULL, "[");
 	}
-	unique_tiles = MatrixXi::Zero(H,n_tiles);
+
 	for (size_t i = 0; i < Hin; i++)
 	{	
 		std::vector<int> ind_num_array;
@@ -52,13 +54,15 @@ Hlevel::Hlevel(unsigned int Hin, unsigned int n_tiles_in, std::string unique_til
 			int temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
-			unique_tiles(i,j) = temp_val;
 			j++;
-		}	
+		}
+
+		unique_tiles = MatrixXi::Zero(H,j);
+		for (size_t k = 0; k < j; k++)
+		{
+			unique_tiles(i,k) = ind_num_array[k];
+		}
 	}
-
-	
-
 }
 
 Hlevel::~Hlevel(){

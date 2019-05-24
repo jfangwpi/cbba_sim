@@ -21,12 +21,307 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	//std::cout << "N_CBTA_W_SOL = " << N_CBTA_W_SOL << std::endl;
 }
 
+TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, int Hin,
+					 	std::string alfa_str,
+						std::string bta_str,
+						std::string w_lower_str,
+						std::string w_upper_str,
+						std::string x_str,
+						std::string w_str,
+						std::string w_sol_str) {
+	tile = linked_tile;
+	H = Hin;
+
+
+	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W> alfa;
+	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W> bta;
+	Eigen::Matrix<double,Eigen::Dynamic,1> w_lower;
+	Eigen::Matrix<double,Eigen::Dynamic,1> w_upper;
+	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W> x;
+	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W> w;
+	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W_SOL> w_sol;
+
+	/********** alfa_str **********/
+	char temp_char[alfa_str.size() +1];
+	strcpy(temp_char, alfa_str.c_str());
+	char *token;
+	
+	std::vector<char *> burner_array;
+	token = strtok (temp_char,"[");
+
+	int counter = 0;
+	while (token != NULL)
+	{	
+		burner_array.push_back(token);
+		token = strtok (NULL, "[");
+		counter++;
+	}
+
+	for (size_t i = 0; i < counter; i++)
+	{	
+		std::vector<double> ind_num_array;
+		char *token;
+		token = strtok (burner_array[i],",]");
+		int j = 0;
+		while (token != NULL)
+		{	
+			token = strtok (NULL, ",]");
+			std::stringstream ss;
+			ss << token;
+			double temp_val;
+			ss >> temp_val;
+			ind_num_array.push_back(temp_val);
+			j++;
+		}
+
+		alfa = MatrixXd::Zero(counter,j);
+		for (size_t k = 0; k < j; k++)
+		{
+			alfa(i,k) = ind_num_array[k];
+		}
+	}
+	
+	/********** bta_str **********/
+	temp_char[bta_str.size() +1];
+	strcpy(temp_char, bta_str.c_str());
+	burner_array.clear();
+	
+	token = strtok (temp_char,"[");
+
+	counter = 0;
+	while (token != NULL)
+	{	
+		burner_array.push_back(token);
+		token = strtok (NULL, "[");
+		counter++;
+	}
+
+	for (size_t i = 0; i < counter; i++)
+	{	
+		std::vector<double> ind_num_array;
+		char *token;
+		token = strtok (burner_array[i],",]");
+		int j = 0;
+		while (token != NULL)
+		{	
+			token = strtok (NULL, ",]");
+			std::stringstream ss;
+			ss << token;
+			double temp_val;
+			ss >> temp_val;
+			ind_num_array.push_back(temp_val);
+			j++;
+		}
+
+		bta = MatrixXd::Zero(counter,j);
+		for (size_t k = 0; k < j; k++)
+		{
+			bta(i,k) = ind_num_array[k];
+		}
+	}
+
+	/********** w_lower_str **********/
+	temp_char[w_lower_str.size() +1];
+	strcpy(temp_char, w_lower_str.c_str());
+	burner_array.clear();
+	
+	token = strtok (temp_char,"[");
+
+	counter = 0;
+	while (token != NULL)
+	{	
+		burner_array.push_back(token);
+		token = strtok (NULL, "[");
+		counter++;
+	}
+
+	for (size_t i = 0; i < counter; i++)
+	{	
+		std::vector<double> ind_num_array;
+		char *token;
+		token = strtok (burner_array[i],",]");
+		int j = 0;
+		while (token != NULL)
+		{	
+			token = strtok (NULL, ",]");
+			std::stringstream ss;
+			ss << token;
+			double temp_val;
+			ss >> temp_val;
+			ind_num_array.push_back(temp_val);
+			j++;
+		}
+
+		w_lower = MatrixXd::Zero(counter,j);
+		for (size_t k = 0; k < j; k++)
+		{
+			w_lower(i,k) = ind_num_array[k];
+		}
+	}
+
+	/********** w_upper_str **********/
+	temp_char[w_upper_str.size() +1];
+	strcpy(temp_char, w_upper_str.c_str());
+	burner_array.clear();
+
+	token = strtok (temp_char,"[");
+
+	counter = 0;
+	while (token != NULL)
+	{	
+		burner_array.push_back(token);
+		token = strtok (NULL, "[");
+		counter++;
+	}
+
+	for (size_t i = 0; i < counter; i++)
+	{	
+		std::vector<double> ind_num_array;
+		char *token;
+		token = strtok (burner_array[i],",]");
+		int j = 0;
+		while (token != NULL)
+		{	
+			token = strtok (NULL, ",]");
+			std::stringstream ss;
+			ss << token;
+			double temp_val;
+			ss >> temp_val;
+			ind_num_array.push_back(temp_val);
+			j++;
+		}
+
+		w_upper = MatrixXd::Zero(counter,j);
+		for (size_t k = 0; k < j; k++)
+		{
+			w_upper(i,k) = ind_num_array[k];
+		}
+	}
+
+	/********** x_str **********/
+	temp_char[x_str.size() +1];
+	strcpy(temp_char, x_str.c_str());
+	burner_array.clear();
+	
+	token = strtok (temp_char,"[");
+
+	counter = 0;
+	while (token != NULL)
+	{	
+		burner_array.push_back(token);
+		token = strtok (NULL, "[");
+		counter++;
+	}
+
+	for (size_t i = 0; i < counter; i++)
+	{	
+		std::vector<double> ind_num_array;
+		char *token;
+		token = strtok (burner_array[i],",]");
+		int j = 0;
+		while (token != NULL)
+		{	
+			token = strtok (NULL, ",]");
+			std::stringstream ss;
+			ss << token;
+			double temp_val;
+			ss >> temp_val;
+			ind_num_array.push_back(temp_val);
+			j++;
+		}
+
+		x = MatrixXd::Zero(counter,j);
+		for (size_t k = 0; k < j; k++)
+		{
+			x(i,k) = ind_num_array[k];
+		}
+	}
+
+	/********** w_str **********/
+	temp_char[w_str.size() +1];
+	strcpy(temp_char, w_str.c_str());
+	burner_array.clear();
+	
+	token = strtok (temp_char,"[");
+
+	counter = 0;
+	while (token != NULL)
+	{	
+		burner_array.push_back(token);
+		token = strtok (NULL, "[");
+		counter++;
+	}
+
+	for (size_t i = 0; i < counter; i++)
+	{	
+		std::vector<double> ind_num_array;
+		char *token;
+		token = strtok (burner_array[i],",]");
+		int j = 0;
+		while (token != NULL)
+		{	
+			token = strtok (NULL, ",]");
+			std::stringstream ss;
+			ss << token;
+			double temp_val;
+			ss >> temp_val;
+			ind_num_array.push_back(temp_val);
+			j++;
+		}
+
+		w = MatrixXd::Zero(counter,j);
+		for (size_t k = 0; k < j; k++)
+		{
+			w(i,k) = ind_num_array[k];
+		}
+	}
+
+	/********** w_sol_str **********/
+	temp_char[w_sol_str.size() +1];
+	strcpy(temp_char, w_sol_str.c_str());
+	burner_array.clear();
+	
+	token = strtok (temp_char,"[");
+
+	counter = 0;
+	while (token != NULL)
+	{	
+		burner_array.push_back(token);
+		token = strtok (NULL, "[");
+		counter++;
+	}
+
+	for (size_t i = 0; i < counter; i++)
+	{	
+		std::vector<double> ind_num_array;
+		char *token;
+		token = strtok (burner_array[i],",]");
+		int j = 0;
+		while (token != NULL)
+		{	
+			token = strtok (NULL, ",]");
+			std::stringstream ss;
+			ss << token;
+			double temp_val;
+			ss >> temp_val;
+			ind_num_array.push_back(temp_val);
+			j++;
+		}
+
+		w_sol = MatrixXd::Zero(counter,j);
+		for (size_t k = 0; k < j; k++)
+		{
+			w_sol(i,k) = ind_num_array[k];
+		}
+	}
+}
 TileBlock::~TileBlock() {
 	// TODO Auto-generated destructor stub
 }
 
+
 // Main driver of Curvature Bounded Traversability Analysis (CBTA)
-//
+
 void TileBlock::cbta(){
 	std::cout << "Enter cbta()" << std::endl;
 	y_exit = MatrixXd::Zero(H,1);
