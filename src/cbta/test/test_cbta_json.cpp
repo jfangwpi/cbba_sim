@@ -72,6 +72,14 @@ namespace ns {
 		std::string w_str;
 		std::string w_sol_str;
 
+		std::string y_exit_str;
+		std::string z_exit_str;
+		std::string bta_smp_str;
+		std::string alfa_sol_str;
+		std::string alfa_smp_str;
+		std::string w_smp_str;
+		std::string x_smp_str;
+
 		for(int n = 0; n < n_tiles; n++){
 
 			std::stringstream str;
@@ -93,11 +101,9 @@ namespace ns {
 
 			std::cout << traversal_type_str << std::endl;
 
-			std::shared_ptr<librav::Tile> newTile = std::make_shared<librav::Tile>(desired_H,traversal_type_str,traversal_faces_str,cell_xform_str,channel_data_str,cell_edge_str,cell_vertices_str,connectivity_str);
-			current_Hlevel->Tiles.insert({n, newTile});
-
+			std::shared_ptr<librav::Tile> temp_tile = std::make_shared<librav::Tile>(desired_H,traversal_type_str,traversal_faces_str,cell_xform_str,channel_data_str,cell_edge_str,cell_vertices_str,connectivity_str);
+			
 			/********** Tile Block **********/
-			// j.at(current_tile_name).at("tile_block").get_to();
 			j.at(current_tile_name).at("tile_block").at("alfa").get_to(alfa_str);
 			j.at(current_tile_name).at("tile_block").at("bta").get_to(bta_str);			
 			j.at(current_tile_name).at("tile_block").at("w_lower").get_to(w_lower_str);
@@ -105,6 +111,35 @@ namespace ns {
 			j.at(current_tile_name).at("tile_block").at("x").get_to(x_str);
 			j.at(current_tile_name).at("tile_block").at("w").get_to(w_str);
 			j.at(current_tile_name).at("tile_block").at("w_sol").get_to(w_sol_str);
+
+			j.at(current_tile_name).at("tile_block").at("y_exit").get_to(y_exit_str);
+			j.at(current_tile_name).at("tile_block").at("z_exit").get_to(z_exit_str);			
+			j.at(current_tile_name).at("tile_block").at("bta_smp").get_to(bta_smp_str);
+			j.at(current_tile_name).at("tile_block").at("alfa_sol").get_to(alfa_sol_str);
+			j.at(current_tile_name).at("tile_block").at("alfa_smp").get_to(alfa_smp_str);
+			j.at(current_tile_name).at("tile_block").at("w_smp").get_to(w_smp_str);
+			j.at(current_tile_name).at("tile_block").at("x_smp").get_to(x_smp_str);	
+
+			std::shared_ptr<librav::TileBlock> temp_tile_block = std::make_shared<librav::TileBlock>
+			(ttd.region_bd, temp_tile, desired_H,
+			alfa_str,
+			bta_str,
+			w_lower_str,
+			w_upper_str,
+			x_str,
+			w_str,
+			w_sol_str,
+			
+			y_exit_str,
+			z_exit_str,
+			bta_smp_str,
+			alfa_sol_str,
+			alfa_smp_str,
+			w_smp_str,
+			x_smp_str);
+			
+			temp_tile->addTileBlock(ttd.region_bd,temp_tile_block,desired_H);
+			current_Hlevel->Tiles.insert({n, temp_tile});
 		}
 		ttd.Hlevels.insert({desired_H,current_Hlevel});
 

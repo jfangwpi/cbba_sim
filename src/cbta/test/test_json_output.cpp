@@ -185,17 +185,6 @@ int main(int argc, char** argv )
 				std::string connectivity_str;
 				auto con_mat = *(current_tile->connectivity.get());
 
-				// The commented code below is an attempt to divide the connectivity 
-				// matrix into blocks in order to reduce the amount of RAM used at a time
-
-				// int numRows = (*(current_tile->connectivity.get())).rows();
-				// int numCols = (*(current_tile->connectivity.get())).cols();
-				// Eigen::SparseMatrix<int, 1> div_mat = (*(current_tile->connectivity.get())).topLeftCorner(numRows/5, numCols/5);
-
-				// /* Note: First two values of the connectivity section are the number of rows and columns of the sparse matrix */
-				// connectivity_str.append(std::to_string(con_mat.rows()));
-				// connectivity_str.append(std::to_string(con_mat.cols()));
-
 				for (int k = 0; k < con_mat.outerSize(); ++k)
 				{	
 					for (Eigen::SparseMatrix<int, 1>::InnerIterator it(con_mat, k); it; ++it)
@@ -313,14 +302,110 @@ int main(int argc, char** argv )
 					j[current_tile_name]["tile_block"]["w"]			= w_str;
 					j[current_tile_name]["tile_block"]["w_sol"]		= w_sol_str;
 
+
+					// ********* Previously private variables ********** //
+
+					std::string y_exit_str;
+					for(int i=0;i<current_tile_block->y_exit.rows(); i++){
+						y_exit_str.append("[");
+						for(int j=0;j<current_tile_block->y_exit.cols(); j++){
+							y_exit_str.append(std::to_string(current_tile_block->y_exit(i,j)));
+							y_exit_str.append(",");
+						}
+						y_exit_str.pop_back();
+						y_exit_str.append("],");
+					}
+					y_exit_str.pop_back();
+
+					std::string z_exit_str;
+					for(int i=0;i<current_tile_block->z_exit.rows(); i++){
+						z_exit_str.append("[");
+						for(int j=0;j<current_tile_block->z_exit.cols(); j++){
+							z_exit_str.append(std::to_string(current_tile_block->z_exit(i,j)));
+							z_exit_str.append(",");
+						}
+						z_exit_str.pop_back();
+						z_exit_str.append("],");
+					}
+					z_exit_str.pop_back();
+
+					std::string bta_smp_str;
+					for(int i=0;i<current_tile_block->bta_smp.rows(); i++){
+						bta_smp_str.append("[");
+						for(int j=0;j<current_tile_block->bta_smp.cols(); j++){
+							bta_smp_str.append(std::to_string(current_tile_block->bta_smp(i,j)));
+							bta_smp_str.append(",");
+						}
+						bta_smp_str.pop_back();
+						bta_smp_str.append("],");
+					}
+					bta_smp_str.pop_back();
+
+					std::string alfa_sol_str;
+					for(int i=0;i<current_tile_block->alfa_sol.rows(); i++){
+						alfa_sol_str.append("[");
+						for(int j=0;j<current_tile_block->alfa_sol.cols(); j++){
+							alfa_sol_str.append(std::to_string(current_tile_block->alfa_sol(i,j)));
+							alfa_sol_str.append(",");
+						}
+						alfa_sol_str.pop_back();
+						alfa_sol_str.append("],");
+					}
+					alfa_sol_str.pop_back();
+
+					std::string alfa_smp_str;
+					for(int i=0;i<current_tile_block->alfa_smp.rows(); i++){
+						alfa_smp_str.append("[");
+						for(int j=0;j<current_tile_block->alfa_smp.cols(); j++){
+							alfa_smp_str.append(std::to_string(current_tile_block->alfa_smp(i,j)));
+							alfa_smp_str.append(",");
+						}
+						alfa_smp_str.pop_back();
+						alfa_smp_str.append("],");
+					}
+					alfa_smp_str.pop_back();
+
+					std::string w_smp_str;
+					for(int i=0;i<current_tile_block->w_smp.rows(); i++){
+						w_smp_str.append("[");
+						for(int j=0;j<current_tile_block->w_smp.cols(); j++){
+							w_smp_str.append(std::to_string(current_tile_block->w_smp(i,j)));
+							w_smp_str.append(",");
+						}
+						w_smp_str.pop_back();
+						w_smp_str.append("],");
+					}
+					w_smp_str.pop_back();
+
+					std::string x_smp_str;
+					for(int i=0;i<current_tile_block->x_smp.rows(); i++){
+						x_smp_str.append("[");
+						for(int j=0;j<current_tile_block->x_smp.cols(); j++){
+							x_smp_str.append(std::to_string(current_tile_block->x_smp(i,j)));
+							x_smp_str.append(",");
+						}
+						x_smp_str.pop_back();
+						x_smp_str.append("],");
+					}
+					x_smp_str.pop_back();
+
+
+					j[current_tile_name]["tile_block"]["y_exit"]		= y_exit_str;
+					j[current_tile_name]["tile_block"]["z_exit"]		= z_exit_str;
+					j[current_tile_name]["tile_block"]["bta_smp"]		= bta_smp_str;
+					j[current_tile_name]["tile_block"]["alfa_sol"]		= alfa_sol_str;
+					j[current_tile_name]["tile_block"]["alfa_smp"]		= alfa_smp_str;
+					j[current_tile_name]["tile_block"]["w_smp"]			= w_smp_str;
+					j[current_tile_name]["tile_block"]["x_smp"]			= x_smp_str;
+
 					//H
 					//y_exit	// <--- These are private //
 					//z_exit	// <--- These are private //
 					//bta_smp	// <--- These are private //
-					//alfa_sol	// <--- These are private //
-					//alfa_smp	// <--- These are private //
-					//w_smp		// <--- These are private //
-					//x_smp		// <--- These are private //
+					//alfa_sol_str	// <--- These are private //
+					//alfa_smp_str	// <--- These are private //
+					//w_smp_str		// <--- These are private //
+					//x_smp_str		// <--- These are private //
 					//alfa
 					//bta
 					//w_lower

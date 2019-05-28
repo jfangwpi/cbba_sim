@@ -8,7 +8,6 @@
 // Eigen header
 #include <eigen3/Eigen/Core>
 #include "cbta/hcost_tile_library.hpp"
-#include <sstream>
 
 using namespace Eigen;
 using namespace librav;

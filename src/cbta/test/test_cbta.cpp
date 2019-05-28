@@ -67,8 +67,6 @@ int main(int argc, char** argv )
 	std::cout << "End buchi graph " << std::endl;
     //std::shared_ptr<Graph_t<BuchiState>> buchi_graph = BuchiAutomaton::CreateBuchiGraph(ltl_formula,buchi_regions);
 
-
-
 	/*** 5. Construct a product graph ***/
 	clock_t     total_time;
 	clock_t		product_time;

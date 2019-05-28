@@ -106,9 +106,17 @@ public:
 						std::string w_upper_str,
 						std::string x_str,
 						std::string w_str,
-						std::string w_sol_str);
+						std::string w_sol_str,
+						
+						std::string y_exit_str,
+						std::string z_exit_str,
+						std::string bta_smp_str,
+						std::string alfa_sol_str,
+						std::string alfa_smp_str,
+						std::string w_smp_str,
+						std::string x_smp_str);
 	~TileBlock();
-private:
+public: // private: <---------------------------------------------------******$*$*$*$*$*$*$
 	int H;
 	Eigen::Matrix<double,Eigen::Dynamic,1> y_exit;
 	Eigen::Matrix<double,Eigen::Dynamic,1> z_exit;
