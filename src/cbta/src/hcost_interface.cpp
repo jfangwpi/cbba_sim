@@ -8,10 +8,12 @@
 #include "opencv2/opencv.hpp"
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/SparseCore>
+#include <iostream>
 
 #include "cbta/hcost_interface.hpp"
 #include "cbta/graph_lift.hpp"
 #include "map/square_grid.hpp"
+#include "nlohmann/json.hpp"
 
 
 using namespace cv;
@@ -20,7 +22,12 @@ using namespace librav;
 using namespace Eigen;
 
 //double HCost::get_lifted_transition(int H, std::vector<Vertex<SquareCell>> tile_vertices_Vertex, std::vector<int> rgn_idx_next, std::map<int, std::shared_ptr<Hlevel>>& Hlevels, int N_REGION_TOTAL)
-TransitionData HCost::get_lifted_transition(int H, Matrix<int,Dynamic,4> tile_vertices, const std::vector<int>& rgn_idx_current, const std::map<unsigned int, std::shared_ptr<Hlevel>>& Hlevels, int N_REGION_TOTAL)
+	TransitionData HCost::get_lifted_transition(int H, 
+												Matrix<int,Dynamic,4> tile_vertices, 
+												const std::vector<int>& rgn_idx_current, 
+												const std::map<unsigned int, 
+												std::shared_ptr<Hlevel>>& Hlevels, 
+												int N_REGION_TOTAL)
 {
 	TransitionData transition_data;
 	double cost = 0.0;
@@ -38,18 +45,23 @@ TransitionData HCost::get_lifted_transition(int H, Matrix<int,Dynamic,4> tile_ve
 	std::shared_ptr<Hlevel> Hlevel = Hlevels.at(H);
 	std::map<unsigned int, std::shared_ptr<Tile>> HTiles = Hlevel->Tiles;
 	int this_tile_equivalent = 0;
-
 	int m1 = 0;
 	for(auto iTiles : HTiles){
 		Eigen::Matrix<int,Dynamic,1> this_trav_type = this_tile_data->traversal_type;
 		Eigen::Matrix<int,Dynamic,1> test_trav_type = Hlevel->unique_tiles.col(m1);
+		// std::cout << this_trav_type << std::endl << std::endl;
+		// std::cout << test_trav_type << std::endl << std::endl << std::endl;
 		if (this_trav_type.isApprox(test_trav_type)){
 			this_tile_equivalent = m1;
 			break;
 		}
+		// getchar();
+
 		m1++;
 	}
+	
 	std::shared_ptr<Tile> matched_tile = HTiles.at(this_tile_equivalent);
+	// std::cout << matched_tile->connectivity << std::endl;
 //	std::shared_ptr<Eigen::SparseMatrix<int>> this_connectivity = matched_tile->connectivity;
 //	Eigen::MatrixXi this_connectivity_dense = Eigen::MatrixXi(this_connectivity);
 //	Eigen::MatrixXi this_connectivity_dense = this_connectivity->toDense();
@@ -63,6 +75,7 @@ TransitionData HCost::get_lifted_transition(int H, Matrix<int,Dynamic,4> tile_ve
 	int m = 0;
 	for (auto it:rgn_idx_current){
 		connect_block.row(m) = matched_tile->connectivity->row(it);
+		// std::cout << "PROBE PROBE PROBE PROBE PROBE" << std::endl;
 		m++;
 	}
 
@@ -95,9 +108,11 @@ int HCost::zta02rgn_idx(std::vector<double> zta0, REGION_BD region_bd)
 	//REGION_BD REGION_BD; //should be available if hcost_tile_library.h is included
 	int region_n = region_bd.region_psi_lower.size();
 	for (int k = 0; k < region_n; k++){
-		if ((location >= region_bd.region_w_lower[k]) && (location < region_bd.region_w_upper[k]) && (angle >= region_bd.region_psi_lower[k]) && (angle < region_bd.region_psi_upper[k]))
+		if ((location >= region_bd.region_w_lower[k]) && (location < region_bd.region_w_upper[k]) && (angle >= region_bd.region_psi_lower[k]) && (angle < region_bd.region_psi_upper[k])){
 			rgn_idx_init = k;
+		}
 	}
+	std::cout << "TEST OUTPUT ========== " << rgn_idx_init << std::endl;
 	return rgn_idx_init;
 }
 
@@ -250,19 +265,20 @@ TileTraversalData HCost::hcost_preprocessing()
 	for (int HistoryH = 1; HistoryH < MAX_H + 1; HistoryH++){
 		std::shared_ptr<Hlevel> currHlevel = Hlevels.at(HistoryH);
 		std::cout << "History Level for loop at H = " << HistoryH << std::endl;
+		std::cout << "Unique Tiles" << std::endl << currHlevel->unique_tiles << std::endl;
 		for (auto it = currHlevel->Tiles.begin(); it != currHlevel->Tiles.end(); ++it){
 			MatrixXi this_tile_edge_list = MatrixXi::Zero(0,3);
 			int n_this_tile_edges = 0;
 
 			std::shared_ptr<Tile> this_tile_data = it->second;
 			std::cout << "--------- Tile data operating on -----------" << std::endl;
-			std::cout << "channel_data" << std::endl << this_tile_data->channel_data << std::endl;
-			std::cout << "cell_vertices" << std::endl << this_tile_data->cell_vertices << std::endl;
-			std::cout << "traversal_type" << std::endl << this_tile_data->traversal_type << std::endl;
-			std::cout << "cell_xform" << std::endl << this_tile_data->cell_xform << std::endl;
-			std::cout << "traversal_faces" << std::endl << this_tile_data->traversal_faces << std::endl;
-			std::cout << "cell_edge" << std::endl << this_tile_data->cell_edge << std::endl;
-			std::cout << " -------- End of current Tile data attributes----------" << std::endl;
+			// std::cout << "channel_data" << std::endl << this_tile_data->channel_data << std::endl;
+			// std::cout << "cell_vertices" << std::endl << this_tile_data->cell_vertices << std::endl;
+			// std::cout << "traversal_type" << std::endl << this_tile_data->traversal_type << std::endl;
+			// std::cout << "cell_xform" << std::endl << this_tile_data->cell_xform << std::endl;
+			// std::cout << "traversal_faces" << std::endl << this_tile_data->traversal_faces << std::endl;
+			// std::cout << "cell_edge" << std::endl << this_tile_data->cell_edge << std::endl;
+			// std::cout << " -------- End of current Tile data attributes----------" << std::endl;
 			std::shared_ptr<TileBlock> this_tile_block = std::make_shared<TileBlock>(REGION_BD,this_tile_data,HistoryH);
 			this_tile_data->addTileBlock(REGION_BD,this_tile_block,HistoryH);
 			this_tile_block->cbta(); // Activte CBTA computations, necessary cbta_results

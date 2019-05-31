@@ -25,11 +25,14 @@ target_include_directories(lcmlib PUBLIC
     $<INSTALL_INTERFACE:include>
     PRIVATE src)
 
-add_executable(test_pi1 test/test_pi1.cpp)
-target_link_libraries(test_pi1 lcmlib ltl map vis cbba ${LCM_LIBRARIES})
+#add_executable(test_pi1 test/test_pi1.cpp)
+#target_link_libraries(test_pi1 lcmlib ltl map vis cbba ${LCM_LIBRARIES})
 
-add_executable(test_pi2 test/test_pi2.cpp)
-target_link_libraries(test_pi2 lcmlib ltl map vis cbba ${LCM_LIBRARIES})
+#add_executable(test_pi2 test/test_pi2.cpp)
+#target_link_libraries(test_pi2 lcmlib ltl map vis cbba ${LCM_LIBRARIES})
+
+add_executable(test_pi1_cbta test/test_pi1_cbta.cpp)
+target_link_libraries(test_pi1_cbta lcmlib ltl map vis cbba ${LCM_LIBRARIES})
 
 #add_executable(test_pi3 test/test_pi3.cpp)
 #target_link_libraries(test_pi3 lcmlib ltl map vis cbba ${LCM_LIBRARIES})

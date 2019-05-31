@@ -27,15 +27,15 @@ target_include_directories(cbta PUBLIC
 #add_executable(test_lifted_graph test/test_lifted_graph.cpp)
 #target_link_libraries(test_lifted_graph cbta vis map ${OpenCV_LIBS})
 
-#add_executable(test_cbta test/test_cbta.cpp)
-#target_link_libraries(test_cbta cbta vis map ltl ${OpenCV_LIBS})
+add_executable(test_cbta test/test_cbta.cpp)
+target_link_libraries(test_cbta cbta vis map ltl ${OpenCV_LIBS})
 
 add_executable(test_cbta_json test/test_cbta_json.cpp)
 target_link_libraries(test_cbta_json cbta vis map ltl ${OpenCV_LIBS})
 
-add_executable(test_json_output test/test_json_output.cpp)
-target_link_libraries(test_json_output cbta vis map ltl ${OpenCV_LIBS})
-#target_link_libraries(test_json_output PRIVATE nlohmann_json::nlohmann_json)
+add_executable(create_json_file test/create_json_file.cpp)
+target_link_libraries(create_json_file cbta vis map ltl ${OpenCV_LIBS})
+#target_link_libraries(create_json_file PRIVATE nlohmann_json::nlohmann_json)
 
 #add_executable(test_path_length_cbta test/test_path_length_cbta.cpp)
 #target_link_libraries(test_path_length_cbta cbba cbta vis ltl map utility ${OpenCV_LIBS})

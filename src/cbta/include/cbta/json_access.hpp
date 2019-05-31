@@ -1,3 +1,17 @@
+/*
+ *  json_access.hpp
+ *
+ *  namespace definition for reading and writing 
+ *  JSON file containing CBTA traversal data
+ * 
+ *  Created on: May 30th, 2019
+ *      Author: Jack O'Neill
+ *      Questions/comments: (203) 558-2221
+ */
+
+#ifndef JSON_ACCESS_HPP
+#define JSON_ACCESS_HPP
+
 // standard libaray
 #include <stdio.h>
 #include <vector>
@@ -5,14 +19,13 @@
 #include <tuple>
 #include <algorithm>
 #include <bitset>
-#include <memory>
-#include <math.h>
 // opencv
 #include "opencv2/opencv.hpp"
 #include <iostream>
 #include <fstream>
 
 // user
+#include "vis/graph_vis.hpp"
 #include "graph/graph.hpp"
 #include "graph/algorithms/astar.hpp"
 #include "map/square_grid.hpp"
@@ -22,24 +35,12 @@
 #include "ltl/product_automaton.hpp"
 #include "cbta/graph_lift.hpp"
 #include "cbta/hcost_interface.hpp"
-
 #include "nlohmann/json.hpp"
 
-using nlohmann::json;
-	// void to_json(json& j, const TileTraversalData& data){
-	// 	j = json{"Hlevels", data.Hlevels};
-	// 	std::string test_string = j.dump();
-	// 	std::cout << test_string << std::endl;
-	// }
 
-
-
-using namespace cv;
-using namespace librav;
-
-int main(int argc, char** argv )
-{
-	for(int desired_H = 1; desired_H < 4; desired_H++){
+namespace jsonReadWrite{
+    void get_to_json(const int desired_H_begin, const int desired_H_end){
+        for(int desired_H = desired_H_begin; desired_H < desired_H_end + 1; desired_H++){
 		int r_min 		= 3; // change this value in hcost_interface.cpp
 		/*** Create the text file ***/
 		std::ofstream file_;
@@ -47,14 +48,13 @@ int main(int argc, char** argv )
 		
 
 		/*** 0. Preprocessing CBTA data ***/
-		TileTraversalData tile_traversal_data = HCost::hcost_preprocessing();
-		const TileTraversalData& ttd = tile_traversal_data;
-		const std::shared_ptr<Hlevel> current_Hlevel = ttd.Hlevels.at(desired_H);
+		librav::TileTraversalData tile_traversal_data = librav::HCost::hcost_preprocessing();
+		const librav::TileTraversalData& ttd = tile_traversal_data;
+		const std::shared_ptr<librav::Hlevel> current_Hlevel = ttd.Hlevels.at(desired_H);
 			
 		using json = nlohmann::json;
 		
 		json j;
-
 		// TileTraversalData
 		j["N_REGION_W"] = tile_traversal_data.N_REGION_W;
 		j["N_REGION_PSI"] = tile_traversal_data.N_REGION_PSI;
@@ -93,7 +93,7 @@ int main(int argc, char** argv )
 
 				
 			// Tiles(n)
-			std::shared_ptr<Tile> current_tile;
+			std::shared_ptr<librav::Tile> current_tile;
 			std::cout << "----------" << std::endl;
 			for(int n = 0; n < current_Hlevel->Tiles.size(); n++){
 				current_tile = current_Hlevel->Tiles.at(n);
@@ -191,12 +191,12 @@ int main(int argc, char** argv )
 					{
 						// connectivity_str.append("[");
 						connectivity_str.append(std::to_string(it.row()));
-						// connectivity_str.append(",");
+						connectivity_str.append(",");
 						connectivity_str.append(std::to_string(it.col()));
-						// connectivity_str.append("],");
+						connectivity_str.append(";");
 					}
 				}
-				// connectivity_str.pop_back();
+				connectivity_str.pop_back();
 
 				j[current_tile_name]["channel_data"] 		= channel_data_str;
 				j[current_tile_name]["cell_vertices"] 		= cell_vertices_str;
@@ -206,8 +206,49 @@ int main(int argc, char** argv )
 				j[current_tile_name]["cell_edge"] 			= cell_edge_str;
 				j[current_tile_name]["connectivity"] 		= connectivity_str;
 
+				// // Private Tile variables
+				// std::string FACE_REF_str;
+				// for(int i=0;i<current_tile->FACE_REF.rows(); i++){
+				// 	FACE_REF_str.append("[");
+				// 	for(int j=0;j<current_tile->FACE_REF.cols(); j++){
+				// 		FACE_REF_str.append(std::to_string(current_tile->FACE_REF(i,j)));
+				// 		FACE_REF_str.append(",");
+				// 	}
+				// 	FACE_REF_str.pop_back();
+				// 	FACE_REF_str.append("],");
+				// }
+				// FACE_REF_str.pop_back();
+
+				// std::string VERTICES_PERMUTATION_str;
+				// for(int i=0;i<current_tile->VERTICES_PERMUTATION.rows(); i++){
+				// 	VERTICES_PERMUTATION_str.append("[");
+				// 	for(int j=0;j<current_tile->VERTICES_PERMUTATION.cols(); j++){
+				// 		VERTICES_PERMUTATION_str.append(std::to_string(current_tile->VERTICES_PERMUTATION(i,j)));
+				// 		VERTICES_PERMUTATION_str.append(",");
+				// 	}
+				// 	VERTICES_PERMUTATION_str.pop_back();
+				// 	VERTICES_PERMUTATION_str.append("],");
+				// }
+				// VERTICES_PERMUTATION_str.pop_back();
+
+				// std::string INVERSE_XFORM_str;
+				// for(int i=0;i<current_tile->INVERSE_XFORM.rows(); i++){
+				// 	INVERSE_XFORM_str.append("[");
+				// 	for(int j=0;j<current_tile->INVERSE_XFORM.cols(); j++){
+				// 		INVERSE_XFORM_str.append(std::to_string(current_tile->INVERSE_XFORM(i,j)));
+				// 		INVERSE_XFORM_str.append(",");
+				// 	}
+				// 	INVERSE_XFORM_str.pop_back();
+				// 	INVERSE_XFORM_str.append("],");
+				// }
+				// INVERSE_XFORM_str.pop_back();
+
+				// j[current_tile_name]["FACE_REF"]				= FACE_REF_str;
+				// j[current_tile_name]["VERTICES_PERMUTATION"] 	= VERTICES_PERMUTATION_str;
+				// j[current_tile_name]["INVERSE_XFORM"] 			= INVERSE_XFORM_str;
+
 				//tile_block
-					std::shared_ptr<TileBlock> current_tile_block = current_tile->tile_block;
+					std::shared_ptr<librav::TileBlock> current_tile_block = current_tile->tile_block;
 					
 					std::string alfa_str;
 					for(int i=0;i<current_tile_block->alfa.rows(); i++){
@@ -440,7 +481,131 @@ int main(int argc, char** argv )
 			file_ << std::setw(4) << s << std::endl;
 
 		file_.close();
-	}
-	return 0;
+        }
+    }
+    void get_from_json(const nlohmann::json& j, librav::TileTraversalData& ttd, int desired_H){	
+        using nlohmann::json;
+        /********** N_REGION **********/
+        j.at("N_REGION_W").get_to(ttd.N_REGION_W);
+        j.at("N_REGION_PSI").get_to(ttd.N_REGION_PSI);
+        j.at("N_REGION_SPD").get_to(ttd.N_REGION_SPD);
+        j.at("N_REGION_TOTAL").get_to(ttd.N_REGION_TOTAL);
+        /********** region_bd **********/
+        j.at("REGION_BD").at("region_psi_lower").get_to(ttd.region_bd.region_psi_lower);
+        j.at("REGION_BD").at("region_psi_upper").get_to(ttd.region_bd.region_psi_upper);
+        j.at("REGION_BD").at("region_w_lower").get_to(ttd.region_bd.region_w_lower);	
+        j.at("REGION_BD").at("region_w_upper").get_to(ttd.region_bd.region_w_upper);	
+        j.at("REGION_BD").at("region_vel_lower").get_to(ttd.region_bd.region_vel_lower);	
+        j.at("REGION_BD").at("region_vel_upper").get_to(ttd.region_bd.region_vel_upper);
+        
+        /********** Hlevels **********/
+        unsigned int H;
+        unsigned int n_tiles;
+        Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> unique_tiles;
+        j.at("Hlevels").at("H").get_to(H);
+        j.at("Hlevels").at("n_tiles").get_to(n_tiles);
+        std::string unique_tiles_str;
+        j.at("Hlevels").at("unique_tiles").get_to(unique_tiles_str);
+        std::shared_ptr<librav::Hlevel> current_Hlevel = std::make_shared<librav::Hlevel>(H,n_tiles,unique_tiles_str);
+        /********** Tiles **********/
+        std::string cell_edge_str;
+        std::string cell_vertices_str;
+        std::string cell_xform_str;
+        std::string channel_data_str;
+        std::string connectivity_str;
+        std::string traversal_type_str;
+        std::string traversal_faces_str;
+        std::string alfa_str;
+        std::string bta_str;
+        std::string w_lower_str;
+        std::string w_upper_str;
+        std::string x_str;
+        std::string w_str;
+        std::string w_sol_str;
+        std::string y_exit_str;
+        std::string z_exit_str;
+        std::string bta_smp_str;
+        std::string alfa_sol_str;
+        std::string alfa_smp_str;
+        std::string w_smp_str;
+        std::string x_smp_str;
+        std::string FACE_REF_str;
+        std::string VERTICES_PERMUTATION_str;
+        std::string INVERSE_XFORM_str;
+        for(int n = 0; n < n_tiles; n++){
+            std::stringstream str;
+            str << "Tile_" << n;
+            std::string title = str.str();
+            const char *current_tile_name = title.c_str();
+            std::cout << str.str() << std::endl;
+            // Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> cell_edge;
+            // Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> cell_vertices;
+            // Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> cell_xform;
+            // Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> channel_data;
+            j.at(current_tile_name).at("traversal_type").get_to(traversal_type_str);
+            j.at(current_tile_name).at("traversal_faces").get_to(traversal_faces_str);			
+            j.at(current_tile_name).at("cell_edge").get_to(cell_edge_str);
+            j.at(current_tile_name).at("cell_vertices").get_to(cell_vertices_str);
+            j.at(current_tile_name).at("cell_xform").get_to(cell_xform_str);
+            j.at(current_tile_name).at("channel_data").get_to(channel_data_str);
+            j.at(current_tile_name).at("connectivity").get_to(connectivity_str);
+            std::shared_ptr<librav::Tile> temp_tile = std::make_shared<librav::Tile>(traversal_type_str,
+                                                                                    traversal_faces_str,
+                                                                                    cell_xform_str,
+                                                                                    channel_data_str,
+                                                                                    cell_edge_str,
+                                                                                    cell_vertices_str,
+                                                                                    connectivity_str);
+                                                                                    //  FACE_REF_str,
+                                                                                    //  VERTICES_PERMUTATION_str,
+                                                                                    //  INVERSE_XFORM_str);
+            
+            /********** Tile Block **********/
+            j.at(current_tile_name).at("tile_block").at("alfa").get_to(alfa_str);
+            j.at(current_tile_name).at("tile_block").at("bta").get_to(bta_str);			
+            j.at(current_tile_name).at("tile_block").at("w_lower").get_to(w_lower_str);
+            j.at(current_tile_name).at("tile_block").at("w_upper").get_to(w_upper_str);
+            j.at(current_tile_name).at("tile_block").at("x").get_to(x_str);
+            j.at(current_tile_name).at("tile_block").at("w").get_to(w_str);
+            j.at(current_tile_name).at("tile_block").at("w_sol").get_to(w_sol_str);
+            j.at(current_tile_name).at("tile_block").at("y_exit").get_to(y_exit_str);
+            j.at(current_tile_name).at("tile_block").at("z_exit").get_to(z_exit_str);			
+            j.at(current_tile_name).at("tile_block").at("bta_smp").get_to(bta_smp_str);
+            j.at(current_tile_name).at("tile_block").at("alfa_sol").get_to(alfa_sol_str);
+            j.at(current_tile_name).at("tile_block").at("alfa_smp").get_to(alfa_smp_str);
+            j.at(current_tile_name).at("tile_block").at("w_smp").get_to(w_smp_str);
+            j.at(current_tile_name).at("tile_block").at("x_smp").get_to(x_smp_str);	
+            std::shared_ptr<librav::TileBlock> temp_tile_block = std::make_shared<librav::TileBlock>
+            (ttd.region_bd, temp_tile, desired_H,
+            alfa_str,
+            bta_str,
+            w_lower_str,
+            w_upper_str,
+            x_str,
+            w_str,
+            w_sol_str,
+            
+            y_exit_str,
+            z_exit_str,
+            bta_smp_str,
+            alfa_sol_str,
+            alfa_smp_str,
+            w_smp_str,
+            x_smp_str);
+            
+            temp_tile->addTileBlock(ttd.region_bd,temp_tile_block,desired_H);
+            //std::cout << n << std::endl;
+            // std::cout << std::endl << temp_tile->traversal_type << std::endl << std::endl;
+            // std::cout << current_Hlevel->unique_tiles << std::endl << std::endl;
+            // std::cout << temp_tile->cell_vertices << std::endl << std::endl;
+            // getchar();
+            current_Hlevel->Tiles.insert({n,temp_tile});
+            // current_Hlevel->add_tile(temp_tile);
+        }
+        ttd.Hlevels.insert({desired_H,current_Hlevel});
+        // getchar();
+        }
 }
 
+
+#endif /* JSON_ACCESS_HPP */

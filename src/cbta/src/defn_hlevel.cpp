@@ -23,9 +23,7 @@ Hlevel::Hlevel(unsigned int Hin){
 Hlevel::Hlevel(unsigned int Hin, unsigned int n_tiles_in, std::string unique_tiles_str){
 	H = Hin;
 	n_tiles = n_tiles_in;
-	unique_tiles = MatrixXi::Zero(H,1); //might need to do this
 
-	/******* Extract the arrays from the matrix *******/
 	char temp_char[unique_tiles_str.size() +1];
 	strcpy(temp_char, unique_tiles_str.c_str());
 	char *token;
@@ -33,13 +31,24 @@ Hlevel::Hlevel(unsigned int Hin, unsigned int n_tiles_in, std::string unique_til
 	std::vector<char *> burner_array;
 	token = strtok (temp_char,"[");
 
+	int counter = 0;
 	while (token != NULL)
 	{	
 		burner_array.push_back(token);
 		token = strtok (NULL, "[");
+		counter++;
 	}
 
-	for (size_t i = 0; i < Hin; i++)
+	std::stringstream ss;
+	ss << burner_array[0];
+	std::string test_str;
+	ss >> test_str;
+	size_t n = std::count(test_str.begin(), test_str.end(), ',');
+	// std::cout << test_str << std::endl << std::endl;
+	// std::cout << n << std::endl;
+	unique_tiles = MatrixXi::Zero(counter,n);
+
+	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<int> ind_num_array;
 		char *token;
@@ -47,20 +56,22 @@ Hlevel::Hlevel(unsigned int Hin, unsigned int n_tiles_in, std::string unique_til
 		int j = 0;
 		while (token != NULL)
 		{	
-			token = strtok (NULL, ",]");
 			std::stringstream ss;
 			ss << token;
 			int temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+
+			token = strtok (NULL, ",]");
 			j++;
 		}
 
-		unique_tiles = MatrixXi::Zero(H,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			unique_tiles(i,k) = ind_num_array[k];
+			// std::cout << unique_tiles(i,k) << std::endl;
 		}
+		// getchar();
 	}
 }
 

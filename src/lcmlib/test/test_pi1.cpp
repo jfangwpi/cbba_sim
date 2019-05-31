@@ -32,10 +32,10 @@ int main(int argc, char** argv )
     /************************************************************************************************************/
 	/*********************************          Initialize: Map         *****************************************/
 	/************************************************************************************************************/
-	/*** 1. Create a empty square grid ***/
+/*** 1. Create a empty square grid ***/
 	std::shared_ptr<SquareGrid> grid = GraphFromGrid::CreateSquareGrid();
 
-    /*** 2. Define the target regions ***/
+/*** 2. Define the target regions ***/
 	// Define LTL specification
 	LTLFormula Global_LTL;
 	for (int i = 0; i < Global_LTL.task_info.size();i++)
@@ -45,7 +45,7 @@ int main(int argc, char** argv )
     CBBATasks tasks(Global_LTL);
     tasks.GetAllTasks();
 	
-	/*** 3. Initialize agents ***/
+/*** 3. Initialize agents ***/
     int agent_id = 0;
     int agent_init_pos = 20;
     std::vector<int> comm = {1, 1};
@@ -53,7 +53,7 @@ int main(int argc, char** argv )
     int num_tasks_de = 0;
     cbba_Agent agent = cbba_Agent(agent_id, agent_init_pos, comm, num_tasks_inde, num_tasks_de);
     
-    /*** 4. Construct a graph from the square grid ***/
+/*** 4. Construct a graph from the square grid ***/
 	std::shared_ptr<Graph_t<SquareCell *>> grid_graph = GraphFromGrid::BuildGraphFromSquareGrid(grid,false, false);
 
     std::cout << "================== Vehicle Information ==================" << std::endl;
@@ -61,9 +61,9 @@ int main(int argc, char** argv )
     std::cout << "Initial position: " << agent.start_node_ << std::endl;
     std::cout << "=========================================================" << std::endl;
     std::cout << std::endl;
-    /************************************************************************************************************/
-	/*************************************          Communicate         *****************************************/
-	/************************************************************************************************************/
+/************************************************************************************************************/
+/*************************************          Communicate         *****************************************/
+/************************************************************************************************************/
     int count = 0;
     int communicate_dia = 3;
     std::cout << "=========================================================" << std::endl;
@@ -71,9 +71,9 @@ int main(int argc, char** argv )
     std::cout << "=========================================================" << std::endl;
     while (count < communicate_dia){
         std::cout << "++++++++++++++ Iteration " << count << " ++++++++++++++" << std::endl;
-        //----------------------------- Reward Update -----------------------------//
-        //-------------------------------------------------------------------------//
-        //-------------------------------------------------------------------------//
+    //----------------------------- Reward Update -----------------------------//
+    //-------------------------------------------------------------------------//
+    //-------------------------------------------------------------------------//
         /*** 7. Bundle Operations ***/
 		/*** 7.1 Remove the out-bid task from the bundle ***/
 		CBBA::bundle_remove(agent);

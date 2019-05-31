@@ -41,12 +41,12 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	H = Hin;
 	
 	/********** alfa_str **********/
-	char temp_char[alfa_str.size() +1];
-	strcpy(temp_char, alfa_str.c_str());
+	char temp_char_double[alfa_str.size() +1];
+	strcpy(temp_char_double, alfa_str.c_str());
 	char *token;
 	
 	std::vector<char *> burner_array;
-	token = strtok (temp_char,"[");
+	token = strtok (temp_char_double,"[");
 
 	int counter = 0;
 	while (token != NULL)
@@ -56,24 +56,31 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 		counter++;
 	}
 
+	std::stringstream ss;
+	ss << burner_array[0];
+	std::string test_str;
+	ss >> test_str;
+	size_t n = std::count(test_str.begin(), test_str.end(), ',');
+	alfa = MatrixXd::Zero(counter,n);
+
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		alfa = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			alfa(i,k) = ind_num_array[k];
@@ -81,11 +88,11 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	}
 	
 	/********** bta_str **********/
-	temp_char[bta_str.size() +1];
-	strcpy(temp_char, bta_str.c_str());
+	temp_char_double[bta_str.size() +1];
+	strcpy(temp_char_double, bta_str.c_str());
 	burner_array.clear();
 	
-	token = strtok (temp_char,"[");
+	token = strtok (temp_char_double,"[");
 
 	counter = 0;
 	while (token != NULL)
@@ -95,24 +102,31 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 		counter++;
 	}
 
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	bta = MatrixXd::Zero(counter,n);
+	test_str.clear();
+
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		bta = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			bta(i,k) = ind_num_array[k];
@@ -120,11 +134,11 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	}
 
 	/********** w_lower_str **********/
-	temp_char[w_lower_str.size() +1];
-	strcpy(temp_char, w_lower_str.c_str());
+	temp_char_double[w_lower_str.size() +1];
+	strcpy(temp_char_double, w_lower_str.c_str());
 	burner_array.clear();
 	
-	token = strtok (temp_char,"[");
+	token = strtok (temp_char_double,"[");
 
 	counter = 0;
 	while (token != NULL)
@@ -133,25 +147,30 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 		token = strtok (NULL, "[");
 		counter++;
 	}
-
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	w_lower = MatrixXd::Zero(counter,n);
+	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		w_lower = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			w_lower(i,k) = ind_num_array[k];
@@ -159,11 +178,11 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	}
 
 	/********** w_upper_str **********/
-	temp_char[w_upper_str.size() +1];
-	strcpy(temp_char, w_upper_str.c_str());
+	temp_char_double[w_upper_str.size() +1];
+	strcpy(temp_char_double, w_upper_str.c_str());
 	burner_array.clear();
 
-	token = strtok (temp_char,"[");
+	token = strtok (temp_char_double,"[");
 
 	counter = 0;
 	while (token != NULL)
@@ -172,25 +191,30 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 		token = strtok (NULL, "[");
 		counter++;
 	}
-
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	w_upper = MatrixXd::Zero(counter,n);
+	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		w_upper = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			w_upper(i,k) = ind_num_array[k];
@@ -198,11 +222,11 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	}
 
 	/********** x_str **********/
-	temp_char[x_str.size() +1];
-	strcpy(temp_char, x_str.c_str());
+	temp_char_double[x_str.size() +1];
+	strcpy(temp_char_double, x_str.c_str());
 	burner_array.clear();
 	
-	token = strtok (temp_char,"[");
+	token = strtok (temp_char_double,"[");
 
 	counter = 0;
 	while (token != NULL)
@@ -211,25 +235,30 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 		token = strtok (NULL, "[");
 		counter++;
 	}
-
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	x = MatrixXd::Zero(counter,n);
+	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		x = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			x(i,k) = ind_num_array[k];
@@ -237,11 +266,11 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	}
 
 	/********** w_str **********/
-	temp_char[w_str.size() +1];
-	strcpy(temp_char, w_str.c_str());
+	temp_char_double[w_str.size() +1];
+	strcpy(temp_char_double, w_str.c_str());
 	burner_array.clear();
 	
-	token = strtok (temp_char,"[");
+	token = strtok (temp_char_double,"[");
 
 	counter = 0;
 	while (token != NULL)
@@ -250,25 +279,30 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 		token = strtok (NULL, "[");
 		counter++;
 	}
-
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	w = MatrixXd::Zero(counter,n);
+	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		w = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			w(i,k) = ind_num_array[k];
@@ -276,11 +310,11 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	}
 
 	/********** w_sol_str **********/
-	temp_char[w_sol_str.size() +1];
-	strcpy(temp_char, w_sol_str.c_str());
+	temp_char_double[w_sol_str.size() +1];
+	strcpy(temp_char_double, w_sol_str.c_str());
 	burner_array.clear();
 	
-	token = strtok (temp_char,"[");
+	token = strtok (temp_char_double,"[");
 
 	counter = 0;
 	while (token != NULL)
@@ -289,25 +323,30 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 		token = strtok (NULL, "[");
 		counter++;
 	}
-
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	w_sol = MatrixXd::Zero(counter,n);
+	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		w_sol = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			w_sol(i,k) = ind_num_array[k];
@@ -315,11 +354,11 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	}
 
 	/********** y_exit_str **********/
-	temp_char[y_exit_str.size() +1];
-	strcpy(temp_char, y_exit_str.c_str());
+	temp_char_double[y_exit_str.size() +1];
+	strcpy(temp_char_double, y_exit_str.c_str());
 	burner_array.clear();
 	
-	token = strtok (temp_char,"[");
+	token = strtok (temp_char_double,"[");
 
 	counter = 0;
 	while (token != NULL)
@@ -328,25 +367,30 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 		token = strtok (NULL, "[");
 		counter++;
 	}
-
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	y_exit = MatrixXd::Zero(counter,n);
+	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		y_exit = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			y_exit(i,k) = ind_num_array[k];
@@ -354,11 +398,11 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	}
 	
 	/********** z_exit_str **********/
-	temp_char[z_exit_str.size() +1];
-	strcpy(temp_char, z_exit_str.c_str());
+	temp_char_double[z_exit_str.size() +1];
+	strcpy(temp_char_double, z_exit_str.c_str());
 	burner_array.clear();
 	
-	token = strtok (temp_char,"[");
+	token = strtok (temp_char_double,"[");
 
 	counter = 0;
 	while (token != NULL)
@@ -367,25 +411,30 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 		token = strtok (NULL, "[");
 		counter++;
 	}
-
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	z_exit = MatrixXd::Zero(counter,n);
+	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		z_exit = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			z_exit(i,k) = ind_num_array[k];
@@ -393,11 +442,11 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	}
 
 	/********** bta_smp_str **********/
-	temp_char[bta_smp_str.size() +1];
-	strcpy(temp_char, bta_smp_str.c_str());
+	temp_char_double[bta_smp_str.size() +1];
+	strcpy(temp_char_double, bta_smp_str.c_str());
 	burner_array.clear();
 	
-	token = strtok (temp_char,"[");
+	token = strtok (temp_char_double,"[");
 
 	counter = 0;
 	while (token != NULL)
@@ -406,25 +455,30 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 		token = strtok (NULL, "[");
 		counter++;
 	}
-
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	bta_smp = MatrixXd::Zero(counter,n);
+	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		bta_smp = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			bta_smp(i,k) = ind_num_array[k];
@@ -432,11 +486,11 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	}
 
 	/********** alfa_sol_str **********/
-	temp_char[alfa_sol_str.size() +1];
-	strcpy(temp_char, alfa_sol_str.c_str());
+	temp_char_double[alfa_sol_str.size() +1];
+	strcpy(temp_char_double, alfa_sol_str.c_str());
 	burner_array.clear();
 
-	token = strtok (temp_char,"[");
+	token = strtok (temp_char_double,"[");
 
 	counter = 0;
 	while (token != NULL)
@@ -445,25 +499,30 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 		token = strtok (NULL, "[");
 		counter++;
 	}
-
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	alfa_sol = MatrixXd::Zero(counter,n);
+	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		alfa_sol = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			alfa_sol(i,k) = ind_num_array[k];
@@ -471,11 +530,11 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	}
 
 	/********** alfa_smp_str **********/
-	temp_char[alfa_smp_str.size() +1];
-	strcpy(temp_char, alfa_smp_str.c_str());
+	temp_char_double[alfa_smp_str.size() +1];
+	strcpy(temp_char_double, alfa_smp_str.c_str());
 	burner_array.clear();
 	
-	token = strtok (temp_char,"[");
+	token = strtok (temp_char_double,"[");
 
 	counter = 0;
 	while (token != NULL)
@@ -484,25 +543,30 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 		token = strtok (NULL, "[");
 		counter++;
 	}
-
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	alfa_smp = MatrixXd::Zero(counter,n);
+	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		alfa_smp = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			alfa_smp(i,k) = ind_num_array[k];
@@ -510,11 +574,11 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	}
 
 	/********** w_smp_str **********/
-	temp_char[w_smp_str.size() +1];
-	strcpy(temp_char, w_smp_str.c_str());
+	temp_char_double[w_smp_str.size() +1];
+	strcpy(temp_char_double, w_smp_str.c_str());
 	burner_array.clear();
 	
-	token = strtok (temp_char,"[");
+	token = strtok (temp_char_double,"[");
 
 	counter = 0;
 	while (token != NULL)
@@ -523,25 +587,30 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 		token = strtok (NULL, "[");
 		counter++;
 	}
-
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	w_smp = MatrixXd::Zero(counter,n);
+	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		w_smp = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			w_smp(i,k) = ind_num_array[k];
@@ -549,11 +618,11 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	}
 
 	/********** x_smp_str **********/
-	temp_char[x_smp_str.size() +1];
-	strcpy(temp_char, x_smp_str.c_str());
+	temp_char_double[x_smp_str.size() +1];
+	strcpy(temp_char_double, x_smp_str.c_str());
 	burner_array.clear();
 	
-	token = strtok (temp_char,"[");
+	token = strtok (temp_char_double,"[");
 
 	counter = 0;
 	while (token != NULL)
@@ -562,30 +631,36 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 		token = strtok (NULL, "[");
 		counter++;
 	}
-
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	x_smp = MatrixXd::Zero(counter,n);
+	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		x_smp = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			x_smp(i,k) = ind_num_array[k];
 		}
 	}
+	ss.clear();
 
 	
 }

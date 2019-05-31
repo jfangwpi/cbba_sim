@@ -48,7 +48,7 @@ int main(int argc, char** argv )
 	std::shared_ptr<Graph_t<SquareCell*>> graph = GraphFromGrid::BuildGraphFromSquareGrid(grid, false, true);
 
     /*** 4. Construct a lifted graph ***/
-	int historyH = 4;
+	int historyH = 3;
 	//std::shared_ptr<Graph_t<LiftedSquareCell>> lifted_graph = GraphLifter::CreateLiftedGraph(HistoryH, graph);
     std::cout << "Start lifted graph " << std::endl;
     std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph = GraphLifter::BuildLiftedGraph(historyH, graph);

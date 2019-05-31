@@ -24,128 +24,7 @@
 #include "cbta/graph_lift.hpp"
 #include "cbta/hcost_interface.hpp"
 #include "nlohmann/json.hpp"
-
-using nlohmann::json;
-
-namespace ns {
-	void from_json(const json& j, librav::TileTraversalData& ttd, int desired_H){
-
-		/********** N_REGION **********/
-		j.at("N_REGION_W").get_to(ttd.N_REGION_W);
-		j.at("N_REGION_PSI").get_to(ttd.N_REGION_PSI);
-		j.at("N_REGION_SPD").get_to(ttd.N_REGION_SPD);
-		j.at("N_REGION_TOTAL").get_to(ttd.N_REGION_TOTAL);
-
-		/********** region_bd **********/
-		j.at("REGION_BD").at("region_psi_lower").get_to(ttd.region_bd.region_psi_lower);
-		j.at("REGION_BD").at("region_psi_upper").get_to(ttd.region_bd.region_psi_upper);
-		j.at("REGION_BD").at("region_w_lower").get_to(ttd.region_bd.region_w_lower);	
-		j.at("REGION_BD").at("region_w_upper").get_to(ttd.region_bd.region_w_upper);	
-		j.at("REGION_BD").at("region_vel_lower").get_to(ttd.region_bd.region_vel_lower);	
-		j.at("REGION_BD").at("region_vel_upper").get_to(ttd.region_bd.region_vel_upper);
-		
-		/********** Hlevels **********/
-		unsigned int H;
-		unsigned int n_tiles;
-		Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> unique_tiles;
-		j.at("Hlevels").at("H").get_to(H);
-		j.at("Hlevels").at("n_tiles").get_to(n_tiles);
-		std::string unique_tiles_str;
-		j.at("Hlevels").at("unique_tiles").get_to(unique_tiles_str);
-		std::shared_ptr<librav::Hlevel> current_Hlevel = std::make_shared<librav::Hlevel>(H,n_tiles,unique_tiles_str);
-		
-
-		/********** Tiles **********/
-		std::string cell_edge_str;
-		std::string cell_vertices_str;
-		std::string cell_xform_str;
-		std::string channel_data_str;
-		std::string connectivity_str;
-		std::string traversal_type_str;
-		std::string traversal_faces_str;
-
-		std::string alfa_str;
-		std::string bta_str;
-		std::string w_lower_str;
-		std::string w_upper_str;
-		std::string x_str;
-		std::string w_str;
-		std::string w_sol_str;
-
-		std::string y_exit_str;
-		std::string z_exit_str;
-		std::string bta_smp_str;
-		std::string alfa_sol_str;
-		std::string alfa_smp_str;
-		std::string w_smp_str;
-		std::string x_smp_str;
-
-		for(int n = 0; n < n_tiles; n++){
-
-			std::stringstream str;
-			str << "Tile_" << n;
-			std::string title = str.str();
-			const char *current_tile_name = title.c_str();
-			std::cout << str.str() << std::endl;
-			// Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> cell_edge;
-			// Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> cell_vertices;
-			// Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> cell_xform;
-			// Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> channel_data;
-			j.at(current_tile_name).at("traversal_type").get_to(traversal_type_str);
-			j.at(current_tile_name).at("traversal_faces").get_to(traversal_faces_str);			
-			j.at(current_tile_name).at("cell_edge").get_to(cell_edge_str);
-			j.at(current_tile_name).at("cell_vertices").get_to(cell_vertices_str);
-			j.at(current_tile_name).at("cell_xform").get_to(cell_xform_str);
-			j.at(current_tile_name).at("channel_data").get_to(channel_data_str);
-			j.at(current_tile_name).at("connectivity").get_to(connectivity_str);
-
-			std::cout << traversal_type_str << std::endl;
-
-			std::shared_ptr<librav::Tile> temp_tile = std::make_shared<librav::Tile>(desired_H,traversal_type_str,traversal_faces_str,cell_xform_str,channel_data_str,cell_edge_str,cell_vertices_str,connectivity_str);
-			
-			/********** Tile Block **********/
-			j.at(current_tile_name).at("tile_block").at("alfa").get_to(alfa_str);
-			j.at(current_tile_name).at("tile_block").at("bta").get_to(bta_str);			
-			j.at(current_tile_name).at("tile_block").at("w_lower").get_to(w_lower_str);
-			j.at(current_tile_name).at("tile_block").at("w_upper").get_to(w_upper_str);
-			j.at(current_tile_name).at("tile_block").at("x").get_to(x_str);
-			j.at(current_tile_name).at("tile_block").at("w").get_to(w_str);
-			j.at(current_tile_name).at("tile_block").at("w_sol").get_to(w_sol_str);
-
-			j.at(current_tile_name).at("tile_block").at("y_exit").get_to(y_exit_str);
-			j.at(current_tile_name).at("tile_block").at("z_exit").get_to(z_exit_str);			
-			j.at(current_tile_name).at("tile_block").at("bta_smp").get_to(bta_smp_str);
-			j.at(current_tile_name).at("tile_block").at("alfa_sol").get_to(alfa_sol_str);
-			j.at(current_tile_name).at("tile_block").at("alfa_smp").get_to(alfa_smp_str);
-			j.at(current_tile_name).at("tile_block").at("w_smp").get_to(w_smp_str);
-			j.at(current_tile_name).at("tile_block").at("x_smp").get_to(x_smp_str);	
-
-			std::shared_ptr<librav::TileBlock> temp_tile_block = std::make_shared<librav::TileBlock>
-			(ttd.region_bd, temp_tile, desired_H,
-			alfa_str,
-			bta_str,
-			w_lower_str,
-			w_upper_str,
-			x_str,
-			w_str,
-			w_sol_str,
-			
-			y_exit_str,
-			z_exit_str,
-			bta_smp_str,
-			alfa_sol_str,
-			alfa_smp_str,
-			w_smp_str,
-			x_smp_str);
-			
-			temp_tile->addTileBlock(ttd.region_bd,temp_tile_block,desired_H);
-			current_Hlevel->Tiles.insert({n, temp_tile});
-		}
-		ttd.Hlevels.insert({desired_H,current_Hlevel});
-
-	}
-
-} // namespace ns
+#include "cbta/json_access.hpp"
 
 
 using namespace cv;
@@ -153,8 +32,8 @@ using namespace librav;
 
 int main(int argc, char *argv[] )
 {		
-	int desired_Hlevel = 3;
-	/*** 0. Preprocessing CBTA data ***/
+	int historyH = 3;
+/*** 0. Preprocessing CBTA data ***/
 	// TileTraversalData tile_traversal_data = HCost::hcost_preprocessing();
 	TileTraversalData tile_traversal_data;
 
@@ -162,11 +41,11 @@ int main(int argc, char *argv[] )
 	nlohmann::json j;
 	i >> j;
 
-	ns::from_json(j, tile_traversal_data, desired_Hlevel);
-	// std::cout << tile_traversal_data.Hlevels.at(desired_Hlevel)->n_tiles << std::endl;
+	jsonReadWrite::get_from_json(j, tile_traversal_data, historyH);
+	// std::cout << tile_traversal_data.Hlevels.at(historyH)->n_tiles << std::endl;
 
 
-	/*** 1. Create a empty square grid ***/
+/*** 1. Create a empty square grid ***/
 	int row_num = 10;
 	int col_num = 10;
 
@@ -180,19 +59,18 @@ int main(int argc, char *argv[] )
     grid->SetInterestedRegionLabel(11,2);
 	grid->SetInterestedRegionLabel(65,3);
 
-	/*** 2. Construct a graph from the square grid ***/
+/*** 2. Construct a graph from the square grid ***/
     
 	std::shared_ptr<Graph_t<SquareCell*>> graph = GraphFromGrid::BuildGraphFromSquareGrid(grid, false, true);
 
-    /*** 4. Construct a lifted graph ***/
-	int historyH = 4;
+/*** 4. Construct a lifted graph ***/
 	//std::shared_ptr<Graph_t<LiftedSquareCell>> lifted_graph = GraphLifter::CreateLiftedGraph(HistoryH, graph);
     std::cout << "Start lifted graph " << std::endl;
     std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph = GraphLifter::BuildLiftedGraph(historyH, graph);
     std::cout << "End lifted graph" << std::endl;
 
 
-	/*** 3. Construct a graph from the buchi automata ***/
+/*** 3. Construct a graph from the buchi automata ***/
 	std::string ltl_formula = "[] p0 && [] !p1 && <> (p2 && <> p3)";
 	std::vector<std::string> buchi_regions;
 	buchi_regions.push_back("p0");
@@ -206,7 +84,7 @@ int main(int argc, char *argv[] )
 
 
 
-	/*** 5. Construct a product graph ***/
+/*** 5. Construct a product graph ***/
 	clock_t     total_time;
 	clock_t		product_time;
 	total_time = clock();
@@ -214,7 +92,7 @@ int main(int argc, char *argv[] )
 	std::shared_ptr<Graph_t<ProductState *>> product_graph_new = std::make_shared<Graph_t<ProductState *>>();
 	product_time = clock() - product_time;
 
-	/*** 6. Search in the product graph ***/
+/*** 6. Search in the product graph ***/
 	// Set start node in original graph
 	Vertex_t<SquareCell *> * start_node_origin = graph->GetVertexFromID(80);
 
@@ -261,7 +139,7 @@ int main(int argc, char *argv[] )
     std::cout << std::endl;
 
 
-	// /*** 7. Visualize the map and graph ***/
+// /*** 7. Visualize the map and graph ***/
     /*** Visualize the map and graph ***/
 	Mat vis_img;
 	/*** Image Layouts: (map) -> square grid -> graph -> path ***/

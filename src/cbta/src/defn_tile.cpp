@@ -18,33 +18,69 @@ using namespace librav;
 
 /* ------- Tile constructors and destructors -------- */
 Tile::Tile(int H, Matrix<int,Dynamic,4> tile_vertices){
-	FACE_REF <<   1, -1, 1, 0, 0,
-					 -2,  2, 1, 2, 0,
-					  2, -2, 1, 1, 0,
-					 -1,  1, 1, 4, 0,
-					  1, -2, 2, 0, 0,
-					 -2, -1, 2, 2, 0,
-					  2,  1, 2, 1, 0,
-					 -1, -2, 2, 4, 0,
-					  1,  2, 2, 3, 0,
-					  2, -1, 2, 4, 2,
-					 -2,  1, 2, 4, 1,
-					 -1,  2, 2, 4, 3;
+	FACE_REF <<   1,  -1,   1,   0,   0,
+				 -2,   2,   1,   2,   0,
+				  2,  -2,   1,   1,   0,
+				 -1,   1,   1,   4,   0,
+				  1,  -2,   2,   0,   0,
+				 -2,  -1,   2,   2,   0,
+				  2,   1,   2,   1,   0,
+				 -1,  -2,   2,   4,   0,
+				  1,   2,   2,   3,   0,
+				  2,  -1,   2,   4,   2,
+				 -2,   1,   2,   4,   1,
+				 -1,   2,   2,   4,   3;
 	VERTICES_PERMUTATION << 1, 2, 3, 4,
-								4, 1, 2, 3,
-								2, 3, 4, 1,
-								4, 3, 2, 1,
-								2, 1, 4, 3;
+							4, 1, 2, 3,
+							2, 3, 4, 1,
+							4, 3, 2, 1,
+							2, 1, 4, 3;
 	INVERSE_XFORM << 0,2,1,3,4;
 	set_tile_data(H,tile_vertices);
 	//std::shared_ptr<TileBlock> tile_block;
 }
 
-Tile::Tile(int H, std::string traversal_type_str, std::string traversal_faces_str, std::string cell_xform_str, std::string channel_data_str, std::string cell_edge_str, std::string cell_vertices_str, std::string connectivity_str){
+Tile::Tile(std::string traversal_type_str,
+		   std::string traversal_faces_str,
+		   std::string cell_xform_str,
+		   std::string channel_data_str,
+		   std::string cell_edge_str,
+		   std::string cell_vertices_str,
+		   std::string connectivity_str){
+		//    std::string FACE_REF_str,
+		//    std::string VERTICES_PERMUTATION_str,
+		//    std::string INVERSE_XFORM_str){
 
-	setMatricesFromJSON(traversal_type_str, traversal_faces_str, cell_xform_str, channel_data_str, cell_edge_str, cell_vertices_str);
+	setMatricesFromJSON(traversal_type_str,
+						traversal_faces_str,
+						cell_xform_str,
+						channel_data_str,
+						cell_edge_str,
+						cell_vertices_str);
+						// FACE_REF_str,
+						// VERTICES_PERMUTATION_str,
+						// INVERSE_XFORM_str);
+						
 	setConnectivityFromJSON(connectivity_str);
 
+	FACE_REF <<   1,  -1,   1,   0,   0,
+				 -2,   2,   1,   2,   0,
+				  2,  -2,   1,   1,   0,
+				 -1,   1,   1,   4,   0,
+				  1,  -2,   2,   0,   0,
+				 -2,  -1,   2,   2,   0,
+				  2,   1,   2,   1,   0,
+				 -1,  -2,   2,   4,   0,
+				  1,   2,   2,   3,   0,
+				  2,  -1,   2,   4,   2,
+				 -2,   1,   2,   4,   1,
+				 -1,   2,   2,   4,   3;
+	VERTICES_PERMUTATION << 1, 2, 3, 4,
+							4, 1, 2, 3,
+							2, 3, 4, 1,
+							4, 3, 2, 1,
+							2, 1, 4, 3;
+	INVERSE_XFORM << 0,2,1,3,4;
 }
 
 
@@ -189,7 +225,15 @@ void Tile::addTileBlock(REGION_BD &REGION_BD, std::shared_ptr<TileBlock> this_ti
 	tile_block = this_tile_block;
 }
 
-void Tile::setMatricesFromJSON(std::string traversal_type_str, std::string traversal_faces_str, std::string cell_xform_str, std::string channel_data_str, std::string cell_edge_str, std::string cell_vertices_str){
+void Tile::setMatricesFromJSON(std::string traversal_type_str,
+							   std::string traversal_faces_str,
+							   std::string cell_xform_str,
+							   std::string channel_data_str,
+							   std::string cell_edge_str,
+							   std::string cell_vertices_str){
+							//    std::string FACE_REF_str,
+							//    std::string VERTICES_PERMUTATION_str,
+							//    std::string INVERSE_XFORM_str){
 
 	/******* cell_xform_str *******/
 	char temp_char[cell_xform_str.size() +1];
@@ -206,6 +250,15 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str, std::string trave
 		token = strtok (NULL, "[");
 		counter++;
 	}
+	
+
+	std::stringstream ss;
+	ss << burner_array[0];
+	std::string test_str;
+	ss >> test_str;
+	size_t n = std::count(test_str.begin(), test_str.end(), ',');
+	cell_xform = MatrixXi::Zero(counter,n);
+	test_str.clear();
 
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -213,18 +266,18 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str, std::string trave
 		char *token;
 		token = strtok (burner_array[i],",]");
 		int j = 0;
+		std::stringstream ss;
 		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
+		{
+			ss.clear();	
 			ss << token;
 			int temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token = strtok (NULL, ",]");
 			j++;
 		}
 
-		cell_xform = MatrixXi::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			cell_xform(i,k) = ind_num_array[k];
@@ -246,24 +299,32 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str, std::string trave
 		counter++;
 	}
 
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	channel_data = MatrixXi::Zero(counter,n);
+	test_str.clear();
+
+
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<int> ind_num_array;
 		char *token;
 		token = strtok(burner_array[i],",]");
 		int j = 0;
+		std::stringstream ss;
 		while (token != NULL)
-		{	
-			token = strtok(NULL, ",]");
-			std::stringstream ss;
+		{
+			ss.clear();	
 			ss << token;
 			int temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token = strtok (NULL, ",]");
 			j++;
 		}
 
-		channel_data = MatrixXi::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			channel_data(i,k) = ind_num_array[k];
@@ -284,24 +345,33 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str, std::string trave
 		counter++;
 	}
 
+	ss.clear();
+	ss << burner_array[0];
+	
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	traversal_faces = MatrixXi::Zero(counter,n);
+	test_str.clear();
+
+
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<int> ind_num_array;
 		char *token;
 		token = strtok(burner_array[i],",]");
 		int j = 0;
+		std::stringstream ss;
 		while (token != NULL)
-		{	
-			token = strtok(NULL, ",]");
-			std::stringstream ss;
+		{
+			ss.clear();	
 			ss << token;
 			int temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token = strtok (NULL, ",]");
 			j++;
 		}
 
-		traversal_faces = MatrixXi::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			traversal_faces(i,k) = ind_num_array[k];
@@ -322,27 +392,36 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str, std::string trave
 		counter++;
 	}
 
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	traversal_type = MatrixXi::Zero(counter,n);
+	test_str.clear();
+
+
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<int> ind_num_array;
 		char *token;
 		token = strtok(burner_array[i],",]");
 		int j = 0;
+		std::stringstream ss;
 		while (token != NULL)
-		{	
-			token = strtok(NULL, ",]");
-			std::stringstream ss;
+		{
+			ss.clear();	
 			ss << token;
 			int temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token = strtok (NULL, ",]");
 			j++;
 		}
 
-		traversal_type = MatrixXi::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			traversal_type(i,k) = ind_num_array[k];
+			// std::cout << traversal_type(i,k) << std::endl;
 		}
 	}
 	
@@ -362,27 +441,37 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str, std::string trave
 		counter++;
 	}
 
+	ss.clear();
+	ss << burner_array[0];
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+
+	cell_edge = MatrixXd::Zero(counter,n);
+	test_str.clear();
+
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
 		char *token_double;
 		token_double = strtok (burner_array[i],",]");
 		int j = 0;
+		std::stringstream ss;
 		while (token_double != NULL)
-		{	
-			token_double = strtok (NULL, ",]");
-			std::stringstream ss;
+		{
+			ss.clear();	
 			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		cell_edge = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			cell_edge(i,k) = ind_num_array[k];
+			// std::cout << cell_edge(i,k) << std::endl;
+			
 		}
 	}
 	
@@ -401,60 +490,213 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str, std::string trave
 		counter++;
 	}
 
+	ss.clear();
+	ss << burner_array[0];
+	
+	ss >> test_str;
+	n = std::count(test_str.begin(), test_str.end(), ',');
+	cell_vertices = MatrixXd::Zero(counter,n);
+	test_str.clear();
+	ss.clear();
+
+
 	for (size_t i = 0; i < counter; i++)
 	{	
 		std::vector<double> ind_num_array;
-		char *token;
-		token = strtok (burner_array[i],",]");
+		char *token_double;
+		token_double = strtok (burner_array[i],",]");
 		int j = 0;
-		while (token != NULL)
-		{	
-			token = strtok (NULL, ",]");
-			std::stringstream ss;
-			ss << token;
+		std::stringstream ss;
+		while (token_double != NULL)
+		{
+			ss.clear();	
+			ss << token_double;
 			double temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
+			token_double = strtok (NULL, ",]");
 			j++;
 		}
 
-		cell_vertices = MatrixXd::Zero(counter,j);
 		for (size_t k = 0; k < j; k++)
 		{
 			cell_vertices(i,k) = ind_num_array[k];
+			// std::cout << cell_vertices(i,k) << std::endl;
 		}
 	}
+
+// ********** Originally Private Variables **********//
+
+	// /******* FACE_REF *******/
+	// temp_char[FACE_REF_str.size() +1];
+	// strcpy(temp_char, FACE_REF_str.c_str());
+	
+	// burner_array.clear();
+	// token = strtok (temp_char,"[");
+
+	// counter = 0;
+	// while (token != NULL)
+	// {	
+	// 	burner_array.push_back(token);
+	// 	token = strtok (NULL, "[");
+	// 	counter++;
+	// }
+
+	// for (size_t i = 0; i < counter; i++)
+	// {	
+	// 	std::vector<int> ind_num_array;
+	// 	char *token;
+	// 	token = strtok(burner_array[i],",]");
+	// 	int j = 0;
+	// 	while (token != NULL)
+	// 	{	
+	// 		token = strtok(NULL, ",]");
+ 	
+		// 		ss << token;
+	// 		int temp_val;
+	// 		ss >> temp_val;
+	// 		ind_num_array.push_back(temp_val);
+	// 		j++;
+	// 	}
+
+	// 	FACE_REF = MatrixXi
+	// 	for (size_t k = 0; k < j; k++)
+	// 	{
+	// 		FACE_REF(i,k) = ind_num_array[k];
+	// 	}
+	// }
+	
+	// /******* VERTICES_PERMUTATION *******/
+	// temp_char[VERTICES_PERMUTATION_str.size() +1];
+	// strcpy(temp_char, VERTICES_PERMUTATION_str.c_str());
+	
+	// burner_array.clear();
+	// token = strtok (temp_char,"[");
+
+	// counter = 0;
+	// while (token != NULL)
+	// {	
+	// 	burner_array.push_back(token);
+	// 	token = strtok (NULL, "[");
+	// 	counter++;
+	// }
+
+	// for (size_t i = 0; i < counter; i++)
+	// {	
+	// 	std::vector<int> ind_num_array;
+	// 	char *token;
+	// 	token = strtok(burner_array[i],",]");
+	// 	int j = 0;
+	// 	while (token != NULL)
+	// 	{	
+	// 		token = strtok(NULL, ",]");
+
+		// 		ss << token;
+	// 		int temp_val;
+	// 		ss >> temp_val;
+	// 		ind_num_array.push_back(temp_val);
+	// 		j++;
+	// 	}
+
+	// 	VERTICES_PERMUTATION = MatrixXi
+	// 	for (size_t k = 0; k < j; k++)
+	// 	{
+	// 		VERTICES_PERMUTATION(i,k) = ind_num_array[k];
+	// 	}
+	// }
+	
+	// /******* INVERSE_XFORM *******/
+	// temp_char[INVERSE_XFORM_str.size() +1];
+	// strcpy(temp_char, INVERSE_XFORM_str.c_str());
+	
+	// burner_array.clear();
+	// token = strtok (temp_char,"[");
+
+	// counter = 0;
+	// while (token != NULL)
+	// {	
+	// 	burner_array.push_back(token);
+	// 	token = strtok (NULL, "[");
+	// 	counter++;
+	// }
+
+	// for (size_t i = 0; i < counter; i++)
+	// {	
+	// 	std::vector<int> ind_num_array;
+	// 	char *token;
+	// 	token = strtok(burner_array[i],",]");
+	// 	int j = 0;
+	// 	while (token != NULL)
+	// 	{	
+	// 		token = strtok(NULL, ",]");
+ 	
+		// 		ss << token;
+	// 		int temp_val;
+	// 		ss >> temp_val;
+	// 		ind_num_array.push_back(temp_val);
+	// 		j++;
+	// 	}
+
+	// 	INVERSE_XFORM = MatrixXi
+	// 	for (size_t k = 0; k < j; k++)
+	// 	{
+	// 		INVERSE_XFORM(i,k) = ind_num_array[k];
+	// 	}
+	// }
 }
 
 void Tile::setConnectivityFromJSON(std::string connectivity_str){
+
+	// std::shared_ptr<Eigen::SparseMatrix<int,Eigen::RowMajor>> connectivity = std::make_shared<Eigen::SparseMatrix<int,Eigen::RowMajor>>(2500,2500);
+
 	char conn_char[connectivity_str.size() +1];
 	strcpy(conn_char, connectivity_str.c_str());
+	char *token;
+	
 
 
-	/* Recall: the first two values of the connectivity section
-	 * are the number of rows and colums of the sparse matrix */ 
-	// std::stringstream str_rows;
-	// std::stringstream str_cols;
-	// str_rows << conn_char[0];
-	// str_cols << conn_char[1];
-	// int n_rows, n_cols;
-	// str_rows >> n_cols;
-	// str_cols >> n_cols;
 
-	Eigen::SparseMatrix<int> connectivity(2500,2500);
-
-	for (size_t i = 0; i < strlen(conn_char) - 1; i = i+2)
+	std::vector<char *> burner_array;
+	token = strtok (conn_char,";");
+	int counter = 0;
+	while (token != NULL)
 	{	
-		std::stringstream str1;
-		std::stringstream str2;
-
-		str1 << conn_char[i];
-		str2 << conn_char[i+1];
-		int idx1, idx2;
-		str1 >> idx1;
-		str2 >> idx2;
-
-		connectivity.coeffRef(idx1, idx2) = 1;
+		burner_array.push_back(token);
+		token = strtok (NULL, ";");
+		counter++;
 	}
+
+	MatrixXi edge_list = MatrixXi::Zero(counter,3);
+
+	for (size_t i = 0; i < counter; i++)
+	{	
+		std::vector<int> ind_num_array;
+		char *token;
+		token = strtok (burner_array[i],",");
+		std::stringstream ss1;
+		ss1 << token;
+		int idx1;
+		ss1 >> idx1;
+
+		token = strtok (NULL, ",");
+		std::stringstream ss2;
+		ss2 << token;
+		int idx2;
+		ss2 >> idx2;
+		edge_list(i,0) = idx1;
+		edge_list(i,1) = idx2;
+		edge_list(i,2) = 1;
+	}
+
+	typedef Eigen::Triplet<int> T;
+	std::vector<T> tripletList;
+	tripletList.reserve(edge_list.rows());
+	for (int k = 0; k < edge_list.rows(); k++){
+		tripletList.push_back(T(edge_list(k,0),edge_list(k,1),edge_list(k,2))); // T(i,j,v_ij)
+	}
+	
+	this->connectivity = std::make_shared<Eigen::SparseMatrix<int,Eigen::RowMajor>>(2500,2500);
+	this->connectivity->setFromTriplets(tripletList.begin(), tripletList.end());
+	// std::cout << connectivity->nonZeros() << std::endl;
 
 }
