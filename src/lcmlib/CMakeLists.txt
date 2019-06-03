@@ -34,6 +34,12 @@ target_include_directories(lcmlib PUBLIC
 add_executable(test_pi1_cbta test/test_pi1_cbta.cpp)
 target_link_libraries(test_pi1_cbta lcmlib ltl map vis cbba ${LCM_LIBRARIES})
 
+add_executable(test_pi2_cbta test/test_pi2_cbta.cpp)
+target_link_libraries(test_pi2_cbta lcmlib ltl map vis cbba ${LCM_LIBRARIES})
+
+add_executable(test_pi3_cbta test/test_pi3_cbta.cpp)
+target_link_libraries(test_pi3_cbta lcmlib ltl map vis cbba ${LCM_LIBRARIES})
+
 #add_executable(test_pi3 test/test_pi3.cpp)
 #target_link_libraries(test_pi3 lcmlib ltl map vis cbba ${LCM_LIBRARIES})
 

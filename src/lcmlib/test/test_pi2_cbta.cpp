@@ -59,8 +59,8 @@ int main(int argc, char** argv )
     tasks.GetAllTasks();
 	
 /*** 3. Initialize agents ***/
-    int agent_id = 0;
-    int agent_init_pos = 20;
+    int agent_id = 1;
+    int agent_init_pos = 24;
     std::vector<int> comm = {1, 1};
     int num_tasks_inde = 2;
     int num_tasks_de = 0;

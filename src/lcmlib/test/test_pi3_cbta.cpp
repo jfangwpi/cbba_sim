@@ -59,10 +59,10 @@ int main(int argc, char** argv )
     tasks.GetAllTasks();
 	
 /*** 3. Initialize agents ***/
-    int agent_id = 0;
-    int agent_init_pos = 20;
-    std::vector<int> comm = {1, 1};
-    int num_tasks_inde = 2;
+    int agent_id = 2;
+    int agent_init_pos = 11;
+    std::vector<int> comm = {0, 1, 1};
+    int num_tasks_inde = 4;
     int num_tasks_de = 0;
     cbba_Agent agent = cbba_Agent(agent_id, agent_init_pos, comm, num_tasks_inde, num_tasks_de);
     
