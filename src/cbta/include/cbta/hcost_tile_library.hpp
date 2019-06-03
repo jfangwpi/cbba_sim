@@ -36,6 +36,7 @@ const int N_CBTA_W_SOL = 51;
 const int N_CBTA_W = 101;
 const double r_min = 3;
 
+#define EIGEN_MAX_STATIC_ALIGN_BYTES = 0
 
 
 struct REGION_BD{
@@ -92,19 +93,18 @@ public:
 
 	void addTileBlock(REGION_BD &region_bd, std::shared_ptr<TileBlock> this_tile, int H);
 
-	void setMatricesFromJSON(std::string traversal_type_str,
-							 std::string traversal_faces_str,
-							 std::string cell_xform_str,
-							 std::string channel_data_str,
-							 std::string cell_edge_str,
-							 std::string cell_vertices_str);
+	void setMatricesFromJSON(std::string ,
+							 std::string ,
+							 std::string ,
+							 std::string ,
+							 std::string ,
+							 std::string );
 							//  std::string FACE_REF_str,
 							//  std::string VERTICES_PERMUTATION_str,
 							//  std::string INVERSE_XFORM_str);
 
 	void setConnectivityFromJSON(std::string connectivity_str);
-public:
-EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 };
 
 // =============================== TileBlock ==============================
@@ -183,9 +183,9 @@ private:
 			Eigen::Matrix<double,2,1>& returnMatrix);
 
 	void interp_broken_seg(Eigen::RowVectorXd& x_data,
-			Eigen::Matrix<double,2,Eigen::Dynamic>& y_data,
-			Eigen::RowVectorXd& x_interp,
-			Eigen::Matrix<double,2,Eigen::Dynamic>& y_interp);
+						   Eigen::Matrix<double,2,Eigen::Dynamic>& y_data,
+						   Eigen::RowVectorXd& x_interp,
+						   Eigen::Matrix<double,2,Eigen::Dynamic>& y_interp);
 	template <typename Derived1, typename Derived2>
 	void remove_inf_values(Eigen::MatrixBase<Derived1>& v,
 			Eigen::MatrixBase<Derived2>& returnMatrix);
@@ -202,8 +202,7 @@ private:
 
 	double pi2pi(double x);
 
-public:
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 
 };
 
