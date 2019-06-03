@@ -19,6 +19,7 @@
 #include <functional>
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/SparseCore>
+#include <eigen3/Eigen/StdVector>
 //#include <eigen3/Eigen/Core>
 //#include <Eigen/Sparse>
 
@@ -104,7 +105,7 @@ public:
 							//  std::string INVERSE_XFORM_str);
 
 	void setConnectivityFromJSON(std::string connectivity_str);
-
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 // =============================== TileBlock ==============================
@@ -168,6 +169,7 @@ public:
 	//			Matrix<int,1,Dynamic>& returnMatrix);
 				Eigen::RowVectorXi& region_neighbors);
 	static int find_sample(Eigen::RowVectorXd& ySmp, double y);
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 private:
 	void cbta_s1(double w, double d,
@@ -228,7 +230,7 @@ public:
 	unsigned int n_tiles;
 	Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> unique_tiles;
 
-
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 struct TileTraversalData{
@@ -238,6 +240,7 @@ struct TileTraversalData{
 	int N_REGION_PSI;
 	int N_REGION_SPD;
 	int N_REGION_TOTAL;
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 } /* namespace srcl */
