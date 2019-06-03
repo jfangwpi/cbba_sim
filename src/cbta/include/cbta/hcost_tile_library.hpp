@@ -36,6 +36,8 @@ const int N_CBTA_W_SOL = 51;
 const int N_CBTA_W = 101;
 const double r_min = 3;
 
+
+
 struct REGION_BD{
 		std::vector<double> region_w_lower;    //REGION_BD(0,:)
 		std::vector<double> region_w_upper;    //REGION_BD(1,:)
@@ -75,7 +77,6 @@ private:
 	Eigen::Matrix<int,5,1> INVERSE_XFORM;
 
 public:
-
 	Eigen::Matrix<int,Eigen::Dynamic,4> channel_data;
 	Eigen::Matrix<double,4,Eigen::Dynamic> cell_vertices;
 	Eigen::Matrix<int,Eigen::Dynamic,1> traversal_type;
@@ -102,7 +103,8 @@ public:
 							//  std::string INVERSE_XFORM_str);
 
 	void setConnectivityFromJSON(std::string connectivity_str);
-
+public:
+EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 // =============================== TileBlock ==============================
@@ -200,6 +202,9 @@ private:
 
 	double pi2pi(double x);
 
+public:
+	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 };
 
 
@@ -235,7 +240,6 @@ struct TileTraversalData{
 	int N_REGION_SPD;
 	int N_REGION_TOTAL;
 };
-
 
 } /* namespace srcl */
 
