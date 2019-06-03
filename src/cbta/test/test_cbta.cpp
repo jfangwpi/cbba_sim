@@ -1,3 +1,6 @@
+/*** Simple example of CBTA 
+ * by Jie Fang
+ * ***/
 // standard libaray
 #include <stdio.h>
 #include <vector>
@@ -19,50 +22,53 @@
 #include "ltl/product_automaton.hpp"
 #include "cbta/graph_lift.hpp"
 #include "cbta/hcost_interface.hpp"
+#include "cbta/json_access.hpp"
+#include "nlohmann/json.hpp"
 
 using namespace cv;
 using namespace librav;
 
 int main(int argc, char** argv )
 {
+
+	int historyH = 3;
+
 	/*** 0. Preprocessing CBTA data ***/
-	TileTraversalData tile_traversal_data = HCost::hcost_preprocessing();
-
+	TileTraversalData tile_traversal_data;
+	std::ifstream i("tile_traversal_data_H3_R3.txt");
+	nlohmann::json j;
+	i >> j;
+	jsonReadWrite::get_from_json(j, tile_traversal_data, historyH);
 	
-	/*** 1. Create a empty square grid ***/
-	int row_num = 10;
-	int col_num = 10;
 
+	/*** 1. Create a empty square grid ***/
+	int row_num = 7;
+	int col_num = 7;
 	std::shared_ptr<SquareGrid> grid = GraphFromGrid::CreateSquareGrid(row_num,col_num,1);
 
 	// assign properties of square cells
-    for (int i = 70; i < 77; i++){
+    for (int i = 35; i < 40; i++){
         grid->SetObstacleRegionLabel(i,1);
     }
-
-    grid->SetInterestedRegionLabel(11,2);
-	grid->SetInterestedRegionLabel(65,3);
+    grid->SetInterestedRegionLabel(28,2);
+	// grid->SetInterestedRegionLabel(10,3);
 
 	/*** 2. Construct a graph from the square grid ***/
-    
 	std::shared_ptr<Graph_t<SquareCell*>> graph = GraphFromGrid::BuildGraphFromSquareGrid(grid, false, true);
 
     /*** 4. Construct a lifted graph ***/
-	int historyH = 3;
 	//std::shared_ptr<Graph_t<LiftedSquareCell>> lifted_graph = GraphLifter::CreateLiftedGraph(HistoryH, graph);
     std::cout << "Start lifted graph " << std::endl;
     std::shared_ptr<Graph_t<LiftedSquareCell *>> lifted_graph = GraphLifter::BuildLiftedGraph(historyH, graph);
-    std::cout << "End lifted graph" << std::endl;
-
-
+   
 	/*** 3. Construct a graph from the buchi automata ***/
-	std::string ltl_formula = "[] p0 && [] !p1 && <> (p2 && <> p3)";
+	/*** Visit region p2 ***/
+	std::string ltl_formula = "[] p0 && [] !p1 && <> p2";
 	std::vector<std::string> buchi_regions;
 	buchi_regions.push_back("p0");
 	buchi_regions.push_back("p1");
 	buchi_regions.push_back("p2");
 	buchi_regions.push_back("p3");
-    std::cout << "Start buchi graph" << std::endl;
     std::shared_ptr<Graph_t<BuchiState *, std::vector<int64_t>>> buchi_graph = BuchiAutomaton::BuildBuchiGraph(ltl_formula,buchi_regions);
 	std::cout << "End buchi graph " << std::endl;
     //std::shared_ptr<Graph_t<BuchiState>> buchi_graph = BuchiAutomaton::CreateBuchiGraph(ltl_formula,buchi_regions);
@@ -77,7 +83,7 @@ int main(int argc, char** argv )
 
 	/*** 6. Search in the product graph ***/
 	// Set start node in original graph
-	Vertex_t<SquareCell *> * start_node_origin = graph->GetVertexFromID(80);
+	Vertex_t<SquareCell *> * start_node_origin = graph->GetVertexFromID(42);
 
     std::cout << "Start node origin is " << start_node_origin->state_->lifted_vertices_id_.size() << std::endl;
     for (auto it = start_node_origin->state_->lifted_vertices_id_.begin(); it != start_node_origin->state_->lifted_vertices_id_.end(); it++)
@@ -97,11 +103,8 @@ int main(int argc, char** argv )
 
 	std::cout << "Start A star " << std::endl;
 	auto path = AStar::ProductIncSearchCBTA(product_graph_new, virtual_start_id,buchi_acc,  GetNeighbourFunc_t<ProductState*, double>(get_product_cbta_neighbour));
-
-
 	total_time = clock() - total_time;
 	std::cout << "Total time in " << double(total_time)/CLOCKS_PER_SEC << " s." << std::endl;
-
 
 	// Map path in the product graph back to the square grid graph
 	std::vector<Vertex_t<SquareCell*>*> path_origin;

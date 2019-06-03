@@ -29,10 +29,8 @@ void SquareCell::UpdateMapInfo(int32_t row_size, int32_t col_size, double side_s
     //std::cout << "pos x is " << coordinate_.x << std::endl;
 	position_.y = coordinate_.y * vis_side_size + vis_side_size/2;
     //std::cout << "pos y is " << coordinate_.y << std::endl;
-    // double y_real = (id/num_col_)*real_side_length/num_row_;
-    // double x_real = (id%num_col_)*real_side_length/num_col_;
-    physical_position_.x = ((double)coordinate_.x / (double)col_size) * map_width;
-    physical_position_.y = ((double)coordinate_.y / (double)row_size) * map_length;
+    physical_position_.x = ((double)coordinate_.x / (double)col_size) * map_width + 0.5 * ((double)map_width / (double)col_size);
+    physical_position_.y = ((double)coordinate_.y / (double)row_size) * map_length + 0.5 * ((double)map_length / (double)row_size);
 }
 
 std::string SquareCell::GetCellLabels(){
