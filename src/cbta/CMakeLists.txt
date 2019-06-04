@@ -33,8 +33,12 @@ target_link_libraries(test_cbta cbta vis map ltl ${OpenCV_LIBS})
 add_executable(test_cbta_json test/test_cbta_json.cpp)
 target_link_libraries(test_cbta_json cbta vis map ltl ${OpenCV_LIBS})
 
-add_executable(create_json_file test/create_json_file.cpp)
-target_link_libraries(create_json_file cbta vis map ltl ${OpenCV_LIBS})
+#add_executable(create_json_file test/create_json_file.cpp)
+#target_link_libraries(create_json_file cbta vis map ltl ${OpenCV_LIBS})
+
+add_executable(test_for_error test/test_for_error.cpp)
+target_link_libraries(test_for_error cbta vis map ltl ${OpenCV_LIBS})
+
 #target_link_libraries(create_json_file PRIVATE nlohmann_json::nlohmann_json)
 
 #add_executable(test_path_length_cbta test/test_path_length_cbta.cpp)

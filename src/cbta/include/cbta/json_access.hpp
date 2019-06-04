@@ -415,7 +415,7 @@ namespace jsonReadWrite{
 						tile_file_.close();
 				}
 			}
-    }
+    	}
     void get_from_json(const int rmin, librav::TileTraversalData& ttd, int curr_H){	
 
 		std::string folder = "./H"+std::to_string(curr_H)+"_R"+std::to_string(rmin)+"/";
