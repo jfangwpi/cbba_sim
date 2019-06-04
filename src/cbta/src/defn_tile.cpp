@@ -88,7 +88,7 @@ Tile::~Tile(){
 
 }
 
-void Tile::set_tile_data(int H, Matrix<int,Dynamic,4> tile_vertices){
+void Tile::set_tile_data(int H, const Matrix<int,Dynamic,4>& tile_vertices){
 	// ---- Location of cells
 	Matrix<double,4,4> I4 = MatrixXd::Identity(4,4);
 	traversal_type = MatrixXi::Zero(H,1);  // Opposite (1), adjacent (2)

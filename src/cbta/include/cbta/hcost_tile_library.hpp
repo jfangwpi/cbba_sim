@@ -90,7 +90,7 @@ public:
 
 	std::shared_ptr<Eigen::SparseMatrix<int,Eigen::RowMajor>> connectivity;
 
-	void set_tile_data(int, Eigen::Matrix<int,Eigen::Dynamic,4>);
+	void set_tile_data(int, const Eigen::Matrix<int,Eigen::Dynamic,4>&);
 
 	void addTileBlock(REGION_BD &region_bd, std::shared_ptr<TileBlock> this_tile, int H);
 
@@ -136,7 +136,7 @@ public:
 						std::string w_smp_str,
 						std::string x_smp_str);
 	~TileBlock();
-public: // private: <---------------------------------------------------******$*$*$*$*$*$*$
+public: // private: 
 	int H;
 	Eigen::Matrix<double,Eigen::Dynamic,1> y_exit;
 	Eigen::Matrix<double,Eigen::Dynamic,1> z_exit;
