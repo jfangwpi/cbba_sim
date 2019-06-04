@@ -37,11 +37,7 @@ int main(int argc, char *argv[] )
 	// TileTraversalData tile_traversal_data = HCost::hcost_preprocessing();
 	TileTraversalData tile_traversal_data;
 
-	std::ifstream i("tile_traversal_data_H3_R3.txt");
-	nlohmann::json j;
-	i >> j;
-
-	jsonReadWrite::get_from_json(j, tile_traversal_data, historyH);
+	jsonReadWrite::get_from_json(3,tile_traversal_data, historyH);
 	// std::cout << tile_traversal_data.Hlevels.at(historyH)->n_tiles << std::endl;
 
 
