@@ -257,7 +257,7 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 	std::string test_str;
 	ss >> test_str;
 	size_t n = std::count(test_str.begin(), test_str.end(), ',');
-	// cell_xform = MatrixXi::Zero(counter,n);
+	cell_xform = MatrixXi::Zero(counter,n);
 	test_str.clear();
 
 	for (size_t i = 0; i < counter; i++)
@@ -280,7 +280,7 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 
 		for (size_t k = 0; k < j; k++)
 		{
-			this->cell_xform(i,k) = ind_num_array[k];
+			cell_xform(i,k) = ind_num_array[k];
 		}
 	}
 	
@@ -327,7 +327,7 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 
 		for (size_t k = 0; k < j; k++)
 		{
-			this->channel_data(i,k) = ind_num_array[k];
+			channel_data(i,k) = ind_num_array[k];
 		}
 	}
 	/******* traversal_faces *******/
@@ -350,7 +350,7 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 	
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	// traversal_faces = MatrixXi::Zero(counter,n);
+	traversal_faces = MatrixXi::Zero(counter,n);
 	test_str.clear();
 
 
@@ -374,7 +374,7 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 
 		for (size_t k = 0; k < j; k++)
 		{
-			this->traversal_faces(i,k) = ind_num_array[k];
+			traversal_faces(i,k) = ind_num_array[k];
 		}
 	}
 	/******* traversal_type *******/
@@ -396,7 +396,7 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	// traversal_type = MatrixXi::Zero(counter,n);
+	traversal_type = MatrixXi::Zero(counter,n);
 	test_str.clear();
 
 
@@ -420,7 +420,7 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 
 		for (size_t k = 0; k < j; k++)
 		{
-			this->traversal_type(i,k) = ind_num_array[k];
+			traversal_type(i,k) = ind_num_array[k];
 			// std::cout << traversal_type(i,k) << std::endl;
 		}
 	}
@@ -446,7 +446,7 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
 
-	// cell_edge = MatrixXd::Zero(counter,n);
+	cell_edge = MatrixXd::Zero(counter,n);
 	test_str.clear();
 
 	for (size_t i = 0; i < counter; i++)
@@ -469,7 +469,7 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 
 		for (size_t k = 0; k < j; k++)
 		{
-			this->cell_edge(i,k) = ind_num_array[k];
+			cell_edge(i,k) = ind_num_array[k];
 			// std::cout << cell_edge(i,k) << std::endl;
 			
 		}
@@ -495,7 +495,7 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 	
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	//cell_vertices = MatrixXd::Zero(counter,n);
+	cell_vertices = MatrixXd::Zero(counter,n);
 	test_str.clear();
 	ss.clear();
 
@@ -520,7 +520,7 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 
 		for (size_t k = 0; k < j; k++)
 		{
-			this->cell_vertices(i,k) = ind_num_array[k];
+			cell_vertices(i,k) = ind_num_array[k];
 			// std::cout << cell_vertices(i,k) << std::endl;
 		}
 	}

@@ -471,7 +471,9 @@ namespace jsonReadWrite{
         std::string FACE_REF_str;
         std::string VERTICES_PERMUTATION_str;
         std::string INVERSE_XFORM_str;
-		std::cout << "Probe" <<std::endl;
+
+		std::cout << current_Hlevel->unique_tiles << std::endl;
+
         for(int n = 0; n < n_tiles; n++){
 			//*** Define the file name to be read ***//
 			std::ifstream i_temp(folder+"H"+std::to_string(curr_H)+"_R"+std::to_string(rmin)+"_Tile"+std::to_string(n)+".txt");
