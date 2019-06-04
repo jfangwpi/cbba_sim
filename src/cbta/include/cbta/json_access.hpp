@@ -484,6 +484,7 @@ namespace jsonReadWrite{
             const char *current_tile_name = title.c_str();
             std::cout << str.str() << std::endl;
 
+
             j_tile.at(current_tile_name).at("traversal_type").get_to(traversal_type_str);
             j_tile.at(current_tile_name).at("traversal_faces").get_to(traversal_faces_str);			
             j_tile.at(current_tile_name).at("cell_edge").get_to(cell_edge_str);
