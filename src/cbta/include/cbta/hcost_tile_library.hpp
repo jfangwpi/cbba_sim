@@ -164,45 +164,47 @@ public:
 
 public:
 	void cbta();
-	void cbra(int idx_r_from,REGION_BD &theRegion,double r_min,
-				long int N_REGION_TOTAL, Eigen::RowVectorXi& region_target_2,
-	//			Matrix<int,1,Dynamic>& returnMatrix);
-				Eigen::RowVectorXi& region_neighbors);
-	static int find_sample(Eigen::RowVectorXd& ySmp, double y);
+	void cbra(int idx_r_from,REGION_BD &theRegion,double,
+				long int, 
+				const Eigen::RowVectorXi&,
+				const Eigen::RowVectorXi&);
+	static int find_sample(const Eigen::RowVectorXd& xSmp, double);
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 private:
 	void cbta_s1(double w, double d,
 			     //Matrix<double,1,N_CBTA_W>& xSmp,
-			Eigen::RowVectorXd& xSmp,
-			Eigen::Matrix<double,2,N_CBTA_W>& btaSmp,
-			Eigen::Matrix<double,2,1>& returnMatrix);
+			const Eigen::RowVectorXd& xSmp,
+			const Eigen::Matrix<double,2,N_CBTA_W>&,
+			const Eigen::Matrix<double,2,1>&);
 
 	void cbta_s2(double w, double d,
 			     //Matrix<double,1,N_CBTA_W>& xSmp,
-			Eigen::RowVectorXd& xSmp,
-			Eigen::Matrix<double,2,N_CBTA_W>& btaSmp,
-			Eigen::Matrix<double,2,1>& returnMatrix);
+			const Eigen::RowVectorXd& xSmp,
+			const Eigen::Matrix<double,2,N_CBTA_W>&,
+			const Eigen::Matrix<double,2,1>&);
 
-	void interp_broken_seg(Eigen::RowVectorXd& x_data,
-						   Eigen::Matrix<double,2,Eigen::Dynamic>& y_data,
-						   Eigen::RowVectorXd& x_interp,
-						   Eigen::Matrix<double,2,Eigen::Dynamic>& y_interp);
+	void interp_broken_seg(const Eigen::RowVectorXd&,
+						   const Eigen::Matrix<double,2,Eigen::Dynamic>&,
+						   const Eigen::RowVectorXd&,
+						   const Eigen::Matrix<double,2,Eigen::Dynamic>&);
 	template <typename Derived1, typename Derived2>
-	void remove_inf_values(Eigen::MatrixBase<Derived1>& v,
-			Eigen::MatrixBase<Derived2>& returnMatrix);
-
-//	int find_sample(Matrix<double,1,N_CBTA_W>& ySmp, double y);
+	void remove_inf_values(const Eigen::MatrixBase<Derived1>&,
+			const Eigen::MatrixBase<Derived2>&);
+	
+	template <typename Derived_a, typename Derived_b>
+	void find_zeros(const Eigen::MatrixBase<Derived_a>&,
+					const Eigen::MatrixBase<Derived_b>&);
+	double pi2pi(double);
+	//	int find_sample(Matrix<double,1,N_CBTA_W>& ySmp, double y);
 
 
 	//double sign_func(double x);
-	template <typename Derived_a, typename Derived_b>
-	void find_zeros(Eigen::MatrixBase<Derived_a>& fSmp,
-			Eigen::MatrixBase<Derived_b>& returnMatrix);
-//	void find_zeros(Matrix<double,1,Dynamic>& fSmp,
-//			Matrix<int,1,Dynamic>& returnMatrix);
 
-	double pi2pi(double x);
+	//	void find_zeros(Matrix<double,1,Dynamic>& fSmp,
+	//			Matrix<int,1,Dynamic>& returnMatrix);
+
+	
 
 
 
