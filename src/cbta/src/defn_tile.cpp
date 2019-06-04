@@ -98,14 +98,14 @@ void Tile::set_tile_data(int H, Matrix<int,Dynamic,4> tile_vertices){
 	MatrixXi middiag = tile_vertices.block(1,2,H,1).asDiagonal();
 	chan_mid.leftCols(2) << middiag*MatrixXi::Ones(H,2); //rect dims (dx,dy)
 	chan_mid.rightCols(2) << tile_vertices.block(1,0,H,2);                                //rect center coords
-//	std::cout << "chan_mid" << std::endl << chan_mid << std::endl;
+	//	std::cout << "chan_mid" << std::endl << chan_mid << std::endl;
 
 	MatrixXd chan_full(H+2,4);
 	MatrixXi fulldiagint = tile_vertices.col(2).asDiagonal();
 	MatrixXd fulldiag = fulldiagint.cast<double>();
 	chan_full.leftCols(2) = fulldiag*MatrixXd::Ones(H+2,2); //Full channel
 	chan_full.rightCols(2) = tile_vertices.leftCols(2).cast<double>();						// needed only to define entry/exit segments
-//	std::cout << "chan_full" << std::endl << chan_full << std::endl;
+	//	std::cout << "chan_full" << std::endl << chan_full << std::endl;
 	channel_data = chan_mid;
 	// Entry segments
 	MatrixXi u1(H,1);
@@ -154,13 +154,13 @@ void Tile::set_tile_data(int H, Matrix<int,Dynamic,4> tile_vertices){
 	VectorXi face_to   = exit_seg.bottomRows(H);\
 	traversal_faces.resize(2*H,1);
 	traversal_faces << face_from, face_to;
-//	std::cout << face_from << std::endl;
-//	std::cout << face_to << std::endl;
+	//	std::cout << face_from << std::endl;
+	//	std::cout << face_to << std::endl;
 
 	// Type of transition
 	cell_vertices = MatrixXd::Zero(4,2*H);   // Vertices of each rectangle, side by side
-//	std::cout << "cell_vertices" << std::endl;
-//	std::cout << cell_vertices << std::endl;
+	//	std::cout << "cell_vertices" << std::endl;
+	//	std::cout << cell_vertices << std::endl;
 	for (int n=0; n < H; n++){
 		Matrix<double,4,2> this_cell_vertices;
 		MatrixXd chan_mid_d(H,4);
@@ -169,8 +169,8 @@ void Tile::set_tile_data(int H, Matrix<int,Dynamic,4> tile_vertices){
 		this_cell_vertices.row(1) << chan_mid_d(n,2) + chan_mid_d(n,0)/2.0, chan_mid_d(n,3) + chan_mid_d(n,1)/2.0; // order starting // with top left
 		this_cell_vertices.row(2) << chan_mid_d(n,2) + chan_mid_d(n,0)/2.0, chan_mid_d(n,3) - chan_mid_d(n,1)/2.0;
 		this_cell_vertices.row(3) << chan_mid_d(n,2) - chan_mid_d(n,0)/2.0, chan_mid_d(n,3) - chan_mid_d(n,1)/2.0;
-//		std::cout << "this_cell_vertices" << std::endl;
-//		std::cout << this_cell_vertices << std::endl;
+	//		std::cout << "this_cell_vertices" << std::endl;
+	//		std::cout << this_cell_vertices << std::endl;
 		Matrix<int,1,2> face;
 		int idx1;
 		for (int mm = 0; mm < 12; mm++){
@@ -181,22 +181,22 @@ void Tile::set_tile_data(int H, Matrix<int,Dynamic,4> tile_vertices){
 				break;
 			}
 		}
-//		std::cout << "idx1 = " << idx1 << std::endl;
+	//		std::cout << "idx1 = " << idx1 << std::endl;
 		cell_xform.row(n) = FACE_REF.row(idx1).rightCols(2); // cols 4,5, Existing transformation on current rectangle
-//		std::cout << "cell_xform" << std::endl;
-//		std::cout << cell_xform << std::endl;
+	//		std::cout << "cell_xform" << std::endl;
+	//		std::cout << cell_xform << std::endl;
 		traversal_type(n,0) = (u1(n,0)!=u1(n+1,0)) + 1;
-//		std::cout << "traversal_type" << std::endl;
-//		std::cout << traversal_type << std::endl;
+	//		std::cout << "traversal_type" << std::endl;
+	//		std::cout << traversal_type << std::endl;
 
 		int xform1 = INVERSE_XFORM(FACE_REF(idx1,4));
 		int xform2 = INVERSE_XFORM(FACE_REF(idx1,3));
-//		std::cout << "xform1 = " << xform1 << std::endl;
-//		std::cout << "xform2 = " << xform2 << std::endl;
+	//		std::cout << "xform1 = " << xform1 << std::endl;
+	//		std::cout << "xform2 = " << xform2 << std::endl;
 		RowVectorXi p1 = VERTICES_PERMUTATION.row(xform1);
 		RowVectorXi p2 = VERTICES_PERMUTATION.row(xform2);
-//		std::cout << "p1 = " << p1 << std::endl;
-//		std::cout << "p2 = " << p2 << std::endl;
+	//		std::cout << "p1 = " << p1 << std::endl;
+	//		std::cout << "p2 = " << p2 << std::endl;
 
 		Matrix4d I4p1;
 		int p10 = p1(0); int p11 = p1(1); int p12 = p1(2); int p13 = p1(3);
@@ -303,7 +303,7 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	// channel_data = MatrixXi::Zero(counter,n);
+	channel_data = MatrixXi::Zero(counter,n);
 	test_str.clear();
 
 
