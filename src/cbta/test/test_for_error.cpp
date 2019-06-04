@@ -277,7 +277,7 @@ int main(int argc, char** argv){
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	Eigen::MatrixX traversal_type;
+	Eigen::MatrixXi traversal_type;
 	traversal_type = MatrixXi::Zero(counter,n);
 	test_str.clear();
 
