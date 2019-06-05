@@ -61,7 +61,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	std::string test_str;
 	ss >> test_str;
 	size_t n = std::count(test_str.begin(), test_str.end(), ',');
-	alfa = MatrixXd::Zero(counter,n);
+	this->alfa = MatrixXd::Zero(counter,n);
 
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -83,7 +83,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 
 		for (size_t k = 0; k < j; k++)
 		{
-			alfa(i,k) = ind_num_array[k];
+			this->alfa(i,k) = ind_num_array[k];
 		}
 	}
 	
@@ -106,7 +106,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	bta = MatrixXd::Zero(counter,n);
+	this->bta = MatrixXd::Zero(counter,n);
 	test_str.clear();
 
 	for (size_t i = 0; i < counter; i++)
@@ -129,7 +129,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 
 		for (size_t k = 0; k < j; k++)
 		{
-			bta(i,k) = ind_num_array[k];
+			this->bta(i,k) = ind_num_array[k];
 		}
 	}
 
@@ -151,7 +151,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	w_lower = MatrixXd::Zero(counter,n);
+	this->w_lower = MatrixXd::Zero(counter,n);
 	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -173,7 +173,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 
 		for (size_t k = 0; k < j; k++)
 		{
-			w_lower(i,k) = ind_num_array[k];
+			this->w_lower(i,k) = ind_num_array[k];
 		}
 	}
 
@@ -195,7 +195,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	w_upper = MatrixXd::Zero(counter,n);
+	this->w_upper = MatrixXd::Zero(counter,n);
 	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -217,7 +217,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 
 		for (size_t k = 0; k < j; k++)
 		{
-			w_upper(i,k) = ind_num_array[k];
+			this->w_upper(i,k) = ind_num_array[k];
 		}
 	}
 
@@ -239,7 +239,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	x = MatrixXd::Zero(counter,n);
+	this->x = MatrixXd::Zero(counter,n);
 	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -261,7 +261,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 
 		for (size_t k = 0; k < j; k++)
 		{
-			x(i,k) = ind_num_array[k];
+			this->x(i,k) = ind_num_array[k];
 		}
 	}
 
@@ -283,7 +283,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	w = MatrixXd::Zero(counter,n);
+	this->w = MatrixXd::Zero(counter,n);
 	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -305,7 +305,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 
 		for (size_t k = 0; k < j; k++)
 		{
-			w(i,k) = ind_num_array[k];
+			this->w(i,k) = ind_num_array[k];
 		}
 	}
 
@@ -327,7 +327,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	w_sol = MatrixXd::Zero(counter,n);
+	this->w_sol = MatrixXd::Zero(counter,n);
 	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -349,7 +349,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 
 		for (size_t k = 0; k < j; k++)
 		{
-			w_sol(i,k) = ind_num_array[k];
+			this->w_sol(i,k) = ind_num_array[k];
 		}
 	}
 
@@ -371,7 +371,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	y_exit = MatrixXd::Zero(counter,n);
+	this->y_exit = MatrixXd::Zero(counter,n);
 	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -393,7 +393,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 
 		for (size_t k = 0; k < j; k++)
 		{
-			y_exit(i,k) = ind_num_array[k];
+			this->y_exit(i,k) = ind_num_array[k];
 		}
 	}
 	
@@ -415,7 +415,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	z_exit = MatrixXd::Zero(counter,n);
+	this->z_exit = MatrixXd::Zero(counter,n);
 	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -437,7 +437,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 
 		for (size_t k = 0; k < j; k++)
 		{
-			z_exit(i,k) = ind_num_array[k];
+			this->z_exit(i,k) = ind_num_array[k];
 		}
 	}
 
@@ -459,7 +459,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	bta_smp = MatrixXd::Zero(counter,n);
+	this->bta_smp = MatrixXd::Zero(counter,n);
 	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -481,7 +481,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 
 		for (size_t k = 0; k < j; k++)
 		{
-			bta_smp(i,k) = ind_num_array[k];
+			this->bta_smp(i,k) = ind_num_array[k];
 		}
 	}
 
@@ -503,7 +503,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	alfa_sol = MatrixXd::Zero(counter,n);
+	this->alfa_sol = MatrixXd::Zero(counter,n);
 	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -525,7 +525,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 
 		for (size_t k = 0; k < j; k++)
 		{
-			alfa_sol(i,k) = ind_num_array[k];
+			this->alfa_sol(i,k) = ind_num_array[k];
 		}
 	}
 
@@ -547,7 +547,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	alfa_smp = MatrixXd::Zero(counter,n);
+	this->alfa_smp = MatrixXd::Zero(counter,n);
 	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -569,7 +569,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 
 		for (size_t k = 0; k < j; k++)
 		{
-			alfa_smp(i,k) = ind_num_array[k];
+			this->alfa_smp(i,k) = ind_num_array[k];
 		}
 	}
 
@@ -591,7 +591,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	w_smp = MatrixXd::Zero(counter,n);
+	this->w_smp = MatrixXd::Zero(counter,n);
 	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -613,7 +613,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 
 		for (size_t k = 0; k < j; k++)
 		{
-			w_smp(i,k) = ind_num_array[k];
+			this->w_smp(i,k) = ind_num_array[k];
 		}
 	}
 
@@ -635,7 +635,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 	ss << burner_array[0];
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	x_smp = MatrixXd::Zero(counter,n);
+	this->x_smp = MatrixXd::Zero(counter,n);
 	test_str.clear();
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -657,7 +657,7 @@ TileBlock::TileBlock(REGION_BD &REGION_BD, std::shared_ptr<Tile> linked_tile, in
 
 		for (size_t k = 0; k < j; k++)
 		{
-			x_smp(i,k) = ind_num_array[k];
+			this->x_smp(i,k) = ind_num_array[k];
 		}
 	}
 	ss.clear();
