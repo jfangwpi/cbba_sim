@@ -317,7 +317,6 @@ TileTraversalData HCost::hcost_preprocessing()
 
 				if ((region_w_lower > cbta_target_2_w.tail(1).value()) || (region_w_upper < cbta_target_2_w(0)))
 					continue;
-
 				int region_w_lower_idx = TileBlock::find_sample(cbta_target_2_w,region_w_lower);
 				int region_w_upper_idx = TileBlock::find_sample(cbta_target_2_w,region_w_upper);
 
@@ -339,7 +338,7 @@ TileTraversalData HCost::hcost_preprocessing()
 
 				if ((region_w_lower < cbta_target_1_w(0)) || (region_w_upper > cbta_target_1_w.tail(1).value()))
 					continue;
-
+				
 				int region_w_lower_idx = TileBlock::find_sample(cbta_target_1_w,region_w_lower);
 				int region_w_upper_idx = TileBlock::find_sample(cbta_target_1_w,region_w_upper);
 

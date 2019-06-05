@@ -19,7 +19,6 @@
 #include <functional>
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/SparseCore>
-#include <eigen3/Eigen/StdVector>
 //#include <eigen3/Eigen/Core>
 //#include <Eigen/Sparse>
 
@@ -36,9 +35,6 @@ const unsigned int SPD_MAX = 1;
 const int N_CBTA_W_SOL = 51;
 const int N_CBTA_W = 101;
 const double r_min = 3;
-
-#define EIGEN_MAX_STATIC_ALIGN_BYTES = 0
-
 
 struct REGION_BD{
 		std::vector<double> region_w_lower;    //REGION_BD(0,:)
@@ -79,6 +75,7 @@ private:
 	Eigen::Matrix<int,5,1> INVERSE_XFORM;
 
 public:
+
 	Eigen::Matrix<int,Eigen::Dynamic,4> channel_data;
 	Eigen::Matrix<double,4,Eigen::Dynamic> cell_vertices;
 	Eigen::Matrix<int,Eigen::Dynamic,1> traversal_type;
@@ -90,22 +87,22 @@ public:
 
 	std::shared_ptr<Eigen::SparseMatrix<int,Eigen::RowMajor>> connectivity;
 
-	void set_tile_data(int, const Eigen::Matrix<int,Eigen::Dynamic,4>&);
+	void set_tile_data(int, Eigen::Matrix<int,Eigen::Dynamic,4>);
 
 	void addTileBlock(REGION_BD &region_bd, std::shared_ptr<TileBlock> this_tile, int H);
 
-	void setMatricesFromJSON(std::string ,
-							 std::string ,
-							 std::string ,
-							 std::string ,
-							 std::string ,
-							 std::string );
+	void setMatricesFromJSON(std::string traversal_type_str,
+							 std::string traversal_faces_str,
+							 std::string cell_xform_str,
+							 std::string channel_data_str,
+							 std::string cell_edge_str,
+							 std::string cell_vertices_str);
 							//  std::string FACE_REF_str,
 							//  std::string VERTICES_PERMUTATION_str,
 							//  std::string INVERSE_XFORM_str);
 
 	void setConnectivityFromJSON(std::string connectivity_str);
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 };
 
 // =============================== TileBlock ==============================
@@ -136,7 +133,7 @@ public:
 						std::string w_smp_str,
 						std::string x_smp_str);
 	~TileBlock();
-public: // private: 
+public: // private: <---------------------------------------------------******$*$*$*$*$*$*$
 	int H;
 	Eigen::Matrix<double,Eigen::Dynamic,1> y_exit;
 	Eigen::Matrix<double,Eigen::Dynamic,1> z_exit;
@@ -164,49 +161,44 @@ public:
 
 public:
 	void cbta();
-	void cbra(int idx_r_from,REGION_BD &theRegion,double,
-				long int, 
-				const Eigen::RowVectorXi&,
-				const Eigen::RowVectorXi&);
-	static int find_sample(const Eigen::RowVectorXd& xSmp, double);
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+	void cbra(int idx_r_from,REGION_BD &theRegion,double r_min,
+				long int N_REGION_TOTAL, Eigen::RowVectorXi& region_target_2,
+	//			Matrix<int,1,Dynamic>& returnMatrix);
+				Eigen::RowVectorXi& region_neighbors);
+	static int find_sample(Eigen::RowVectorXd& ySmp, double y);
 
 private:
 	void cbta_s1(double w, double d,
 			     //Matrix<double,1,N_CBTA_W>& xSmp,
-			const Eigen::RowVectorXd& xSmp,
-			const Eigen::Matrix<double,2,N_CBTA_W>&,
-			const Eigen::Matrix<double,2,1>&);
+			Eigen::RowVectorXd& xSmp,
+			Eigen::Matrix<double,2,N_CBTA_W>& btaSmp,
+			Eigen::Matrix<double,2,1>& returnMatrix);
 
 	void cbta_s2(double w, double d,
 			     //Matrix<double,1,N_CBTA_W>& xSmp,
-			const Eigen::RowVectorXd& xSmp,
-			const Eigen::Matrix<double,2,N_CBTA_W>&,
-			const Eigen::Matrix<double,2,1>&);
+			Eigen::RowVectorXd& xSmp,
+			Eigen::Matrix<double,2,N_CBTA_W>& btaSmp,
+			Eigen::Matrix<double,2,1>& returnMatrix);
 
-	void interp_broken_seg(const Eigen::RowVectorXd&,
-						   const Eigen::Matrix<double,2,Eigen::Dynamic>&,
-						   const Eigen::RowVectorXd&,
-						   const Eigen::Matrix<double,2,Eigen::Dynamic>&);
+	void interp_broken_seg(Eigen::RowVectorXd& x_data,
+			Eigen::Matrix<double,2,Eigen::Dynamic>& y_data,
+			Eigen::RowVectorXd& x_interp,
+			Eigen::Matrix<double,2,Eigen::Dynamic>& y_interp);
 	template <typename Derived1, typename Derived2>
-	void remove_inf_values(const Eigen::MatrixBase<Derived1>&,
-			const Eigen::MatrixBase<Derived2>&);
-	
-	template <typename Derived_a, typename Derived_b>
-	void find_zeros(const Eigen::MatrixBase<Derived_a>&,
-					const Eigen::MatrixBase<Derived_b>&);
-	double pi2pi(double);
-	//	int find_sample(Matrix<double,1,N_CBTA_W>& ySmp, double y);
+	void remove_inf_values(Eigen::MatrixBase<Derived1>& v,
+			Eigen::MatrixBase<Derived2>& returnMatrix);
+
+//	int find_sample(Matrix<double,1,N_CBTA_W>& ySmp, double y);
 
 
 	//double sign_func(double x);
+	template <typename Derived_a, typename Derived_b>
+	void find_zeros(Eigen::MatrixBase<Derived_a>& fSmp,
+			Eigen::MatrixBase<Derived_b>& returnMatrix);
+//	void find_zeros(Matrix<double,1,Dynamic>& fSmp,
+//			Matrix<int,1,Dynamic>& returnMatrix);
 
-	//	void find_zeros(Matrix<double,1,Dynamic>& fSmp,
-	//			Matrix<int,1,Dynamic>& returnMatrix);
-
-	
-
-
+	double pi2pi(double x);
 
 };
 
@@ -232,7 +224,7 @@ public:
 	unsigned int n_tiles;
 	Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> unique_tiles;
 
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 };
 
 struct TileTraversalData{
@@ -242,8 +234,8 @@ struct TileTraversalData{
 	int N_REGION_PSI;
 	int N_REGION_SPD;
 	int N_REGION_TOTAL;
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
+
 
 } /* namespace srcl */
 
