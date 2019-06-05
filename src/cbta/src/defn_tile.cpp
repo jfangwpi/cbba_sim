@@ -517,13 +517,13 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 			token_double = strtok (NULL, ",]");
 			j++;
 		}
-	// Eigen::Matrix<double,4,Eigen::Dynamic,Eigen::DontAlign> test;
+	// Eigen::Matrix<double,Eigen::Dynamic,4,Eigen::DontAlign> test;
 	// test = MatrixXd::Zero(counter,n);
 
 		for (size_t k = 0; k < j; k++)
 		{
 			// test(i,k) = ind_num_array[k];
-			cell_vertices(i,k) = ind_num_array[k];
+			// cell_vertices(i,k) = ind_num_array[k];
 			// std::cout << cell_vertices(i,k) << std::endl;
 		}
 	}
