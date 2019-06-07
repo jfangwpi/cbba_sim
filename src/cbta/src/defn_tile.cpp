@@ -12,6 +12,9 @@
 
 #include "cbta/hcost_tile_library.hpp"
 #include <sstream>
+#include <iostream>
+#include <fstream>
+#include "nlohmann/json.hpp"
 
 using namespace Eigen;
 using namespace librav;
@@ -46,7 +49,8 @@ Tile::Tile(std::string traversal_type_str,
 		   std::string channel_data_str,
 		   std::string cell_edge_str,
 		   std::string cell_vertices_str,
-		   std::string connectivity_str){
+		   std::string current_tile_name,
+		   std::string file_prefix){
 		//    std::string FACE_REF_str,
 		//    std::string VERTICES_PERMUTATION_str,
 		//    std::string INVERSE_XFORM_str){
@@ -61,7 +65,7 @@ Tile::Tile(std::string traversal_type_str,
 						// VERTICES_PERMUTATION_str,
 						// INVERSE_XFORM_str);
 						
-	setConnectivityFromJSON(connectivity_str);
+	setConnectivityFromJSON(current_tile_name, file_prefix);
 
 	FACE_REF <<   1,  -1,   1,   0,   0,
 				 -2,   2,   1,   2,   0,
@@ -495,7 +499,7 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 	
 	ss >> test_str;
 	n = std::count(test_str.begin(), test_str.end(), ',');
-	cell_vertices = Matrix4Xd::Zero(counter,n);
+	this->cell_vertices = Matrix4Xd::Zero(counter,n);
 	test_str.clear();
 	ss.clear();
 
@@ -529,58 +533,68 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 	}
 }
 
-void Tile::setConnectivityFromJSON(std::string connectivity_str){
+void Tile::setConnectivityFromJSON(std::string current_tile_name, std::string file_prefix){
 
-	// std::shared_ptr<Eigen::SparseMatrix<int,Eigen::RowMajor>> connectivity = std::make_shared<Eigen::SparseMatrix<int,Eigen::RowMajor>>(2500,2500);
+typedef Eigen::Triplet<int> T;
+std::vector<T> tripletList;
+tripletList.reserve(50000);
 
-	char conn_char[connectivity_str.size() +1];
-	strcpy(conn_char, connectivity_str.c_str());
-	char *token;
-	
+for(int horiz_blk_strt = 499; horiz_blk_strt < 2499; horiz_blk_strt += 500){
+	for(int vert_blk_strt = 499; vert_blk_strt < 2499; vert_blk_strt += 500){
+		
+		// Define the current connectivity file and create JSON object from it
+		std::ifstream i(file_prefix + "_conn_" + std::to_string(horiz_blk_strt) + "_" + std::to_string(vert_blk_strt) + ".txt");
+		nlohmann::json j_conn;
+		i >> j_conn;
+		std::string current_conn_str;
+		j_conn.at(current_tile_name).at("connectivity").get_to(current_conn_str);
 
-
-
-	std::vector<char *> burner_array;
-	token = strtok (conn_char,";");
-	int counter = 0;
-	while (token != NULL)
-	{	
-		burner_array.push_back(token);
-		token = strtok (NULL, ";");
-		counter++;
-	}
-
-	MatrixXi edge_list = MatrixXi::Zero(counter,3);
-
-	for (size_t i = 0; i < counter; i++)
-	{	
-		std::vector<int> ind_num_array;
+		char conn_char[current_conn_str.size() +1];
+		strcpy(conn_char, current_conn_str.c_str());
 		char *token;
-		token = strtok (burner_array[i],",");
-		std::stringstream ss1;
-		ss1 << token;
-		int idx1;
-		ss1 >> idx1;
+		
 
-		token = strtok (NULL, ",");
-		std::stringstream ss2;
-		ss2 << token;
-		int idx2;
-		ss2 >> idx2;
-		edge_list(i,0) = idx1;
-		edge_list(i,1) = idx2;
-		edge_list(i,2) = 1;
-	}
+		
 
-	typedef Eigen::Triplet<int> T;
-	std::vector<T> tripletList;
-	tripletList.reserve(edge_list.rows());
-	for (int k = 0; k < edge_list.rows(); k++){
-		tripletList.push_back(T(edge_list(k,0),edge_list(k,1),edge_list(k,2))); // T(i,j,v_ij)
+		std::vector<char *> burner_array;
+		token = strtok (conn_char,";");
+		int counter = 0;
+		while (token != NULL)
+		{	
+			burner_array.push_back(token);
+			token = strtok (NULL, ";");
+			counter++;
+		}
+
+		MatrixXi edge_list = MatrixXi::Zero(counter,3);
+
+		for (size_t i = 0; i < counter; i++)
+		{	
+			std::vector<int> ind_num_array;
+			char *token;
+			token = strtok (burner_array[i],",");
+			std::stringstream ss1;
+			ss1 << token;
+			int idx1;
+			ss1 >> idx1;
+
+			token = strtok (NULL, ",");
+			std::stringstream ss2;
+			ss2 << token;
+			int idx2;
+			ss2 >> idx2;
+			edge_list(i,0) = idx1;
+			edge_list(i,1) = idx2;
+			edge_list(i,2) = 1;
+		}
+
+
+		for (int k = 0; k < edge_list.rows(); k++){
+			tripletList.push_back(T(edge_list(k,0),edge_list(k,1),edge_list(k,2))); // T(i,j,v_ij)
+		}
 	}
-	
-	this->connectivity = std::make_shared<Eigen::SparseMatrix<int,Eigen::RowMajor>>(2500,2500);
-	this->connectivity->setFromTriplets(tripletList.begin(), tripletList.end());
-	// std::cout << connectivity->nonZeros() << std::endl;
+}
+		this->connectivity = std::make_shared<Eigen::SparseMatrix<int,Eigen::RowMajor>>(2500,2500);
+		this->connectivity->setFromTriplets(tripletList.begin(), tripletList.end());
 
 }

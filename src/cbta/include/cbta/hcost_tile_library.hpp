@@ -56,12 +56,13 @@ class Tile{
 public:
 	Tile(int H, Eigen::Matrix<int,Eigen::Dynamic,4> tile_vertices);
 	Tile(std::string traversal_type_str,
-		 std::string traversal_faces_str,
-		 std::string cell_xform_str,
-		 std::string channel_data_str,
-		 std::string cell_edge_str,
-		 std::string cell_vertices_str,
-		 std::string connectivity_str);
+		   std::string traversal_faces_str,
+		   std::string cell_xform_str,
+		   std::string channel_data_str,
+		   std::string cell_edge_str,
+		   std::string cell_vertices_str,
+		   std::string current_tile_name,
+		   std::string file_prefix);
 		//  std::string FACE_REF_str,
 		//  std::string VERTICES_PERMUTATION_str,
 		//  std::string INVERSE_XFORM_str);
@@ -97,11 +98,9 @@ public:
 							 std::string channel_data_str,
 							 std::string cell_edge_str,
 							 std::string cell_vertices_str);
-							//  std::string FACE_REF_str,
-							//  std::string VERTICES_PERMUTATION_str,
-							//  std::string INVERSE_XFORM_str);
 
-	void setConnectivityFromJSON(std::string connectivity_str);
+
+	void setConnectivityFromJSON(std::string current_tile_name, std::string file_prefix);
 
 };
 
