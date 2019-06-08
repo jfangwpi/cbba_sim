@@ -31,7 +31,7 @@ using namespace librav;
 int main(int argc, char** argv )
 {
 
-	int historyH = 1;
+	int historyH = 3;
 
 	/*** 0. Preprocessing CBTA data ***/
 	TileTraversalData tile_traversal_data;

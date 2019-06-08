@@ -50,7 +50,8 @@ Tile::Tile(std::string traversal_type_str,
 		   std::string cell_edge_str,
 		   std::string cell_vertices_str,
 		   std::string current_tile_name,
-		   std::string file_prefix){
+		   std::string file_prefix,
+		   int num_conn_files){
 		//    std::string FACE_REF_str,
 		//    std::string VERTICES_PERMUTATION_str,
 		//    std::string INVERSE_XFORM_str){
@@ -65,10 +66,10 @@ Tile::Tile(std::string traversal_type_str,
 						// VERTICES_PERMUTATION_str,
 						// INVERSE_XFORM_str);
 						
-	setConnectivityFromJSON(current_tile_name, file_prefix);
+	setConnectivityFromJSON(current_tile_name, file_prefix, num_conn_files);
 
 	FACE_REF <<   1,  -1,   1,   0,   0,
-				 -2,   2,   1,   2,   0,
+				 -2,   2,   1,   2,   0,		
 				  2,  -2,   1,   1,   0,
 				 -1,   1,   1,   4,   0,
 				  1,  -2,   2,   0,   0,
@@ -533,41 +534,36 @@ void Tile::setMatricesFromJSON(std::string traversal_type_str,
 	}
 }
 
-void Tile::setConnectivityFromJSON(std::string current_tile_name, std::string file_prefix){
-
-typedef Eigen::Triplet<int> T;
-std::vector<T> tripletList;
-tripletList.reserve(50000);
-
-for(int horiz_blk_strt = 499; horiz_blk_strt < 2499; horiz_blk_strt += 500){
-	for(int vert_blk_strt = 499; vert_blk_strt < 2499; vert_blk_strt += 500){
+void Tile::setConnectivityFromJSON(std::string current_tile_name, std::string file_prefix, int num_conn_files){
+	typedef Eigen::Triplet<int> T;
+	std::vector<T> tripletList;
+	// tripletList.reserve(50000);
+	// Iterate through all the connectivity files
+	for(int n = 0; n < num_conn_files; n++){
 		
 		// Define the current connectivity file and create JSON object from it
-		std::ifstream i(file_prefix + "_conn_" + std::to_string(horiz_blk_strt) + "_" + std::to_string(vert_blk_strt) + ".txt");
+		std::ifstream i(file_prefix + "_conn_" + std::to_string(n) + ".txt");
 		nlohmann::json j_conn;
 		i >> j_conn;
 		std::string current_conn_str;
 		j_conn.at(current_tile_name).at("connectivity").get_to(current_conn_str);
-
+	
 		char conn_char[current_conn_str.size() +1];
 		strcpy(conn_char, current_conn_str.c_str());
 		char *token;
-		
-
-		
-
 		std::vector<char *> burner_array;
 		token = strtok (conn_char,";");
 		int counter = 0;
+	
 		while (token != NULL)
 		{	
 			burner_array.push_back(token);
 			token = strtok (NULL, ";");
 			counter++;
 		}
-
+	
 		MatrixXi edge_list = MatrixXi::Zero(counter,3);
-
+	
 		for (size_t i = 0; i < counter; i++)
 		{	
 			std::vector<int> ind_num_array;
@@ -577,7 +573,6 @@ for(int horiz_blk_strt = 499; horiz_blk_strt < 2499; horiz_blk_strt += 500){
 			ss1 << token;
 			int idx1;
 			ss1 >> idx1;
-
 			token = strtok (NULL, ",");
 			std::stringstream ss2;
 			ss2 << token;
@@ -587,14 +582,11 @@ for(int horiz_blk_strt = 499; horiz_blk_strt < 2499; horiz_blk_strt += 500){
 			edge_list(i,1) = idx2;
 			edge_list(i,2) = 1;
 		}
-
-
 		for (int k = 0; k < edge_list.rows(); k++){
 			tripletList.push_back(T(edge_list(k,0),edge_list(k,1),edge_list(k,2))); // T(i,j,v_ij)
 		}
 	}
-}
-		this->connectivity = std::make_shared<Eigen::SparseMatrix<int,Eigen::RowMajor>>(2500,2500);
-		this->connectivity->setFromTriplets(tripletList.begin(), tripletList.end());
+	this->connectivity = std::make_shared<Eigen::SparseMatrix<int,Eigen::RowMajor>>(2500,2500);
+	this->connectivity->setFromTriplets(tripletList.begin(), tripletList.end());
 
 }

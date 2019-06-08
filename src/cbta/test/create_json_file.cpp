@@ -41,7 +41,7 @@ int main(int argc, char** argv )
 {
 	int start_hlevel = 1;
 	int end_hlevel = 3;
-	jsonReadWrite::get_to_json(start_hlevel, end_hlevel);
+	jsonReadWrite::get_to_json(start_hlevel, end_hlevel, 3);
 	return 0;
 }
 

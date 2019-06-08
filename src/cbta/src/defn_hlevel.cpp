@@ -23,7 +23,6 @@ Hlevel::Hlevel(unsigned int Hin){
 Hlevel::Hlevel(unsigned int Hin, unsigned int n_tiles_in, std::string unique_tiles_str){
 	H = Hin;
 	n_tiles = n_tiles_in;
-
 	char temp_char[unique_tiles_str.size() +1];
 	strcpy(temp_char, unique_tiles_str.c_str());
 	char *token;
@@ -38,15 +37,15 @@ Hlevel::Hlevel(unsigned int Hin, unsigned int n_tiles_in, std::string unique_til
 		token = strtok (NULL, "[");
 		counter++;
 	}
+	
 
 	std::stringstream ss;
 	ss << burner_array[0];
 	std::string test_str;
 	ss >> test_str;
 	size_t n = std::count(test_str.begin(), test_str.end(), ',');
-	// std::cout << test_str << std::endl << std::endl;
-	// std::cout << n << std::endl;
-	unique_tiles = MatrixXi::Zero(counter,n);
+	this->unique_tiles = Matrix<int,Eigen::Dynamic,Eigen::Dynamic>::Zero(counter,n);
+	test_str.clear();
 
 	for (size_t i = 0; i < counter; i++)
 	{	
@@ -54,24 +53,22 @@ Hlevel::Hlevel(unsigned int Hin, unsigned int n_tiles_in, std::string unique_til
 		char *token;
 		token = strtok (burner_array[i],",]");
 		int j = 0;
+		std::stringstream ss;
 		while (token != NULL)
-		{	
-			std::stringstream ss;
+		{
+			ss.clear();	
 			ss << token;
 			int temp_val;
 			ss >> temp_val;
 			ind_num_array.push_back(temp_val);
-
 			token = strtok (NULL, ",]");
 			j++;
 		}
 
 		for (size_t k = 0; k < j; k++)
 		{
-			unique_tiles(i,k) = ind_num_array[k];
-			// std::cout << unique_tiles(i,k) << std::endl;
+			this->unique_tiles(i,k) = ind_num_array[k];
 		}
-		// getchar();
 	}
 }
 

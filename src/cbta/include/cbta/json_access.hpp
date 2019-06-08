@@ -39,12 +39,14 @@
 
 
 namespace jsonReadWrite{
-    void get_to_json(const int desired_H_begin, const int desired_H_end){
+void get_to_json(const int desired_H_begin, const int desired_H_end, int rmin){
     	for(int curr_H = desired_H_begin; curr_H < desired_H_end + 1; curr_H++){
+			std::string folder = "./H"+std::to_string(curr_H)+"_R"+std::to_string(rmin)+"/";
+
 			int r_min 		= 3; // change this value in hcost_interface.cpp
 			/*** Create the text file ***/
 			std::ofstream Hlevel_file_;
-			Hlevel_file_.open("ttd_H" + std::to_string(curr_H) + "_R" + std::to_string(r_min) + ".txt");
+			Hlevel_file_.open(folder + "ttd_H" + std::to_string(curr_H) + "_R" + std::to_string(r_min) + ".txt");
 			
 
 			/*** 0. Preprocessing CBTA data ***/
@@ -95,6 +97,7 @@ namespace jsonReadWrite{
 			if(Hlevel_file_.is_open())
 				Hlevel_file_ << s << std::endl;
 			Hlevel_file_.close();
+			s.clear();
 
 			// Tiles(n)
 				std::shared_ptr<librav::Tile> current_tile;
@@ -102,7 +105,7 @@ namespace jsonReadWrite{
 				for(int n = 0; n < current_Hlevel->Tiles.size(); n++){
 					//*** Create a tile file for current Hlevel ***//
 					std::ofstream tile_file_;
-					tile_file_.open("H" + std::to_string(curr_H) + "_R" + std::to_string(r_min) + "_Tile" + std::to_string(n) +".txt");
+					tile_file_.open(folder + "H_" + std::to_string(curr_H) + "_R_" + std::to_string(r_min) + "_Tile_" + std::to_string(n) +".txt");
 					j.clear();
 
 					//*** Start going through all tile data ***//
@@ -191,52 +194,51 @@ namespace jsonReadWrite{
 					* 																 * 
 					* For now, we only have access to Hlevels 1-3					 * 	
 					*																 */
-			
-					std::string connectivity_str;
+
 					auto con_mat = *(current_tile->connectivity.get());
-					json j_conn;
 					
-					for(int horiz_blk_strt = 499; horiz_blk_strt < 2499; horiz_blk_strt += 500){
-						   for(int vert_blk_strt = 499; vert_blk_strt < 2499; vert_blk_strt += 500){
+					
 							    
-							    // RENAME FILE HERE
-							    // OPEN FILE
-							    
-							    std::ofstream conn_file_;
-							    conn_file_.open("H" + std::to_string(curr_H) + "_R" + std::to_string(r_min) + "_conn_" + std::to_string(horiz_blk_strt) + "_" + std::to_string(vert_blk_strt) + ".txt");
-													    
-							    auto blocked_con_mat = con_mat.block(horiz_blk_strt-500, vert_blk_strt-500, horiz_blk_strt, vert_blk_strt);
-							    
-							    for (int k = 0; k < blocked_con_mat.outerSize(); ++k)
-							    {	
-								    for (Eigen::SparseMatrix<int, 1>::InnerIterator it(con_mat, k); it; ++it)
-								    {														    
-									    connectivity_str.append(std::to_string(it.row()));
-									    connectivity_str.append(",");
-									    connectivity_str.append(std::to_string(it.col()));
-									    connectivity_str.append(";");
-								    }
-							    }
-							    connectivity_str.pop_back();
-							    
-							    // WRITE TO JSON OBJECT
-							    // DUMP JSON OBJECT
-							    // WRITE TO FILE
-							    // CLOSE FILE
-							    // CLEAR JSON OBJECT
-							    
-							    j_conn[current_tile_name]["connectivity"] = connectivity_str;
-							    std::string s = j_conn.dump();
-							    if(conn_file_.is_open())
-								    conn_file_ << s << std::endl;
-							    conn_file_.close();
-							    j_conn.clear();
-						    }
+					// RENAME FILE HERE
+					// OPEN FILE
+					std::string connectivity_str;
+					std::ofstream conn_file_;
+					int counter = 0;
+					for (int k = 0; k < con_mat.outerSize(); ++k)
+					{	
+					    for (Eigen::SparseMatrix<int, 1>::InnerIterator it(con_mat, k); it; ++it)
+					    {													    
+						    connectivity_str.append(std::to_string(it.row()));
+						    connectivity_str.append(",");
+						    connectivity_str.append(std::to_string(it.col()));
+							if((counter+1)%5000 == 0)
+								connectivity_str.append("|");
+						    connectivity_str.append(";");
+							counter++;
+						}
 					}
+					connectivity_str.pop_back();
+					char temp_char[connectivity_str.size() +1];
+					strcpy(temp_char, connectivity_str.c_str());
+					char *token;
+					token = strtok(temp_char,"|");
+					counter = 0;
+					json j_conn;
 
+					while (token != NULL)
+					{	
+						conn_file_.open(folder + "H_" + std::to_string(curr_H) + "_R_" + std::to_string(r_min) +"_" + current_tile_name +"_conn_" + std::to_string(counter) + ".txt");
+						j_conn[current_tile_name]["connectivity"] = connectivity_str;
+						std::string s = j_conn.dump();
+						if(conn_file_.is_open())
+					    	conn_file_ << s << std::endl;
+						conn_file_.close();
+						j_conn.clear();
+						token = strtok (NULL, "|");
+						counter++;
+					}					
 
-
-
+					j[current_tile_name]["num_conn_files"]		= counter;
 					j[current_tile_name]["channel_data"] 		= channel_data_str;
 					j[current_tile_name]["cell_vertices"] 		= cell_vertices_str;
 					j[current_tile_name]["traversal_type"] 		= traversal_type_str;
@@ -438,17 +440,15 @@ namespace jsonReadWrite{
 						j[current_tile_name]["tile_block"]["x_smp"]			= x_smp_str;
 
 						//*** Write to the Tile File ***//
-						std::string s = j.dump();
+						s = j.dump();
 						if(tile_file_.is_open())
 							tile_file_ << s << std::endl;
 						tile_file_.close();
 				}
 			}
     	}
-    void get_from_json(const int rmin, librav::TileTraversalData& ttd, int curr_H){	
-
+void get_from_json(const int rmin, librav::TileTraversalData& ttd, int curr_H){	
 		std::string folder = "./H"+std::to_string(curr_H)+"_R"+std::to_string(rmin)+"/";
-
         using nlohmann::json;
 		std::ifstream i(folder+"ttd_H"+std::to_string(curr_H)+"_R"+std::to_string(rmin)+".txt");
 		nlohmann::json j_Hlevel;
@@ -465,9 +465,8 @@ namespace jsonReadWrite{
         j_Hlevel.at("REGION_BD").at("region_w_upper").get_to(ttd.region_bd.region_w_upper);	
         j_Hlevel.at("REGION_BD").at("region_vel_lower").get_to(ttd.region_bd.region_vel_lower);	
         j_Hlevel.at("REGION_BD").at("region_vel_upper").get_to(ttd.region_bd.region_vel_upper);
-        
         /********** Hlevels **********/
-        unsigned int H;
+	    unsigned int H;
         unsigned int n_tiles;
         Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> unique_tiles;
         j_Hlevel.at("Hlevels").at("H").get_to(H);
@@ -480,7 +479,7 @@ namespace jsonReadWrite{
         std::string cell_vertices_str;
         std::string cell_xform_str;
         std::string channel_data_str;
-        std::string connectivity_str;
+		int num_conn_files;
         std::string traversal_type_str;
         std::string traversal_faces_str;
         std::string alfa_str;
@@ -500,16 +499,13 @@ namespace jsonReadWrite{
         std::string FACE_REF_str;
         std::string VERTICES_PERMUTATION_str;
         std::string INVERSE_XFORM_str;
-
-		std::cout << current_Hlevel->unique_tiles << std::endl;
-
         for(int n = 0; n < n_tiles; n++){
 	    //*** Define the file name to be read ***//
-	    std::string file_prefix = folder+"H" + std::to_string(curr_H) + "_R" + std::to_string(rmin);
-	    std::ifstream i_temp(file_prefix + "_Tile" + std::to_string(n) + ".txt");
-	    nlohmann::json j_tile;
+	    std::string file_prefix = folder + "H_" + std::to_string(curr_H) + "_R_" + std::to_string(rmin) + "_Tile_" + std::to_string(n);
+	    std::ifstream i_temp(file_prefix + ".txt");
+		nlohmann::json j_tile;
 	    i_temp >> j_tile;
-
+		
             std::stringstream str;
             str << "Tile_" << n;
             std::string tile_str = str.str();
@@ -522,7 +518,7 @@ namespace jsonReadWrite{
             j_tile.at(current_tile_name).at("cell_vertices").get_to(cell_vertices_str);
             j_tile.at(current_tile_name).at("cell_xform").get_to(cell_xform_str);
             j_tile.at(current_tile_name).at("channel_data").get_to(channel_data_str);
-            j_tile.at(current_tile_name).at("connectivity").get_to(connectivity_str);
+			j_tile.at(current_tile_name).at("num_conn_files").get_to(num_conn_files);
             std::shared_ptr<librav::Tile> temp_tile = std::make_shared<librav::Tile>(traversal_type_str,
                                                                                     traversal_faces_str,
                                                                                     cell_xform_str,
@@ -530,8 +526,9 @@ namespace jsonReadWrite{
                                                                                     cell_edge_str,
                                                                                     cell_vertices_str,
                                                                                     tile_str,
-										    file_prefix);
-            	    std::cout << "Tile data loaded succesfully" << std::endl;
+										    										file_prefix,
+																					num_conn_files);
+            std::cout << "Tile data loaded succesfully" << std::endl;
 
             /********** Tile Block **********/
             j_tile.at(current_tile_name).at("tile_block").at("alfa").get_to(alfa_str);
@@ -565,8 +562,8 @@ namespace jsonReadWrite{
             alfa_smp_str,
             w_smp_str,
             x_smp_str);
-            	    std::cout << "Tile Block data loaded succesfully" << std::endl;
-
+            std::cout << "Tile Block data loaded succesfully" << std::endl;
+			std::cout << "__________________________________" << std::endl;
             temp_tile->addTileBlock(ttd.region_bd,temp_tile_block,curr_H);
             //std::cout << n << std::endl;
             // std::cout << std::endl << temp_tile->traversal_type << std::endl << std::endl;
