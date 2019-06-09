@@ -14,6 +14,7 @@
 #include "cbta/graph_lift.hpp"
 #include "map/square_grid.hpp"
 #include "nlohmann/json.hpp"
+#define EIGEN_DONT_ALIGN_STATICALLY
 
 
 using namespace cv;

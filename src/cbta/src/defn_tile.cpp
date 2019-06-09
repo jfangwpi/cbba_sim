@@ -15,6 +15,7 @@
 #include <iostream>
 #include <fstream>
 #include "nlohmann/json.hpp"
+#define EIGEN_DONT_ALIGN_STATICALLY
 
 using namespace Eigen;
 using namespace librav;

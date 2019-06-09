@@ -8,6 +8,9 @@
 #ifndef HCOST_INTERFACE_HPP
 #define HCOST_INTERFACE_HPP
 
+#define EIGEN_DONT_ALIGN_STATICALLY
+
+
 #include <vector>
 #include <map>
 #include <memory>

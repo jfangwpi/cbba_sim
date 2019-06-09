@@ -9,6 +9,7 @@
 
 #ifndef EDGE_HPP
 #define EDGE_HPP
+#define EIGEN_DONT_ALIGN_STATICALLY
 
 #include <iostream>
 

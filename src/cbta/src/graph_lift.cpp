@@ -1,4 +1,5 @@
 #include "cbta/graph_lift.hpp"
+#define EIGEN_DONT_ALIGN_STATICALLY
 
 using namespace librav;
 

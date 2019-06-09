@@ -13,6 +13,7 @@
 #include "map/square_grid.hpp"
 #include "graph/graph.hpp"
 #include "graph/vertex.hpp"
+#define EIGEN_DONT_ALIGN_STATICALLY
 
 
 namespace librav{

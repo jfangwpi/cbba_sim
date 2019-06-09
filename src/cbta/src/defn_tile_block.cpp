@@ -6,6 +6,7 @@
  */
 
 #include "cbta/hcost_tile_library.hpp"
+#define EIGEN_DONT_ALIGN_STATICALLY
 
 using namespace Eigen;
 using namespace librav;

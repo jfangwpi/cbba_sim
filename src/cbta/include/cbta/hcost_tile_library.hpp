@@ -21,6 +21,9 @@
 #include <eigen3/Eigen/SparseCore>
 //#include <eigen3/Eigen/Core>
 //#include <Eigen/Sparse>
+#define EIGEN_DONT_ALIGN_STATICALLY
+
+
 
 namespace librav {
 const double PI = 3.141592653589793;

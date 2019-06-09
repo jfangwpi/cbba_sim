@@ -26,7 +26,7 @@
 #include "nlohmann/json.hpp"
 
 
-#define EIGEN_DONT_ALIGN_STATICALLY;
+#define EIGEN_DONT_ALIGN_STATICALLY
 
 
 using namespace cv;

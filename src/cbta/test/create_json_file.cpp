@@ -34,6 +34,9 @@
 #include "nlohmann/json.hpp"
 #include "cbta/json_access.hpp"
 
+#define EIGEN_DONT_ALIGN_STATICALLY
+
+
 using namespace cv;
 using namespace librav;
 

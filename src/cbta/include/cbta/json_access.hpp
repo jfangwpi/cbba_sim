@@ -12,6 +12,9 @@
 #ifndef JSON_ACCESS_HPP
 #define JSON_ACCESS_HPP
 
+#define EIGEN_DONT_ALIGN_STATICALLY
+
+
 // standard libaray
 #include <stdio.h>
 #include <vector>
