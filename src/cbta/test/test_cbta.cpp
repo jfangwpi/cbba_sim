@@ -25,6 +25,10 @@
 #include "cbta/json_access.hpp"
 #include "nlohmann/json.hpp"
 
+
+#define EIGEN_DONT_ALIGN_STATICALLY;
+
+
 using namespace cv;
 using namespace librav;
 
@@ -44,10 +48,10 @@ int main(int argc, char** argv )
 	std::shared_ptr<SquareGrid> grid = GraphFromGrid::CreateSquareGrid(row_num,col_num,1);
 
 	// assign properties of square cells
-    for (int i = 35; i < 40; i++){
-        grid->SetObstacleRegionLabel(i,1);
-    }
-    grid->SetInterestedRegionLabel(28,2);
+    // for (int i = 35; i < 40; i++){
+    //     grid->SetObstacleRegionLabel(i,1);
+    // }
+    grid->SetInterestedRegionLabel(15,2);
 	// grid->SetInterestedRegionLabel(10,3);
 
 	/*** 2. Construct a graph from the square grid ***/

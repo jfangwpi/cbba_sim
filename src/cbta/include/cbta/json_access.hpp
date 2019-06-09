@@ -211,7 +211,7 @@ void get_to_json(const int desired_H_begin, const int desired_H_end, int rmin){
 						    connectivity_str.append(std::to_string(it.row()));
 						    connectivity_str.append(",");
 						    connectivity_str.append(std::to_string(it.col()));
-							if((counter+1)%5000 == 0)
+							if((counter+1)%2500 == 0)
 								connectivity_str.append("|");
 						    connectivity_str.append(";");
 							counter++;
