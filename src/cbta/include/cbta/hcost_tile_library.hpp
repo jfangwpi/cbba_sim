@@ -78,21 +78,21 @@ private:
 	Eigen::Matrix<int,5,4> VERTICES_PERMUTATION;
 	//VectorXi INVERSE_XFORM(5);
 	Eigen::Matrix<int,5,1> INVERSE_XFORM;
-
+	#define EIGEN_DONT_ALIGN_STATICALLY
 public:
 
-	Eigen::Matrix<int,Eigen::Dynamic,4> channel_data;
-	Eigen::Matrix<double,4,Eigen::Dynamic> cell_vertices;
-	Eigen::Matrix<int,Eigen::Dynamic,1> traversal_type;
-	Eigen::Matrix<int,Eigen::Dynamic,2> cell_xform;
-	Eigen::Matrix<int,Eigen::Dynamic,1> traversal_faces;
-	Eigen::Matrix<double,Eigen::Dynamic,4> cell_edge;
+	Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> channel_data;
+	Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> cell_vertices;
+	Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> traversal_type;
+	Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> cell_xform;
+	Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic> traversal_faces;
+	Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> cell_edge;
 
 	std::shared_ptr<TileBlock> tile_block;
 
 	std::shared_ptr<Eigen::SparseMatrix<int,Eigen::RowMajor>> connectivity;
 
-	void set_tile_data(int, Eigen::Matrix<int,Eigen::Dynamic,4>);
+	void set_tile_data(int, Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>);
 
 	void addTileBlock(REGION_BD &region_bd, std::shared_ptr<TileBlock> this_tile, int H);
 
@@ -105,7 +105,7 @@ public:
 
 
 	void setConnectivityFromJSON(std::string current_tile_name, std::string file_prefix, int num_conn_files);
-
+	#define EIGEN_DONT_ALIGN_STATICALLY
 };
 
 // =============================== TileBlock ==============================
@@ -138,16 +138,17 @@ public:
 	~TileBlock();
 public: // private: <---------------------------------------------------******$*$*$*$*$*$*$
 	int H;
-	Eigen::Matrix<double,Eigen::Dynamic,1> y_exit;
-	Eigen::Matrix<double,Eigen::Dynamic,1> z_exit;
+	Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> y_exit;
+	Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> z_exit;
 
-	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W> bta_smp; //Matrix<double,Dynamic,N_CBTA_W>
+	Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> bta_smp; //Matrix<double,Dynamic,N_CBTA_W>
 
-	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W_SOL> alfa_sol;
-	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W> alfa_smp;
+	Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> alfa_sol;
+	Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> alfa_smp;
 
-	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W> w_smp;
-	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W> x_smp;
+	Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> w_smp;
+	Eigen::Matrix<double,Eigen::Dynamic,Eigen::Dynamic> x_smp;
+	#define EIGEN_DONT_ALIGN_STATICALLY
 public:
 	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W> alfa;
 	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W> bta;
@@ -156,6 +157,7 @@ public:
 	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W> x;
 	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W> w;
 	Eigen::Matrix<double,Eigen::Dynamic,N_CBTA_W_SOL> w_sol;
+	#define EIGEN_DONT_ALIGN_STATICALLY
 
 
 	std::shared_ptr<Tile> tile;
@@ -202,7 +204,7 @@ private:
 //			Matrix<int,1,Dynamic>& returnMatrix);
 
 	double pi2pi(double x);
-
+	#define EIGEN_DONT_ALIGN_STATICALLY
 };
 
 
